@@ -8,6 +8,7 @@
 - 0-WORKER:s primära slutmål är professionellt, precist, välstrukturerat och verifierbart ComfyUI-workflowarbete. Tidiga teknologioberoende uppgifter är kvalificeringsgrund, inte konkurrerande slutmål.
 - Behåll fem phases, åtta rounds och tre ERST per round. Ingen ny screening, stor upprepningskvot eller extra fas införs som förberedelsekrav.
 - Roadmapen omfattar återstående implementation och relevant lokal verifiering, inte själva nästa kandidat-evalen. Vid senare operativa arbetspass börjar uppdateringar med `RMS <steg>/18`; genomför inte roadmapen utan Team Masters startbesked.
+- Statusägarskap är uppdelat: `[PLAN] - [4] - [PREPARE FOR MASSIVELY IMPROVED EVALS] - [ROADMAP].md` ägs av ChatGPT för steg 1, 3, 5, 6, 8 och 11–15. `[PLAN] - [4] - [PREPARE FOR MASSIVELY IMPROVED EVALS] - [CODEX] - [ROADMAP].md` ägs av Codex för steg 2, 4, 7, 9, 10 och 16–18. Globala stegnummer och beroenden bevaras; inga dubbla statusrader. Varje aktör uppdaterar endast sin roadmap och lämnar den andres implementation/status orörd.
 
 ## 2. Verifierade fynd och deras konsekvenser
 
