@@ -6,13 +6,13 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$repoRoot = (& git -C (Join-Path $PSScriptRoot "..") rev-parse --show-toplevel 2>$null).Trim()
+$repoRoot = (& git -C $PSScriptRoot rev-parse --show-toplevel 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($repoRoot)) {
     throw "Could not resolve repository root."
 }
 $repoRoot = (Resolve-Path $repoRoot).Path
 
-$watcher = Join-Path $repoRoot "tools\main_autopull_watcher.ps1"
+$watcher = Join-Path $PSScriptRoot "main_autopull_watcher.ps1"
 if (-not (Test-Path $watcher)) {
     throw "Watcher not found: $watcher"
 }
@@ -31,9 +31,6 @@ $logPath = Join-Path $gitDir "main-autopull.log"
 $startupDir = [Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
 $launcherPath = Join-Path $startupDir "SSIRA-ComfyUI-MainAutoPull.cmd"
 
-# Use the exact PowerShell host that is running this installer. This works for
-# PowerShell 7 (pwsh.exe) as well as Windows PowerShell (powershell.exe), without
-# assuming either executable is available through PATH.
 $hostExe = (Get-Process -Id $PID).Path
 if ([string]::IsNullOrWhiteSpace($hostExe) -or -not (Test-Path $hostExe)) {
     throw "Could not resolve the current PowerShell host executable."
@@ -82,7 +79,7 @@ Write-Host "PowerShell host: $hostExe"
 Write-Host "Poll interval: ${IntervalSeconds}s"
 Write-Host "Startup launcher: $launcherPath"
 Write-Host "Log: $logPath"
-Write-Host "Safety: only branch main; only fast-forward; skips tracked/staged local changes; never resets/rebases/cleans/stashes."
+Write-Host "Safety: only branch main; only fast-forward; skips tracked/staged local changes and colliding untracked files; never resets/rebases/cleans/stashes."
 
 if (Test-Path $logPath) {
     Write-Host "--- watcher evidence ---"
@@ -93,4 +90,4 @@ else {
     Write-Warning "Watcher log not created yet. The watcher may not have started; inspect the command output or retry the installer."
 }
 
-Write-Host "Uninstall: & .\tools\install_main_autopull.ps1 -Uninstall"
+Write-Host "Uninstall: & .\scripts\github_autopull_chatgpts_repo_work\install_main_autopull.ps1 -Uninstall"
