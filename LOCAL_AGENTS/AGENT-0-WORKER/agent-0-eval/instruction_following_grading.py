@@ -10,8 +10,10 @@ import json
 from pathlib import Path
 import time
 
+from evaluation_paths import PROJECT_ROOT, project_relative_path
+
 CATALOG = Path(__file__).with_name("instruction_following_catalog.json")
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = PROJECT_ROOT
 
 
 def load_catalog() -> dict:
@@ -132,9 +134,7 @@ def screening_summary(evidence: list[dict]) -> dict:
 def require_recent_idle(review: dict) -> None:
     observation = next(item for item in review["observations"] if item["condition"] == "idle_state")
     reference = observation["evidence_reference"]
-    relative = Path(reference["path"])
-    path = (ROOT / relative).resolve()
-    path.relative_to(ROOT.resolve())
+    path = project_relative_path(reference["path"])
     with path.open("rb") as handle:
         body = handle.read(1048577)
     if len(body) > 1048576 or hashlib.sha256(body).hexdigest() != reference["sha256"]:
@@ -152,12 +152,7 @@ def require_recent_idle(review: dict) -> None:
 
 def verify_baseline(review: dict, completion: dict, cancellation: dict, model: str,
                     prompt: str, source_fingerprints: dict) -> dict:
-    """Require raw server receipts plus a traceable review of effective conditions.
-
-    The evaluator must check the model-specific target against primary readback;
-    this does not turn its semantic review into an independent model verdict.
-    A status-only/unknown settings file is deliberately insufficient.
-    """
+    """Require raw server receipts plus a traceable review of effective conditions."""
     if (completion.get("state") != "completed" or completion.get("stop") is not None
             or completion.get("contract", {}).get("model_identifier") != model
             or completion.get("contract", {}).get("owned_process_probe")
@@ -193,11 +188,7 @@ def verify_baseline(review: dict, completion: dict, cancellation: dict, model: s
         reference = observation["evidence_reference"]
         if not isinstance(reference, dict) or not isinstance(reference.get("path"), str):
             raise ValueError("condition requires a captured project-relative JSON source")
-        relative = Path(reference["path"])
-        if relative.is_absolute() or ".." in relative.parts:
-            raise ValueError("condition source must stay in the workspace")
-        path = (ROOT / relative).resolve()
-        path.relative_to(ROOT.resolve())
+        path = project_relative_path(reference["path"])
         with path.open("rb") as handle:
             body = handle.read(1048577)
         if len(body) > 1048576 or hashlib.sha256(body).hexdigest() != reference.get("sha256"):
