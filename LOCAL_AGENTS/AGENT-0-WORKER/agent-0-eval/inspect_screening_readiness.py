@@ -10,10 +10,9 @@ import hashlib
 from pathlib import Path
 import sys
 import time
-from uuid import uuid4
 
-ROOT = Path(__file__).resolve().parents[4]
-ROLE = Path(__file__).resolve().parents[1]
+from evaluation_paths import PROJECT_ROOT as ROOT, ROLE_ROOT as ROLE, create_run_directory, run_directory
+
 sys.path[:0] = [str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
                 str(ROOT / "LM-Studio_connections/LM-Studio_observability"), str(ROOT / "tools")]
 from interruptible_prediction import SdkPredictionProcess
@@ -22,14 +21,17 @@ from observability_common import sanitize_for_log, timestamp_fields, write_captu
 from instruction_following_grading import task_contract
 
 
-def capture(model: str, model_file: str | None = None) -> tuple[Path, dict]:
+def capture(eval_id: str, run_id: str, model: str, model_file: str | None = None) -> tuple[Path, dict]:
+    pending = run_directory(eval_id, run_id)
+    if pending.exists():
+        raise ValueError("readiness run id already exists")
     task = task_contract("record_transformation")
     prompt = task["system_prompt"]
     token = resolve_token()
     if token in prompt:
         raise ValueError("token must not be part of model input")
-    report = {"kind": "screening_readiness", "created_at": timestamp_fields(),
-              "model_identifier": model, "status": "blocked",
+    report = {"kind": "screening_readiness", "eval_id": eval_id, "run_id": run_id,
+              "created_at": timestamp_fields(), "model_identifier": model, "status": "blocked",
               "generation_requested": False, "system_prompt": sanitize_for_log(prompt),
               "system_prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
               "catalog_sha256": task["catalog_sha256"], "events": [],
@@ -100,19 +102,21 @@ def capture(model: str, model_file: str | None = None) -> tuple[Path, dict]:
         if sdk:
             sdk.close()
     report["finished_at"] = timestamp_fields()
-    destination = ROOT / "LM-Studio_logs/frontier_evaluations" / uuid4().hex / "readiness.json"
-    destination.parent.mkdir(parents=True, exist_ok=False)
+    directory = create_run_directory(eval_id, run_id)
+    destination = directory / "readiness.json"
     write_capture(destination, report)
     return destination, report
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--eval-id", required=True)
+    parser.add_argument("--run-id", required=True)
     parser.add_argument("--model", required=True, help="exact already-loaded SDK identifier")
     parser.add_argument("--model-file", help="optional explicit GGUF identity read; no model processing")
     args = parser.parse_args()
     try:
-        path, report = capture(args.model, args.model_file)
+        path, report = capture(args.eval_id, args.run_id, args.model, args.model_file)
         print(path.relative_to(ROOT).as_posix())
         print("Status:", report["status"], "Loaded model:", report["required_checks"]["loaded_model"])
         return 2 if report["status"] == "blocked" else 0
