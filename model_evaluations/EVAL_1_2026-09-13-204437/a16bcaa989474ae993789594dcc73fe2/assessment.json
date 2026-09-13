@@ -1,0 +1,10 @@
+{
+  "assessed_at": "2026-09-13 21:12:04 +02:00",
+  "evidence_file": "evidence.json",
+  "purpose": "interrupt-control diagnostic, not task-success evidence",
+  "tool_stop_verified": true,
+  "generation_state": "The preceding model round had ended before the tool started; no follow-up prediction started after cancellation.",
+  "observed_outcome": "Stop request was observed after tool_started; cancel_sent, tool_aborted, active=0, completed=0, and unchanged fixture hash were recorded within the five-second budget.",
+  "separate_external_check": "After the controller exited, lms ps --json showed Granite idle with queued=0; no Python controller process containing this run ID remained.",
+  "limit": "This verifies abort of this read-only tool path, not every future tool or a simultaneous generation-plus-tool process."
+}

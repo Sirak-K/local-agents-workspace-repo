@@ -1,0 +1,8 @@
+{
+  "reason": "Verify in-flight file tool abort after observed start",
+  "requested_at": {
+    "local": "2026-09-13 | 21:11:21.212 +02:00",
+    "utc": "2026-09-13 | 19:11:21.212 UTC",
+    "epoch_ms": 1789326681212
+  }
+}

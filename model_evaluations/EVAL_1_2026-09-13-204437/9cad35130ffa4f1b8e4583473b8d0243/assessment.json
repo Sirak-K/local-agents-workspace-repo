@@ -1,0 +1,9 @@
+{
+  "assessed_at": "2026-09-13 21:12:04 +02:00",
+  "evidence_file": "evidence.json",
+  "task_completed": true,
+  "real_world_relevance": "high",
+  "observed_outcome": "Granite requested the exact read tool, the file was read once, and the answer reported the disk-verified queue_name render-622d1295 and retry_limit 3. The fixture hash was unchanged.",
+  "conditions": "No WORKER role files, profile, or other context sources; the task, tool interface, and explicitly enabled Granite text-tool bridge were supplied.",
+  "comparison_note": "This is a separate harness-adapted attempt. The original unbridged task remains a failure and must not be counted as passed."
+}

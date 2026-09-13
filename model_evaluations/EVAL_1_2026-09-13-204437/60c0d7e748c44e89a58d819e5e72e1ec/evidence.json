@@ -1,0 +1,626 @@
+{
+  "run_id": "60c0d7e748c44e89a58d819e5e72e1ec",
+  "kind": "transport_diagnostic",
+  "state": "verified_cancel",
+  "created_at": {
+    "local": "2026-09-13 | 20:40:10.851 +02:00",
+    "utc": "2026-09-13 | 18:40:10.851 UTC",
+    "epoch_ms": 1789324810851
+  },
+  "updated_at": {
+    "local": "2026-09-13 | 20:40:11.552 +02:00",
+    "utc": "2026-09-13 | 18:40:11.552 UTC",
+    "epoch_ms": 1789324811552
+  },
+  "contract": {
+    "transport": "lmstudio-js 1.5.0",
+    "model_identifier": "granite-4.1-3b",
+    "duration_seconds": 30.0,
+    "stop_budget_seconds": 5.0,
+    "observation_target_seconds": 0.5,
+    "control_poll_seconds": 0.1,
+    "max_tokens": 1024,
+    "temperature": 0,
+    "fresh_chat": true,
+    "model_tools": [],
+    "owned_process_probe": true,
+    "max_evidence_bytes": 1048576,
+    "max_stream_events": 1000
+  },
+  "instruction": "Write the integers from 1 to 5000 in ascending order, separated by spaces. Do not summarize or stop early.",
+  "instruction_sha256": "553de5ecd664c69c9468d810288b2e9a88d805b07b1e063e936088a009b00d86",
+  "source_fingerprints": {
+    "controlled_run.py": "e1f394ddee90f265a9fefb8dc3b6884e621a26c8ede140719cbe5635b41fc6ce",
+    "lm_studio_sdk_prediction.mjs": "199308ce42af01aac9cf0de3c5e1b1ad0d13ecc8d7ba9504b2009c30d9124c24",
+    "interruptible_prediction.py": "9c10af62dd862217a0ad7b3c404e38e9290d01dd3ab17111ea5ecf7b35c509df",
+    "package-lock.json": "cc53c84543b2806de2e3fbfeece5acf0861c2a1b332789f97628927af3a6aa70",
+    "worker_tool_process_control.py": "226f8f7e712884601faffc521ea11c6f2f26437e9c8b37b337de03cbbe5a5119",
+    "instruction_following_grading.py": "bd95a92492a0d6ac433a92c8cda69b852dd79180d384bab3cf06999f4248bb29",
+    "instruction_following_catalog.json": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1"
+  },
+  "system_prompt": "",
+  "previous_run": null,
+  "change_reason": null,
+  "events": [
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.029 +02:00",
+        "utc": "2026-09-13 | 18:40:11.029 UTC",
+        "epoch_ms": 1789324811029
+      },
+      "data": {
+        "type": "model_bound",
+        "model_info": {
+          "type": "llm",
+          "modelKey": "granite-4.1-3b",
+          "format": "gguf",
+          "displayName": "Granite 4.1 3B",
+          "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+          "sizeBytes": 2099501664,
+          "paramsString": "3B",
+          "architecture": "granite",
+          "quantization": {
+            "name": "Q4_K_M",
+            "bits": 4
+          },
+          "identifier": "granite-4.1-3b",
+          "instanceReference": "VYUEeZsiGDZwDmScMn+G2bcD",
+          "vision": false,
+          "trainedForToolUse": true,
+          "maxContextLength": 131072,
+          "contextLength": 8192
+        }
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.029 +02:00",
+        "utc": "2026-09-13 | 18:40:11.029 UTC",
+        "epoch_ms": 1789324811029
+      },
+      "data": {
+        "type": "prediction_started"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.038 +02:00",
+        "utc": "2026-09-13 | 18:40:11.038 UTC",
+        "epoch_ms": 1789324811038
+      },
+      "data": {
+        "type": "owned_tool_probe_started",
+        "pid": 28024
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.058 +02:00",
+        "utc": "2026-09-13 | 18:40:11.058 UTC",
+        "epoch_ms": 1789324811058
+      },
+      "data": {
+        "type": "prompt_progress",
+        "percent": 0
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.250 +02:00",
+        "utc": "2026-09-13 | 18:40:11.250 UTC",
+        "epoch_ms": 1789324811250
+      },
+      "data": {
+        "type": "prompt_progress",
+        "percent": 100
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.250 +02:00",
+        "utc": "2026-09-13 | 18:40:11.250 UTC",
+        "epoch_ms": 1789324811250
+      },
+      "data": {
+        "type": "fragment",
+        "content": "1",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.398 +02:00",
+        "utc": "2026-09-13 | 18:40:11.398 UTC",
+        "epoch_ms": 1789324811398
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.402 +02:00",
+        "utc": "2026-09-13 | 18:40:11.402 UTC",
+        "epoch_ms": 1789324811402
+      },
+      "data": {
+        "type": "fragment",
+        "content": "2",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.410 +02:00",
+        "utc": "2026-09-13 | 18:40:11.410 UTC",
+        "epoch_ms": 1789324811410
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.410 +02:00",
+        "utc": "2026-09-13 | 18:40:11.410 UTC",
+        "epoch_ms": 1789324811410
+      },
+      "data": {
+        "type": "fragment",
+        "content": "3",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.425 +02:00",
+        "utc": "2026-09-13 | 18:40:11.425 UTC",
+        "epoch_ms": 1789324811425
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.431 +02:00",
+        "utc": "2026-09-13 | 18:40:11.431 UTC",
+        "epoch_ms": 1789324811431
+      },
+      "data": {
+        "type": "fragment",
+        "content": "4",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.438 +02:00",
+        "utc": "2026-09-13 | 18:40:11.438 UTC",
+        "epoch_ms": 1789324811438
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.443 +02:00",
+        "utc": "2026-09-13 | 18:40:11.443 UTC",
+        "epoch_ms": 1789324811443
+      },
+      "data": {
+        "type": "fragment",
+        "content": "5",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.450 +02:00",
+        "utc": "2026-09-13 | 18:40:11.450 UTC",
+        "epoch_ms": 1789324811450
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.462 +02:00",
+        "utc": "2026-09-13 | 18:40:11.462 UTC",
+        "epoch_ms": 1789324811462
+      },
+      "data": {
+        "type": "fragment",
+        "content": "6",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.468 +02:00",
+        "utc": "2026-09-13 | 18:40:11.468 UTC",
+        "epoch_ms": 1789324811468
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.477 +02:00",
+        "utc": "2026-09-13 | 18:40:11.477 UTC",
+        "epoch_ms": 1789324811477
+      },
+      "data": {
+        "type": "fragment",
+        "content": "7",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.478 +02:00",
+        "utc": "2026-09-13 | 18:40:11.478 UTC",
+        "epoch_ms": 1789324811478
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.490 +02:00",
+        "utc": "2026-09-13 | 18:40:11.490 UTC",
+        "epoch_ms": 1789324811490
+      },
+      "data": {
+        "type": "fragment",
+        "content": "8",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.490 +02:00",
+        "utc": "2026-09-13 | 18:40:11.490 UTC",
+        "epoch_ms": 1789324811490
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.503 +02:00",
+        "utc": "2026-09-13 | 18:40:11.503 UTC",
+        "epoch_ms": 1789324811503
+      },
+      "data": {
+        "type": "fragment",
+        "content": "9",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.508 +02:00",
+        "utc": "2026-09-13 | 18:40:11.508 UTC",
+        "epoch_ms": 1789324811508
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.518 +02:00",
+        "utc": "2026-09-13 | 18:40:11.518 UTC",
+        "epoch_ms": 1789324811518
+      },
+      "data": {
+        "type": "fragment",
+        "content": "10",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.518 +02:00",
+        "utc": "2026-09-13 | 18:40:11.518 UTC",
+        "epoch_ms": 1789324811518
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.537 +02:00",
+        "utc": "2026-09-13 | 18:40:11.537 UTC",
+        "epoch_ms": 1789324811537
+      },
+      "data": {
+        "type": "cancel_sent"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.538 +02:00",
+        "utc": "2026-09-13 | 18:40:11.538 UTC",
+        "epoch_ms": 1789324811538
+      },
+      "data": {
+        "type": "fragment",
+        "content": "11",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:40:11.538 +02:00",
+        "utc": "2026-09-13 | 18:40:11.538 UTC",
+        "epoch_ms": 1789324811538
+      },
+      "data": {
+        "type": "result_received",
+        "stats": {
+          "stopReason": "userStopped"
+        }
+      }
+    }
+  ],
+  "stop": {
+    "reason": "verify mandatory stop gate with disposable diagnostic fixture",
+    "requested_at": {
+      "local": "2026-09-13 | 20:40:11.516 +02:00",
+      "utc": "2026-09-13 | 18:40:11.516 UTC",
+      "epoch_ms": 1789324811516
+    },
+    "observed_at": {
+      "local": "2026-09-13 | 20:40:11.533 +02:00",
+      "utc": "2026-09-13 | 18:40:11.533 UTC",
+      "epoch_ms": 1789324811533
+    }
+  },
+  "result": {
+    "type": "result",
+    "content": "1 2 3 4 5 6 7 8 9 10 11",
+    "stats": {
+      "stopReason": "userStopped"
+    },
+    "model_info": {
+      "type": "llm",
+      "modelKey": "granite-4.1-3b",
+      "format": "gguf",
+      "displayName": "Granite 4.1 3B",
+      "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+      "sizeBytes": 2099501664,
+      "paramsString": "3B",
+      "architecture": "granite",
+      "quantization": {
+        "name": "Q4_K_M",
+        "bits": 4
+      },
+      "identifier": "granite-4.1-3b",
+      "instanceReference": "VYUEeZsiGDZwDmScMn+G2bcD",
+      "vision": false,
+      "trainedForToolUse": true,
+      "maxContextLength": 131072,
+      "contextLength": 8192
+    },
+    "load_config": {
+      "fields": [
+        {
+          "key": "llm.load.llama.autoFit",
+          "value": false
+        },
+        {
+          "key": "llm.load.mlx.autoFit",
+          "value": false
+        },
+        {
+          "key": "llm.load.llama.cpuThreadPoolSize",
+          "value": 6
+        },
+        {
+          "key": "llm.load.contextLength",
+          "value": 8192
+        },
+        {
+          "key": "llm.load.llama.flashAttention",
+          "value": true
+        },
+        {
+          "key": "llm.load.promptTemplate",
+          "value": {
+            "type": "jinja",
+            "jinjaPromptTemplate": {
+              "template": {
+                "encoding": "utf-8",
+                "character_count": 6099,
+                "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                "text_chunks": [
+                  "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                  "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                  "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                  ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                  "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                  "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                  " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                  " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                  " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                  "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                  "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                  "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                  "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                  "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                  "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                  "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                  "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                  "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                  "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                  "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                  "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                  "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                  "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                  "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                  "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                  "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                  "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                  " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                  "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                  "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                  "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                  " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                  "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                  "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                  "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                  ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                  "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                  " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                  "|>' }}\n{%- endif %}"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "key": "llm.load.llama.tryDirectIO",
+          "value": false
+        },
+        {
+          "key": "llm.load.llama.acceleration.offloadRatio",
+          "value": 1
+        },
+        {
+          "key": "llm.load.numParallelSessions",
+          "value": 1
+        }
+      ]
+    },
+    "prediction_config": {
+      "fields": [
+        {
+          "key": "llm.prediction.promptTemplate",
+          "value": {
+            "type": "jinja",
+            "jinjaPromptTemplate": {
+              "template": {
+                "encoding": "utf-8",
+                "character_count": 6099,
+                "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                "text_chunks": [
+                  "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                  "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                  "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                  ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                  "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                  "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                  " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                  " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                  " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                  "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                  "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                  "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                  "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                  "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                  "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                  "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                  "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                  "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                  "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                  "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                  "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                  "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                  "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                  "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                  "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                  "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                  "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                  " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                  "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                  "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                  "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                  " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                  "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                  "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                  "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                  ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                  "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                  " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                  "|>' }}\n{%- endif %}"
+                ]
+              }
+            },
+            "stopStrings": []
+          }
+        },
+        {
+          "key": "llm.prediction.llama.cpuThreads",
+          "value": 6
+        },
+        {
+          "key": "llm.prediction.temperature",
+          "value": 0
+        },
+        {
+          "key": "llm.prediction.maxPredictedTokens",
+          "value": {
+            "checked": true,
+            "value": 1024
+          }
+        },
+        {
+          "key": "llm.prediction.tools",
+          "value": {
+            "type": "none"
+          }
+        }
+      ]
+    }
+  },
+  "verification": {
+    "generation": "verified_cancel",
+    "tools": {
+      "active_processes": 0,
+      "total_processes": 3,
+      "verified": true
+    },
+    "within_stop_budget": true,
+    "stop_to_receipt_seconds": 0.0,
+    "cancel_command_sent": true,
+    "sdk_client_exited": true
+  },
+  "evidence_gaps": [
+    "Diagnostic run; round/grader and controlled baseline gates are not implemented.",
+    "SDK stderr is not captured; transport errors use secret-free codes.",
+    "Sanitized input/output is not guaranteed byte-exact or free of arbitrary text secrets."
+  ],
+  "finished_at": {
+    "local": "2026-09-13 | 20:40:11.552 +02:00",
+    "utc": "2026-09-13 | 18:40:11.552 UTC",
+    "epoch_ms": 1789324811552
+  }
+}

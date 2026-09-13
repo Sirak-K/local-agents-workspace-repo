@@ -1,0 +1,8 @@
+{
+  "name": "lm-studio-prediction-control",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@lmstudio/sdk": "1.5.0"
+  }
+}

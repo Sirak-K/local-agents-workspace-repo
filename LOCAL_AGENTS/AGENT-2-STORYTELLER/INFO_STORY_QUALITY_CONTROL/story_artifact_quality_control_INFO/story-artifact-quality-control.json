@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.1",
+  "vssa_versions": [
+    "premise",
+    "story_segment_core",
+    "full_story",
+    "prompt_realized_json",
+    "prompt_realized_markdown"
+  ],
+  "review_order": [
+    "story_segment_core_markdown",
+    "full_story_markdown",
+    "prompt_realized"
+  ],
+  "artifacts": {
+    "story_segment_core_markdown": {
+      "format": "markdown",
+      "blueprint_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO-STORY_CREATION/INFO-VSSADB/version_specific_story_artifact_design_blueprints_INFO/[VSSADB] - [STORY SEGMENT CORE].md",
+      "saqc_instructions_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO_STORY_QUALITY_CONTROL/story_artifact_quality_control_INFO/version_specific_story_artifact_quality_control_INFO/[VSSA-QC-I] - [STORY SEGMENT CORE].md"
+    },
+    "full_story_markdown": {
+      "format": "markdown",
+      "blueprint_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO-STORY_CREATION/INFO-VSSADB/version_specific_story_artifact_design_blueprints_INFO/[VSSADB] - [FULL].md",
+      "saqc_instructions_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO_STORY_QUALITY_CONTROL/story_artifact_quality_control_INFO/version_specific_story_artifact_quality_control_INFO/[VSSA-QC-I] - [FULL].md"
+    },
+    "prompt_realized_json": {
+      "format": "json",
+      "blueprint_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO-STORY_CREATION/INFO-VSSADB/version_specific_story_artifact_design_blueprints_INFO/[VSSADB] - [PROMPT-REALIZED].md",
+      "saqc_instructions_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO_STORY_QUALITY_CONTROL/story_artifact_quality_control_INFO/version_specific_story_artifact_quality_control_INFO/[VSSA-QC-I] - [PROMPT-REALIZED].md"
+    },
+    "prompt_realized_markdown": {
+      "format": "markdown",
+      "blueprint_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO-STORY_CREATION/INFO-VSSADB/version_specific_story_artifact_design_blueprints_INFO/[VSSADB] - [PROMPT-REALIZED].md",
+      "saqc_instructions_file": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/INFO_STORY_QUALITY_CONTROL/story_artifact_quality_control_INFO/version_specific_story_artifact_quality_control_INFO/[VSSA-QC-I] - [PROMPT-REALIZED].md"
+    }
+  },
+  "correction_policy": {
+    "maximum_iterations": 3,
+    "iteration_order": [
+      "story_segment_core_markdown",
+      "full_story_markdown",
+      "prompt_realized"
+    ],
+    "iteration_outcomes": [
+      "CORRECTIONS_APPLIED",
+      "NO_CORRECTIONS_NEEDED"
+    ],
+    "allowed_statuses": [
+      "APPROVED",
+      "REVISED",
+      "NOT_APPROVED"
+    ],
+    "rules": [
+      "APPROVED authorizes no artifact mutation and no remaining blocker; any populated correction fields are inactive and discarded by the deterministic runtime.",
+      "REVISED returns only focused corrections that differ from current values, fully correct the reviewed Story version, and leave no remaining blocker.",
+      "NOT_APPROVED identifies the exact unresolved defect and returns no speculative correction.",
+      "Every correction is deterministically revalidated before the next SAQC review begins.",
+      "If any Story version is corrected, the complete next SAQC iteration restarts from Story Segment Core.",
+      "Only a complete iteration with no corrections produces NO_CORRECTIONS_NEEDED and permits final Quality Control completion.",
+      "If the maximum iteration count is reached while corrections are still required, stop with NOT_APPROVED instead of starting an unbounded local-model loop.",
+      "No workflow file may be edited during SAQC."
+    ]
+  },
+  "iteration_report": {
+    "format": "pretty_utf8_json",
+    "relative_directory": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/GENERATED-STORY-ARTIFACTS/<STORY-ID>_ARTIFACTS/saqc-reports",
+    "filename_pattern": "<STORY-ID>_SAQC_REPORT_<REPORT-ID>.json",
+    "required_content": [
+      "Story identifier, numeric iteration and persistent numeric report identifier",
+      "Human-readable start and finish timestamps",
+      "Configured LM Studio model identifier",
+      "Exact structured Lumimaid result for SSC, Full and Prompt-Realized",
+      "Iteration outcome",
+      "SHA-256 values for all four Story artifacts before and after the iteration",
+      "Every correction applied and any remaining blocker"
+    ],
+    "rules": [
+      "Write exactly one report for every started SAQC iteration, including an iteration that ends with NOT_APPROVED.",
+      "Allocate a new monotonically increasing report ID per Story and never overwrite or delete an earlier report.",
+      "Preserve the model-returned review data without a separate LLM summarization call.",
+      "Write reports atomically and never modify ComfyUI workflow files."
+    ]
+  },
+  "vssaqc_report": {
+    "format": "pretty_utf8_json",
+    "relative_directory": "PROJECT_BIONIC/BIONIC_AGENTS/bionic_agent-2-Lumimaid/GENERATED-STORY-ARTIFACTS/<STORY-ID>_ARTIFACTS/saqc-reports/vssaqc-reports",
+    "filename_patterns": {
+      "premise": "<STORY-ID>_VSSAQC_PREMISE_REPORT_<REPORT-ID>.json",
+      "story_segment_core": "<STORY-ID>_VSSAQC_SSC_REPORT_<REPORT-ID>.json",
+      "full_story": "<STORY-ID>_VSSAQC_FULL_REPORT_<REPORT-ID>.json",
+      "prompt_realized_json": "<STORY-ID>_VSSAQC_PRMPRZ_JSON_REPORT_<REPORT-ID>.json",
+      "prompt_realized_markdown": "<STORY-ID>_VSSAQC_PRMPRZ_MD_REPORT_<REPORT-ID>.json"
+    },
+    "rules": [
+      "Write exactly five VSSAQC files for every started SAQC iteration.",
+      "Do not start an additional model call for a VSSAQC file.",
+      "Premise VSSAQC records only the approved premise snapshot state.",
+      "Prompt-Realized JSON and Markdown VSSAQC files are split deterministically from the same Prompt-Realized SAQC result."
+    ]
+  }
+}

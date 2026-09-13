@@ -1,0 +1,12 @@
+{
+  "config_version": 1,
+  "bionic_model_config_relative_path": "apps/bionic/.internal/user-concrete-model-default-config/NeverSleep/Lumimaid-v0.2-8B-GGUF/Lumimaid-v0.2-8B.q4_k_m.gguf.json",
+  "system_prompt_source": "../agent-2_system_prompt.txt",
+  "bionic_skill_source": "../agent-2-ctx",
+  "bionic_skill_install_relative_path": "skills/story-and-chat-agent",
+  "prompt_template_mode": "model_metadata",
+  "clear_model_prompt_template_override": true,
+  "obsolete_exact_stop_strings": [
+    "[TOOL_RESULT]"
+  ]
+}

@@ -1,0 +1,33 @@
+# Handoff-instruktioner och regler: Codex → ChatGPT
+
+Denna yta används enbart för avgränsade, substantiella projektuppgifter som ChatGPT kan utföra med tillgänglig repoåtkomst. Team Master initierar körningen genom att säga till ChatGPT att en handoff finns **efter att handoff-filen faktiskt är publicerad på GitHub `main`**. Codex lägger en handoff-fil här men skickar den inte direkt till ChatGPT. Ingen automatisk scheduler, osynlig lokal filåtkomst eller tvåvägs-Git-synk förutsätts.
+
+## När Codex ska skapa en handoff
+
+- Pröva möjligheten vid naturliga arbetsgränser och när ett tydligt, självständigt flerfiligt arbetsstycke framträder. Välj arbete med konkret filskapande, filändring eller avgränsad filborttagning samt relevanta tester/verifieringar. Dokumentation får följa en kodändring men ska normalt inte ensam motivera en handoff.
+- Välj bara när uppgiften sannolikt kan bli korrekt utan lokal Bionic-app, modellkörning, GUI eller annan miljö som ChatGPT inte bevisligen når. Avstå om beslutet gäller ännu olåst arkitektur/centrala kontrakt, osäker destruktion, hemligheter, överlappande pågående ändringar eller om handoff + granskning kostar mer än Codex eget utförande.
+- Skapa ingen handoff för en trivial enskild dokumentuppdatering, spekulativ backlog, tom planering eller arbete som redan är färdigt. Ersätt inte Codex ansvar för att integrera och granska resultatet.
+- Innan skapande: kontrollera berörda filers aktuella tillstånd och befintliga handoffs. Avgränsa från andra agenters skrivytor. Skriv upp exakta berörda vägar, befintliga ändringar som måste bevaras, förbjudna ytor och verklig definition av klar. Långa vägar behövs bara när de undanröjer tvetydighet.
+
+## Filnamn och statusansvar
+
+- Codex skapar en unik, beskrivande `.md`-fil med suffix ` - [INCOMPLETE].md`. Behåll samma basnamn hela arbetet; använd inte roadmap-steg eller temporära processnamn som implementationens filnamn.
+- `INCOMPLETE` betyder att arbetet inte är fullt implementerat och verifierat, även om delar är klara eller ChatGPT är blockerad. ChatGPT skriver då konkret status/blockerare i filen men behåller suffixet.
+- **ChatGPT äger suffixets korrekthet**: byt själv till ` - [COMPLETED].md` först när alla acceptanskriterier faktiskt uppfyllts och relevanta tester/verifieringar körts. Rapportera då exakta ändrade/raderade filer, resultat och återstående risker i samma fil. Codex får granska och påpeka felaktig status men ska inte tyst markera ChatGPT-arbete klart åt ChatGPT.
+- Om Team Master pekar ut filen används den. Om exakt en `* - [INCOMPLETE].md` finns i denna mapp kan ChatGPT välja den. Om flera finns, eller om den utpekade filen inte syns via ChatGPT:s faktiska repoåtkomst, ska ChatGPT fråga Team Master; välj inte godtyckligt den senaste. `handoff_instructions_and_rules.md` är instruktion, inte en arbetsuppgift.
+
+## Minsta innehåll i varje handoff
+
+1. **Mål och nytta:** konkret beteende eller projektresultat, varför ChatGPT kan äga just detta avgränsade arbete.
+2. **Aktuellt underlag:** relevanta källfiler, verifierat nuläge och beroenden; märk osynliga lokala/osynkroniserade ändringar som blockerare i stället för att gissa.
+3. **Skrivyta och negativa gränser:** tillåtna filer/mappar, vad som får skapas/ändras/raderas, vilka orelaterade eller användarägda ändringar som ska bevaras. För destruktion: exakta mål och återställbarhet.
+4. **Operativt uppdrag:** implementerbara ändringar och ansvarsfördelning, inte en osäker arkitekturbeställning eller krav på ChatGPT att själv uppfinna invarianta namn.
+5. **Klarsignal:** verifierbara acceptanskriterier och proportionerliga kommandon/tester. Resultat utan genomförd kontroll är inte `COMPLETED`.
+6. **Rapport:** ändrade filer, körda kontroller och resultat, eventuella blockerare/avvikelser samt om en process behöver startas om för att se ändringen.
+
+## Git, connector och återtagning
+
+- Det av Team Master beskrivna flödet är **ChatGPT:s GitHub Connector → commit direkt på `origin/main` → lokal FF-only AutoPull-watcher → lokal `main`**. Watcherns lokala kod verifierar att den pollar `origin/main`, vägrar reset/rebase/clean/stash, hoppar över lokala spårade ändringar, fast-forwardar bara när säkert och loggar status. Detta är inte lokal → GitHub-uppladdning. Implementation: `tools/main_autopull_watcher.ps1`. Pågående lokal dirty tracked arbetsyta kan fördröja eller stoppa mottagningen även när ChatGPT har committat korrekt.
+- Codex-skapade `* - [INCOMPLETE].md` måste först bli synliga på GitHub `main` innan ChatGPT kan upptäcka dem via connectorn. En lokal ny/ospårad fil eller en lokal ändring i `AGENTS.md` räcker inte. Team Master har godkänt ett snävt, bestående undantag: Codex får stagea, committa och pusha **endast den aktuella handoffens filer och strikt nödvändiga regel-/ignoreändringar** efter kontroll av diff, index och fjärrbranch. Befintliga staged/dirty filer utanför scope lämnas orörda. Ingen force-push, reset, rebase, clean eller stash för att få publiceringen att fungera. Om lokal branch är efter fjärrbranch medan arbetsytan är smutsig, använd en isolerad ren publiceringsyta utgående från aktuell `origin/main`, inte en osäker merge i den smutsiga huvudytan; verifiera att fjärrfilen finns efter push.
+- Efter publicering säger Team Master bara att en handoff finns. ChatGPT ska först bekräfta att **exakt handoff-fil och nödvändiga källfiler** syns i connectorns `main`-vy; annars fråga, inte återskapa dem från minnet. ChatGPT får genomföra de avgränsade repoändringarna och nödvändiga commits via GitHub Connector enligt Team Masters etablerade arbetsflöde, samt kontrollera CI när relevant. Inga orelaterade filer eller Git-history-operationer utanför handoffens scope.
+- ChatGPT byter suffix till `[COMPLETED]` i samma GitHub-ändring eller en efterföljande commit först efter uppfyllda acceptanskriterier. Om lokala tracked ändringar finns kan AutoPull stanna i `SKIP_DIRTY_TRACKED`. **Det stoppar inte handoff-kommunikationen:** Codex uppdaterar `origin/main` med `git fetch`, listar handoff-filer via `git ls-tree` och läser relevant version/status via `git show origin/main:<sökväg>` utan checkout, merge eller ändring av lokala arbetsfiler. Codex kan granska fjärrdiff/testbevis i en isolerad yta; lokal integration av ChatGPT:s kod får vänta tills den kan göras säkert utan att förlora lokala ändringar. Varken ChatGPT eller Codex får tvinga igenom reset/rebase/clean/stash för att dölja dirty state. ChatGPT:s `COMPLETED` är handoff-status, inte automatiskt godkännande av integration, säkerhet eller regressionstest.

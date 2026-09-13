@@ -1,0 +1,19 @@
+{
+  "schema_version": "3.0",
+  "production_path": "reference-guided",
+  "prompting_guide_files": {
+    "WF-1-A": "docs/docs_comfyui-workflows/WF-1/WF-1-A/[PROMPTING].md",
+    "WF-2-A": "docs/docs_comfyui-workflows/WF-2/WF-2-A/[PROMPTING].md",
+    "WF-3": "docs/docs_comfyui-workflows/WF-3/[PROMPTING].md"
+  },
+  "owner_generation_instructions": {
+    "WF-1-A:74:text": "Write one direct positive photorealistic FLUX.2 image description. Order the content as framing; exact human count and visual identity; visible pose, action, expression and gaze; required anatomy, contacts and details; clothing and objects; camera and composition; environment and background; lighting; materials, texture and finish. Begin with the human and key visible action. Describe one coherent present moment using only source-supported scene content.",
+    "WF-2-A:1:value": "Write only concrete visual facts that remain stable across this segment's START, MID and END keyframes: reference-controlled human identity and appearance, clothing, anatomy, camera, framing, environment, lighting and persistent objects. Use actual values, not abstract category names or a current action.",
+    "WF-2-A:131:value": "Write only the segment START as one observable present-moment state. Specify the human pose, action, expression, gaze, body mechanics, contacts, object interaction and spatial relationship supported by the accepted Story sources.",
+    "WF-2-A:169:value": "Write only the segment MID as one observable present-moment state. Specify the human pose, action, expression, gaze, body mechanics, contacts, object interaction and spatial relationship supported by the accepted Story sources.",
+    "WF-2-A:5:value": "Write only the segment END as one observable present-moment state. Specify the human pose, action, expression, gaze, body mechanics, contacts, object interaction and spatial relationship supported by the accepted Story sources.",
+    "WF-2-A:158:value": "Write only the END reference-role policy: state which concrete identity, appearance, clothing, camera and scene facts the external reference and earlier keyframes preserve, while making the END specification authoritative for the current pose, action, contacts and expression.",
+    "WF-3:105:value": "Write only the physical START-to-MID transition between the connected endpoint images. State camera behavior, initial visible state, motion path, body mechanics, weight transfer, contacts, momentum, arrival at MID, concrete preserved visual facts and permitted dynamic changes.",
+    "WF-3:122:value": "Write only the physical MID-to-END transition between the connected endpoint images. State camera behavior, initial visible state, motion path, body mechanics, weight transfer, contacts, momentum, arrival at END, concrete preserved visual facts and permitted dynamic changes."
+  }
+}

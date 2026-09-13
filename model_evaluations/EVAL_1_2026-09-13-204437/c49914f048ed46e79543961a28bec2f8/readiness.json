@@ -1,0 +1,113 @@
+{
+  "kind": "screening_readiness",
+  "created_at": {
+    "local": "2026-09-13 | 20:39:43.732 +02:00",
+    "utc": "2026-09-13 | 18:39:43.732 UTC",
+    "epoch_ms": 1789324783732
+  },
+  "model_identifier": "granite-4.1-3b",
+  "status": "blocked",
+  "generation_requested": false,
+  "system_prompt": "",
+  "system_prompt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "catalog_sha256": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1",
+  "events": [
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:39:43.931 +02:00",
+        "utc": "2026-09-13 | 18:39:43.931 UTC",
+        "epoch_ms": 1789324783931
+      },
+      "data": {
+        "type": "model_bound",
+        "model_info": {
+          "type": "llm",
+          "modelKey": "granite-4.1-3b",
+          "format": "gguf",
+          "displayName": "Granite 4.1 3B",
+          "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+          "sizeBytes": 2099501664,
+          "paramsString": "3B",
+          "architecture": "granite",
+          "quantization": {
+            "name": "Q4_K_M",
+            "bits": 4
+          },
+          "identifier": "granite-4.1-3b",
+          "instanceReference": "VYUEeZsiGDZwDmScMn+G2bcD",
+          "vision": false,
+          "trainedForToolUse": true,
+          "maxContextLength": 131072,
+          "contextLength": 8192
+        }
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-13 | 20:39:43.971 +02:00",
+        "utc": "2026-09-13 | 18:39:43.971 UTC",
+        "epoch_ms": 1789324783971
+      },
+      "data": {
+        "type": "model_inspection",
+        "model_info": {
+          "type": "llm",
+          "modelKey": "granite-4.1-3b",
+          "format": "gguf",
+          "displayName": "Granite 4.1 3B",
+          "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+          "sizeBytes": 2099501664,
+          "paramsString": "3B",
+          "architecture": "granite",
+          "quantization": {
+            "name": "Q4_K_M",
+            "bits": 4
+          },
+          "identifier": "granite-4.1-3b",
+          "instanceReference": "VYUEeZsiGDZwDmScMn+G2bcD",
+          "vision": false,
+          "trainedForToolUse": true,
+          "maxContextLength": 131072,
+          "contextLength": 8192
+        },
+        "context_length": 8192,
+        "rendered_input": {
+          "encoding": "utf-8",
+          "character_count": 353,
+          "sha256": "da026348017e42229ecfc3dc2768aedf341e378ee9d4b98da03d6f152726af0b",
+          "text_chunks": [
+            "<|start_of_role|>user<|end_of_role|>Transform this record: {\"name\":\"Mira\",\"value\":17,\"note\":\"warehouse C\"}. Return only a JSON object containing exactly the key",
+            "s name and value. Preserve the name and increase the integer value by one. Do not include the note or any other field. Do not use tools.<|end_of_text|>\n<|start_",
+            "of_role|>assistant<|end_of_role|>"
+          ]
+        },
+        "input_tokens": 67
+      }
+    }
+  ],
+  "source_fingerprints": {
+    "inspect_screening_readiness.py": "465247cd3a379e7b486759b54504bdbda0850689ba86fcb5775969c38477b7f8",
+    "instruction_following_catalog.json": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1",
+    "lm_studio_sdk_prediction.mjs": "fcaa798baec55e42477c7acc706b73fec8d1c1b5244b6ea8dd18e64f49ce18d3"
+  },
+  "required_checks": {
+    "loaded_model": "observed",
+    "short_input_fits_context": "observed",
+    "effective_configuration": "pending_primary_readback_and_baseline_comparison",
+    "loaded_file_identity": "pending_loaded_identity_comparison",
+    "idle_state": "pending_current_activity_verification",
+    "live_generation_stop": "pending_server_userStopped_receipt",
+    "legitimate_completion": "pending_uninterrupted_completion_receipt",
+    "runner_progression": "contract_tested_pending_live_baseline"
+  },
+  "evidence_gaps": [
+    "Saved settings and a file hash do not verify the loaded instance or effective inference.",
+    "Public SDK inspection exposes context/rendered input, not all effective load/sampling values.",
+    "Readiness capture alone never authorizes candidate assessment."
+  ],
+  "finished_at": {
+    "local": "2026-09-13 | 20:39:43.989 +02:00",
+    "utc": "2026-09-13 | 18:39:43.989 UTC",
+    "epoch_ms": 1789324783989
+  }
+}

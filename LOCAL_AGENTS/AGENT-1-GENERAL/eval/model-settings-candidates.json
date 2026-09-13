@@ -1,0 +1,71 @@
+{
+  "schema_version": 5,
+  "status": "PRESERVED_UNVALIDATED_CANDIDATES",
+  "model_family": "Qwen3.5-9B",
+  "target_model": "Huihui Qwen3.5 9B Abliterated Q4_K_M",
+  "bionic_model_config_relative_path": "apps/bionic/.internal/user-concrete-model-default-config/huihui-ai/Huihui-Qwen3.5-9B-abliterated/Huihui-Qwen3.5-9B-abliterated-Q4_K_M.gguf.json",
+  "operational_system_prompt_source": "worker-system-prompt-candidate.txt",
+  "profiles": {
+    "nonthinking-general": {
+      "enable_thinking": false,
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 1.5,
+      "repetition_penalty": 1.0,
+      "reasoning_budget": null,
+      "context_overflow_policy": "stopAtLimit",
+      "automatic_hardware_optimization": false,
+      "context_length": 16384,
+      "seed": 737,
+      "source_basis": "current official Qwen3.5-9B non-thinking general guidance plus project-fixed diagnostic seed; context length resolved to 16384 after verified local hardware/runtime inspection on Ryzen 7 5800X, 31.66 GiB RAM and RTX 3070 Ti 8 GiB; current LM Studio schema verifies stopAtLimit, llm.load.seed and llm.load.llama.autoFit",
+      "project_status": "CONTROLLED_CANDIDATE"
+    },
+    "thinking-general": {
+      "enable_thinking": true,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 1.5,
+      "repetition_penalty": 1.0,
+      "reasoning_budget": "EXPLICIT_TBD_AFTER_RUNTIME_CHECK",
+      "context_overflow_policy": "stopAtLimit",
+      "automatic_hardware_optimization": false,
+      "context_length": 16384,
+      "seed": 737,
+      "source_basis": "current official Qwen3.5-9B thinking general guidance plus project-fixed diagnostic seed; context length resolved to 16384 after verified local hardware/runtime inspection; reasoning budget remains runtime-TBD; current LM Studio schema verifies stopAtLimit, llm.load.seed and llm.load.llama.autoFit",
+      "project_status": "CONTROLLED_CANDIDATE"
+    }
+  },
+  "controlled_invariants": {
+    "max_concurrent_predictions": 1,
+    "chat_template": "FROZEN_AND_FINGERPRINTED_PER_RUN",
+    "tool_surface": "FROZEN_AND_FINGERPRINTED_PER_RUN",
+    "system_prompt_track": [
+      "NATIVE_MINIMAL",
+      "OPERATIONAL_WORKER"
+    ],
+    "seed_policy": "737_FOR_ITERATIVE_DEBUG; 3_TO_5_SEEDS_BEFORE_FIX_CLAIM",
+    "context_length": 16384,
+    "context_scope": "FIXED_CONTROLLED_BASELINE_FROM_VERIFIED_5800X_31.66_GIB_RAM_RTX_3070_TI_8_GIB_CAPACITY; 32768_REQUIRES_SEPARATE_RUNTIME_PROOF",
+    "context_overflow_policy": "stopAtLimit",
+    "automatic_hardware_optimization": false,
+    "repeat_penalty_change": "DO_NOT_CHANGE_UNTIL_MODE_CORRECT_PROFILE_TESTED",
+    "skills": "NO_EVAL_SPECIFIC_SKILL_DURING_NATIVE_BASELINE",
+    "mcp": "NO_EVAL_SPECIFIC_MCP_DURING_MODEL_CHARACTERIZATION"
+  },
+  "manual_only_until_programmatically_verified": [
+    "any Bionic setting whose persisted key/value semantics cannot be verified"
+  ],
+  "notes": [
+    "Do not treat these profiles as permanent production configuration until controlled Bionic runtime supports them.",
+    "The current official Qwen3.5-9B documentation contains conflicting values for a specialized non-thinking reasoning profile; that profile is intentionally excluded here.",
+    "Thinking budget behavior must be runtime-verified in LM Studio/Bionic before a fixed value becomes canonical.",
+    "Context length is 16384 for the first controlled Eval-v3 baseline. The choice is intentionally conservative for the verified RTX 3070 Ti 8 GiB host and Q4_K_M target; 32768 is not accepted until real Bionic/LM Studio load/runtime evidence proves adequate margin and stable behavior.",
+    "LM Studio current schema verifies llm.prediction.contextOverflowPolicy with stopAtLimit, llm.prediction.llama.presencePenalty, llm.load.seed and llm.load.llama.autoFit; these are project-owned persisted settings rather than Team Master manual settings.",
+    "An absent explicit Chat Template override means model metadata/default may be active. Template identity requires runtime verification after Bionic start, not a manual UI setting by default.",
+    "Persisted Bionic model config is inspected read-only before controlled runs; unresolved fields remain UNRESOLVED rather than being inferred."
+  ]
+}

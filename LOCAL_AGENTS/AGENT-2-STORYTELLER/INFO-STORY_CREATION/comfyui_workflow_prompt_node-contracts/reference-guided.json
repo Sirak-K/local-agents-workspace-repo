@@ -1,0 +1,113 @@
+{
+  "extractor": {
+    "name": "comfyui_workflow_conditioning_extractor",
+    "schema_version": "1.0",
+    "read_only": true,
+    "projection": "active_prompt_contract"
+  },
+  "workflows": [
+    {
+      "source": {
+        "filename": "WF-1-A ) T2I - REF. PROD. - FLUX.2 DEV - [PRIMARY].json",
+        "sha256": "dc8eeff729cb7c54b89ccaf63f711bb0e0b0d73f77fc219fffe51a4b73d45679"
+      },
+      "role": "WF-1-A",
+      "active_prompt_owners": [
+        {
+          "node_id": 74,
+          "type": "CLIPTextEncode",
+          "title": "REFERENCE IMAGE POSITIVE PROMPT - TEMPLATE",
+          "field": "text",
+          "roles": [
+            "positive",
+            "reference"
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "filename": "WF-2-A ) I2I - KEY. PROD. - REFERENCE-GUIDED - FLUX.2 Klein 9B Base + SNOFS v1.4 - MLAE - [PRIMARY].json",
+        "sha256": "4b7b421d4fc71ae6a5db9c1057cdaee47ce9b36c01a994ce6e25f6a296ba7f1a"
+      },
+      "role": "WF-2-A",
+      "active_prompt_owners": [
+        {
+          "node_id": 1,
+          "type": "PrimitiveStringMultiline",
+          "title": "SHARED VISUAL CONTINUITY SPECIFICATION",
+          "field": "value",
+          "roles": [
+            "shared"
+          ]
+        },
+        {
+          "node_id": 5,
+          "type": "PrimitiveStringMultiline",
+          "title": "END KEYFRAME ACTION SPECIFICATION",
+          "field": "value",
+          "roles": [
+            "end"
+          ]
+        },
+        {
+          "node_id": 131,
+          "type": "PrimitiveStringMultiline",
+          "title": "START KEYFRAME ACTION SPECIFICATION",
+          "field": "value",
+          "roles": [
+            "start"
+          ]
+        },
+        {
+          "node_id": 158,
+          "type": "PrimitiveStringMultiline",
+          "title": "END SINGLE-MOMENT REFERENCE ROLE POLICY",
+          "field": "value",
+          "roles": [
+            "end",
+            "reference"
+          ]
+        },
+        {
+          "node_id": 169,
+          "type": "PrimitiveStringMultiline",
+          "title": "MID KEYFRAME ACTION SPECIFICATION",
+          "field": "value",
+          "roles": [
+            "mid"
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "filename": "WF-3 ) I2V (FLF2V) - SEG. PROD. - Wan2.2-14B - [PRIMARY].json",
+        "sha256": "7544deb2cc9468d074e53b9f16922e56acb119bc5bc5f32a72795a50b5a3966e"
+      },
+      "role": "WF-3",
+      "active_prompt_owners": [
+        {
+          "node_id": 105,
+          "type": "PrimitiveStringMultiline",
+          "title": "INTER-KF INTERVAL 01 PROMPT - START TO MID",
+          "field": "value",
+          "roles": [
+            "start",
+            "mid"
+          ]
+        },
+        {
+          "node_id": 122,
+          "type": "PrimitiveStringMultiline",
+          "title": "INTER-KF INTERVAL 02 PROMPT - MID TO END",
+          "field": "value",
+          "roles": [
+            "mid",
+            "end"
+          ]
+        }
+      ]
+    }
+  ]
+}
