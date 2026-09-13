@@ -24,6 +24,18 @@ class AutoPullSourceContractTest(unittest.TestCase):
         self.assertNotIn('"tools\\main_autopull_watcher.ps1"', text)
         self.assertIn("scripts\\github_autopull_chatgpts_repo_work\\install_main_autopull.ps1", text)
 
+    def test_installer_uses_project_specific_startup_launcher(self):
+        text = INSTALLER.read_text(encoding="utf-8")
+        self.assertIn('"SSIRA-LocalAgents-MainAutoPull.cmd"', text)
+        # The ComfyUI startup launcher belongs to another repository and must not
+        # be targeted by Local Agents install or uninstall behavior.
+        executable_lines = [
+            line for line in text.splitlines()
+            if not line.lstrip().startswith("#")
+        ]
+        executable_text = "\n".join(executable_lines)
+        self.assertNotIn('"SSIRA-ComfyUI-MainAutoPull.cmd"', executable_text)
+
     def test_watcher_remains_ff_only_and_has_explicit_collision_guard(self):
         text = WATCHER.read_text(encoding="utf-8")
         self.assertIn('"merge", "--ff-only"', text)
