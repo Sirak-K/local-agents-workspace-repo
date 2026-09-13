@@ -1,7 +1,7 @@
 /** One bounded WORKER read-only agent action through the existing LM Studio SDK. */
-import { LMStudioClient, tool } from "../../../../LM-Studio_connections/LM-Studio_for_codex/node_modules/@lmstudio/sdk/dist/index.mjs";
-import { z } from "../../../../LM-Studio_connections/LM-Studio_for_codex/node_modules/zod/index.js";
-import { authenticatedOptions, predictionChat } from "../../../../LM-Studio_connections/LM-Studio_for_codex/lm_studio_sdk_prediction.mjs";
+import { LMStudioClient, tool } from "../../../LM-Studio_connections/LM-Studio_for_codex/node_modules/@lmstudio/sdk/dist/index.mjs";
+import { z } from "../../../LM-Studio_connections/LM-Studio_for_codex/node_modules/zod/index.js";
+import { authenticatedOptions, predictionChat } from "../../../LM-Studio_connections/LM-Studio_for_codex/lm_studio_sdk_prediction.mjs";
 import { workerWorkspaceTextTool } from "../agent-0-tools/worker_workspace_text_tool.mjs";
 import { parseGraniteToolCallEnvelope } from "../AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs";
 import { createInterface } from "node:readline";
