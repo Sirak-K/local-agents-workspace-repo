@@ -10,10 +10,11 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
-import sys
 from uuid import uuid4
 
-from controlled_run import ROOT, LOG_ROOT, read_json, MAX_DOCUMENT_BYTES
+from controlled_run import ROOT, read_json, MAX_DOCUMENT_BYTES
+from evaluation_paths import (create_run_directory, existing_run_directory, relative_to_project,
+                              run_directory)
 from instruction_following_grading import load_catalog
 from observability_common import timestamp_fields, write_capture
 
@@ -25,12 +26,14 @@ def _run_text(command: list[str]) -> str:
     return result.stdout.decode("utf-8", "replace").strip()
 
 
-def capture(completion_run: str, cancellation_run: str, readiness_path: Path) -> Path:
-    from controlled_run import run_directory
-    completion_path = run_directory(completion_run) / "evidence.json"
-    cancellation_path = run_directory(cancellation_run) / "evidence.json"
-    readiness_path = readiness_path.resolve()
-    readiness_path.relative_to(LOG_ROOT.resolve())
+def capture(eval_id: str, run_id: str, completion_run: str, cancellation_run: str,
+            readiness_run: str) -> Path:
+    pending = run_directory(eval_id, run_id)
+    if pending.exists():
+        raise ValueError("baseline run id already exists")
+    completion_path = existing_run_directory(eval_id, completion_run) / "evidence.json"
+    cancellation_path = existing_run_directory(eval_id, cancellation_run) / "evidence.json"
+    readiness_path = existing_run_directory(eval_id, readiness_run) / "readiness.json"
     completion = read_json(completion_path, MAX_DOCUMENT_BYTES)
     cancellation = read_json(cancellation_path, MAX_DOCUMENT_BYTES)
     readiness = read_json(readiness_path, MAX_DOCUMENT_BYTES)
@@ -41,7 +44,9 @@ def capture(completion_run: str, cancellation_run: str, readiness_path: Path) ->
     if model_relative.is_absolute() or ".." in model_relative.parts or model_relative.suffix.lower() != ".gguf":
         raise ValueError("loaded GGUF path is not a safe relative model path")
     model_file = Path.home() / ".lmstudio/models" / model_relative
-    if (completion["state"] != "completed" or completion["stop"] is not None
+    if (completion.get("eval_id") != eval_id or cancellation.get("eval_id") != eval_id
+            or readiness.get("eval_id") != eval_id
+            or completion["state"] != "completed" or completion["stop"] is not None
             or result["content"].strip() != "OK" or result["stats"]["stopReason"] != "eosFound"
             or cancellation["state"] != "verified_cancel"
             or cancellation["result"]["stats"]["stopReason"] != "userStopped"
@@ -78,16 +83,16 @@ def capture(completion_run: str, cancellation_run: str, readiness_path: Path) ->
             or "Transform this record:" not in prompt
             or rendered["input_tokens"] + catalog["max_tokens"] > model["contextLength"]):
         raise ValueError("minimal user-only rendered prompt not verified")
-    session = LOG_ROOT / uuid4().hex
-    session.mkdir(parents=True, exist_ok=False)
-    identity = {"model_file_identity": {"model_path": model["path"],
+    session = create_run_directory(eval_id, run_id)
+    identity = {"eval_id": eval_id, "run_id": run_id,
+        "model_file_identity": {"model_path": model["path"],
                "size_bytes": model["sizeBytes"], "sha256": current_sha256,
                "quantization": model["quantization"], "loaded_instance_reference": model["instanceReference"]},
         "sources": [
-            {"path": completion_path.relative_to(ROOT).as_posix(),
+            {"path": relative_to_project(completion_path),
              "sha256": hashlib.sha256(completion_path.read_bytes()).hexdigest(),
              "pointer": ["result", "model_info"]},
-            {"path": readiness_path.relative_to(ROOT).as_posix(),
+            {"path": relative_to_project(readiness_path),
              "sha256": hashlib.sha256(readiness_path.read_bytes()).hexdigest(),
              "pointer": ["local_file_identity"]}],
         "verification": "Loaded SDK path/size agree with captured local GGUF hash; publisher match is separately documented for this candidate, actual loaded bytes are not independently exposed."}
@@ -96,7 +101,8 @@ def capture(completion_run: str, cancellation_run: str, readiness_path: Path) ->
     application = Path.home() / "AppData/Local/Programs/LM Studio/LM Studio.exe"
     app_version = _run_text(["pwsh", "-NoProfile", "-Command",
                              "(Get-Item -LiteralPath '" + str(application) + "').VersionInfo.ProductVersion"])
-    environment = {"environment_versions": {"lm_studio_app": app_version,
+    environment = {"eval_id": eval_id, "run_id": run_id,
+        "environment_versions": {"lm_studio_app": app_version,
         "lms_cli": _run_text(["lms", "--version"]), "node": _run_text(["node", "--version"]),
         "sdk": json.loads((ROOT / "LM-Studio_connections/LM-Studio_for_codex/package.json")
                            .read_text(encoding="utf-8"))["dependencies"]["@lmstudio/sdk"]},
@@ -107,14 +113,15 @@ def capture(completion_run: str, cancellation_run: str, readiness_path: Path) ->
     def observation(condition: str, value, source: Path, pointer: list, rationale: str) -> dict:
         return {"condition": condition, "status": "verified", "value": value,
                 "rationale": rationale, "evidence_reference": {
-                    "path": source.relative_to(ROOT).as_posix(),
+                    "path": relative_to_project(source),
                     "sha256": hashlib.sha256(source.read_bytes()).hexdigest(), "pointer": pointer}}
 
     fields = result["prediction_config"]["fields"]
     template_index = next(index for index, item in enumerate(fields)
                           if item["key"] == "llm.prediction.promptTemplate")
-    review = {"model_identifier": model["identifier"], "completion_run": completion_run,
-              "cancellation_run": cancellation_run,
+    review = {"eval_id": eval_id, "run_id": run_id,
+              "model_identifier": model["identifier"], "completion_run": completion_run,
+              "cancellation_run": cancellation_run, "readiness_run": readiness_run,
               "catalog_sha256": catalog["sha256"],
               "system_prompt_sha256": hashlib.sha256(b"").hexdigest(),
               "created_at": timestamp_fields(),
@@ -139,11 +146,13 @@ def capture(completion_run: str, cancellation_run: str, readiness_path: Path) ->
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--eval-id", required=True)
+    parser.add_argument("--run-id", required=True, help="new run id for this baseline review")
     parser.add_argument("--completion-run", required=True)
     parser.add_argument("--cancellation-run", required=True)
-    parser.add_argument("--readiness-file", type=Path, required=True)
+    parser.add_argument("--readiness-run", required=True)
     args = parser.parse_args()
-    print(capture(args.completion_run, args.cancellation_run, args.readiness_file)
+    print(capture(args.eval_id, args.run_id, args.completion_run, args.cancellation_run, args.readiness_run)
           .relative_to(ROOT).as_posix())
     return 0
 
