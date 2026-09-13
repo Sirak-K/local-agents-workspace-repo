@@ -1,6 +1,6 @@
 # Current Architectural Project State
 
-**Statusdatum:** 2026-09-13  
+**Statusdatum:** 2026-09-14
 **Dokumentets ansvar:** Ge en extern agent en självständig och arkitekturnära förståelse av projektets långsiktiga syfte, huvudkomponenter, teknikval, ansvarsfördelning och centrala runtimeflöden.
 
 ## 1. Projektets kärna
@@ -9,7 +9,7 @@ Projektet bygger en professionellt spårbar miljö där en stark Frontier-modell
 
 Det yttersta målet är inte vanlig chatt eller en samling modellbenchmarks. Målet är att utveckla, pröva och förstå lokala modeller som kan utföra verkligt agentarbete: tolka instruktioner, använda uttryckligt tilldelade verktyg, läsa och skriva inom avgränsat scope, verifiera resultat och fungera tillförlitligt i ett framtida agentteam.
 
-Den enda aktiva agentrollen är för närvarande **0-WORKER**. Rollen ska utföra konkret arbete. Andra rollmappar är utanför aktivt scope tills Team Master uttryckligen ändrar riktningen.
+Den enda aktiva agentrollen är för närvarande **0-WORKER**. Dess absolut viktigaste och primära slutmål är professionellt, precist, välstrukturerat och verifierbart arbete med de centrala kod- och filytorna i `comfy_ui_workspace`, framför allt ComfyUI workflow-JSON och berörd projektlokal backend-/integrationskod. Generell instruktion-, fil- och toolförmåga är kvalificeringsgrund för detta huvudmål. Andra rollmappar är utanför aktivt scope tills Team Master uttryckligen ändrar riktningen.
 
 ## 2. Styrande arkitektur
 
@@ -130,6 +130,10 @@ PASS/FAIL får inte styras av kosmetik eller kriterier som evaluatorn hittar på
 
 Första screening kan vara verktygsfri och minimalt konditionerad för att mäta instruktionsefterlevnad utan tung rollinjektion. Det bevisar endast de testade uppgiftsutfallen. Fil-, tool- och mutationsförmåga måste utvärderas separat under verifierade runtime- och scopevillkor.
 
+Trajectoryn börjar därför med teknologioberoende instruktion-, fil- och tooluppgifter. Den senare halvan prövar ComfyUI-domän- och skillanvändning följt av held-out workflow-roadmaps som avgör om agentinstallationen är användbar i Team Masters dagliga arbete. `model_evaluations/comfy_ui_eval-playground/workflows/` är endast disponibelt fixturematerial: framtida ERST arbetar i unika kopior och får kreativt mutera noder/länkar utan att ändra produktionsworkflows, ladda ComfyUI-modeller eller starta generering.
+
+Full ComfyUI-kontext behöver inte färdigställas före nästa teknologioberoende eval. Före första ComfyUI-ERST krävs ett litet modellneutralt och versions-/hashbundet paket med relevant workflowformat, lokala regler, berörda nodkontrakt och statisk verifieringsprocedur. Granite får samma semantiska kontext som andra kandidater; modellspecifik presentation införs endast när reproducerbar evidens motiverar den och redovisas då separat.
+
 ## 7. Avbrotts- och processarkitektur
 
 Avbrottsförmåga är en verifierad kontrollkedja, inte bara en timeout:
@@ -172,6 +176,8 @@ Den aktiva SDK-transporten har en tidsbegränsad auth-anpassning för LM Studios
 | Vad gjorde servern, modellen eller värdsystemet oberoende av evalen? | Separat ström i `LM-Studio_logs/`      |
 
 Samma korrelations-ID kan länka lager. Rå data ska länkas, inte kopieras mellan ägare. Om evidensen inte visar orsaken ska orsaken förbli uttryckligen obevisad.
+
+PASS/FAIL anger först om uppgiften klarades och är inte automatiskt en modellspecifik orsaksbedömning. Modellens prestationssammanfattning får endast tillskriva positiv förmåga under verifierade, exakt avgränsade villkor och negativa egenskaper när modellen har isolerats som ensam felägare. Alla oklara eller delade orsaker dokumenteras hos rätt harness-, runtime-, evaldesign-, evaluator- eller projektägare och hålls utanför modellspecifik bedömning.
 
 ## 10. Säkerhets- och resursgränser
 

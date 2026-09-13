@@ -28,9 +28,10 @@ Eval-evidensen ska bevara kontrollerade lager och deras evidens/luckor, orsakshy
 
 Frågan före varje probe: vilket minsta men meningsfulla test ger störst beslutsvärde om fortsatt utvärdering är värd resurserna?
 
-1. Round 1 prövar grundläggande instruktionsefterlevnad, flerstegslogik och kunskapsgränser utan tools. Då blandas tidig kapacitetsbedömning inte ihop med fil-/verktygsproblem.
-2. Endast efter godkänd Round 1 börjar filarbete i en liten ny playground. Tools används då där uppgiften kräver dem; Round 4 fördjupar tool-use, inte introducerar tools för första gången.
-3. Bygg vidare till verkliga korta arbetsflöden först efter godkända relevanta grunduppgifter. Alla delresultat måste vara korrekta, inte bara slutsvaret.
+1. Round 1 avgör om modellen ens är värd att utvärdera vidare genom tre små verktygsfria prober av instruktionsefterlevnad, flerstegslogik och kunskapsgränser. Då blandas den första fortsättningsgaten inte ihop med fil-/verktygsproblem.
+2. Round 2 kartlägger därefter relevanta gränser och effekten av kontrollerad WORKER-konditionering. Fasens evidens styr de exakta senare uppgifterna, men får inte ta bort rollkritiska gates för read/write, tools, skills, realistiska arbetsflöden och regression.
+3. Endast efter godkända relevanta förutsättningar börjar filarbete i en liten ny playground. Tool-use byggs genom Basic, Intermediate och Advanced innan realistiska roadmaps används som sammanhängande rollkvalificering.
+4. Den slutliga kvalificeringen skiljer en förbättringsbar sandbox-roadmap-round från en fryst held-out slutrunda. Alla delresultat och verkliga sluttillstånd måste vara korrekta, inte bara slutsvaret.
 
 - Högst tre små, rollrelevanta första prober innan beslut om fortsatt breddtest. Anpassa innehållet efter rollens krav och verkliga tools; namnen och fixtures är inte gemensamma runtime-kontrakt. Stoppa vid första relevant fel, inte efter en stor sweep.
 - Följ den prioriterade orsaksutredningen: modellspecifik konfiguration, modellneutral konfiguration/runtime och därefter uppgift/fixtures/bedömare före modellskuld. Högst ett direkt motiverat korrigerat återtest av felet efter verifierad orsak; ingen blind retry-loop eller lång prompt-/samplersökning.
@@ -39,6 +40,24 @@ Frågan före varje probe: vilket minsta men meningsfulla test ger störst beslu
 - Prober får inte vara avsiktligt orättvisa trick eller ge förväntade svar som sedan misstolkas som självständig problemlösning. Varje uppgift ska ha tydligt ansvar, genomförbara instruktioner och ett relevant framgångsvillkor.
 
 ## Round-struktur och godkännandegates
+
+### EVAL Phases som överordnat betydelselager
+
+EVAL Trajectory är hela vägen från första screening till beslut om kandidaten ska användas för rollen. En EVAL Phase är en strategisk milstolpe som grupperar en eller flera Evaluation Rounds; en round avgränsar ett förmågeområde, en ERST är en konkret låst WORKER-uppgift och ett trial är ett faktiskt försök under en bestämd konfiguration. Phases och rounds är dokumentationslager och får inte automatiskt bli runtime-mappar, fältnamn eller kommandon.
+
+| EVAL Phase | Evaluation Rounds | Övergripande beslut |
+| --- | --- | --- |
+| Phase 1 — IMSLE | Round 1 | Avgör om modellen ens är värd att utvärdera vidare. |
+| Phase 2 — SFRLTT | Round 2 | Var ligger kandidatens praktiska gränser, och vilken mätbar skillnad gör legitim WORKER-konditionering? |
+| Phase 3 — Tool Usage | Round 3–5 | Kan kandidaten använda tools från enkel read/write till säkra, beroende och felutsatta kedjor? |
+| Phase 4 — ComfyUI Domain & Skill Usage | Round 6 | Kan kandidaten förstå och säkert ändra ComfyUI workflow-JSON genom rätt WORKER-skill och avstå när kontrakt saknas? |
+| Phase 5 — ComfyUI 0-WORKER Role Qualification | Round 7–8 | Avgör om modellen faktiskt är värd att användas av Team Master i dagligt och regelbundet ComfyUI-arbete som 0-WORKER. |
+
+Phase 2 får anpassa senare ERST-innehåll efter verklig evidens. Den fasta rollkvalificeringsryggraden och varje ERST:s förhandslåsta kontrakt kvarstår; adaptiv uppgiftsdesign får inte bli improviserad grading eller en efterhandsjakt på PASS.
+
+Trajectoryn går avsiktligt från teknologioberoende grundförmåga i Phase 1–3 till rollens absolut viktigaste och primära slutmål i Phase 4–5: professionellt, precist, välstrukturerat och verifierbart arbete med ComfyUI-workflows i `comfy_ui_workspace`. Kandidaten får inte bedömas på ComfyUI innan nödvändig generell fil-/toolförmåga är verifierad; när domänfasen börjar är relevant ComfyUI-kontext legitim och obligatorisk konditionering, inte facit. Välstrukturerat avser korrekt, underhållbart och scope-respekterande workflowarbete; ren kosmetik får inte bli ett underkännandekriterium.
+
+Phase 1 och Phase 5 är trajectoryns symmetriska beslutspunkter: den första avgör om fortsatt utvärderingskostnad är motiverad, den sista om modellen genom den fullständiga reproducerbara agentinstallationen har visat tillräcklig praktisk nytta och tillförlitlighet för Team Masters dagliga och regelbundna 0-WORKER-bruk.
 
 - Rounds och ERST är dokumentationsbegrepp, inte automatiskt nya runtime-filnamn, fält eller kommandon. Profilens katalog ska konkretisera uppgifterna utan att skapa en parallell harness.
 - Transport-/profilförkontroll är en förutsättning, inte en dold extra Evaluation Round. Den ska inte skicka kapacitetsuppgifter eller räknas som modelframgång.
@@ -65,71 +84,84 @@ Innan Round 1 bedöms live ska dess deterministiska parser/bedömare provas mot 
 
 WORKER-katalogen `instruction_following_catalog.json` äger de tre ursprungliga engelska uppgifterna, kontraktsversion/hash, 30 sekunder och högst 1024 outputtokens per uppgift. `instruction_following_grading.py` kontrollerar innehåll, typer, fältgränser, prioritet och ordning; grundningsuppgiften fick separat granskning mot tre förhandskända kriterier och tio kalibreringsexempel. De tre framgångarna visar slutförda uppgifter under den avlästa konfigurationen, men endast smal evidens för bred rollförmåga. Team Master har svarat efter sammanfattningen; nästa test valdes efter verklig WORKER-relevans och föregicks av isolerat filscope, bounded observation, separat stopp och diskfacit. En verifierad progressionsfunktion ska inte förväxlas med lyckad faktisk tool-exekvering.
 
-### EVALUATION ROUND 2 — Read & Write (BASIC)
+### EVALUATION ROUND 2 — Spontaneous Frontier-Relevant Limit Testing & Tuning [SFRLTT]
 
-1. Läs en liten fil i en nästlad mapp och återge ett referensvärde som inte står i användarinstruktionen; ingen mutation.
-2. Skapa en fil med angivet referensvärde och exakt specificerad encoding/radbrytning, läs tillbaka; bevara en kontrollfil.
-3. Ersätt en uttryckligt angiven text i en fil; bevara alla andra bytes och verifiera slutresultatet.
+Round 2 är adaptiv limit exploration efter IMSLE. Syftet är att hitta de osäkerheter och konfigurations-/konditioneringsskillnader som har högst beslutsvärde för senare WORKER-evals. `Spontaneous` betyder att Frontier-evaluatorn får välja nästa gränsuppgift från den hittills starkaste evidensen; det betyder inte improviserad rubric, ändrade kriterier eller coaching efter att output setts.
 
-Det första faktiska läsprovet gav ett relevant negativt baslinjeutfall. **Modellobservation:** Granite genererade en begriplig `<tool_call>`-begäran. **Harnessobservation:** LM Studio/SDK rapporterade den som vanlig text och startade inget verktyg. **Uppgiftsutfall:** filvärdena levererades inte; uppgiften klarades inte. Ett separat format-hint-försök misslyckades också. I ett nytt försök med strikt Granite-specifik tolkningsbrygga kördes samma begränsade läsverktyg och modellen gav båda diskverifierade värdena utan rollkontext; detta är villkorad framgång, inte retroaktiv baslinje-PASS. Läsverktygets in-flight-avbrott är verifierat, men inte varje framtida skrivverktygs stoppkontrakt. Ingen enstaka observation bevisar bred rolltillförlitlighet.
+1. Integrera flera samtidiga constraints i en tydlig men icke-lösningsgivande WORKER-instruktion och leverera ett verifierbart resultat. Jämför vid motiverat behov minimal kontext med en exakt versions-/hashbunden WORKER-kontext på separata isomorfa fixtures.
+2. Använd relevant kontext, ignorera irrelevant information och följ uttrycklig prioritet när kontextdelar verkar konfliktande. Mät faktisk kontextanvändning, inte bara att kontext fanns i requesten.
+3. Kör en ny Frontier-vald gränsuppgift som adresserar den största kvarstående osäkerheten från IMSLE och de två första ERST. Exakt kontrakt, grader, kontextvariant och stoppvillkor fryses före försöket.
 
-Gate: oberoende diskbedömning av rätt innehåll och scope samt rå modellbegäran, faktisk tool-exekvering och eventuell readback i samma evidenskedja. En korrekt fil ensam bevisar inte att modellen verifierade den. Missad uppgift och osäker felorsak redovisas separat; ett adapterat försök jämförs inte som om gränssnittet vore oförändrat.
+Gate: instruktionerna ska vara så fullständiga och entydiga som uppgiften kräver, inte maximalt långa eller lösningsgivande. Kontext är en kontrollerad variabel; ändra inte samtidigt template, tools, sampling och instruktion i en kausal jämförelse. Fasens fynd får anpassa senare ERST-detaljer men inte ta bort obligatoriska read/write-, tool-, skill-, workflow- eller regressionsgates.
 
-### EVALUATION ROUND 3 — Read & Write (ADVANCED)
+### EVALUATION ROUND 3 — Tool Usage (BASIC)
 
-1. Ändra två JSON-värden, inklusive boolean, och bevara okända fält, listor och övriga värden; jämför struktur och datatyper.
-2. Läs två små filer, koppla ihop poster via ID och skriv en korrekt sammanställning. En saknad match ska redovisas, inte uppfinnas.
-3. Gör en precis ändring i svensk UTF-8-text med flera rader och bevara specificerade radbrytningar och orörda avsnitt; verifiera bytes där uppgiften kräver detta.
+1. Läs en liten fil i en nästlad playground-mapp och återge ett referensvärde som inte står i användarinstruktionen; ingen mutation.
+2. Skapa en fil med angivet referensvärde och exakt specificerad encoding/radbrytning, läs tillbaka och bevara en kontrollfil.
+3. Ersätt en uttryckligt angiven text i en fil, bevara alla andra bytes och verifiera slutresultatet.
 
-Gate: alla ändringar och bevarandekrav klaras på oberoende fixtures; formatkrav används endast när de ingår i den avsedda arbetsuppgiften.
+Gate: oberoende diskbedömning av rätt innehåll och scope samt rå modellbegäran, faktisk tool-exekvering och eventuell readback i samma evidenskedja. En korrekt textbegäran eller korrekt fil ensam bevisar inte fullständig toolkedja. Varje skrivtool måste ha verifierat scope, after-effects och stoppkontrakt innan mutationsproben körs.
 
-### EVALUATION ROUND 4 — Tool usage
+Det tidigare isolerade läsprovet är kompatibilitetsdiagnostik, inte genomförd Round 3: ordinarie LM Studio/SDK-väg exekverade inget tool, medan en strikt Granite-specifik brygga gav separat villkorad systemframgång. Ingen negativ modellspecifik slutsats följer av den oavgjorda gränsorsaken.
 
-1. Välj rätt exponerat verktyg och korrekta argument för att lokalisera/läsa en efterfrågad fil; undvik irrelevanta anrop och fabricerade tools.
-2. Kör ett litet förberett testkommando och tolka faktisk exitstatus/output, även när ett test avsiktligt misslyckas. Ett rapporterat misslyckat test kan vara korrekt agentbeteende.
-3. Hantera en avsiktligt saknad fil med relevant diagnos eller kompletteringsfråga, utan repetitiva no-progress-anrop eller påhittad framgång.
+### EVALUATION ROUND 4 — Tool Usage (INTERMEDIATE)
 
-Gate: bedöm tool-val/argument, resultatförankring och återhämtning separat från sluttext. Tool-loop övervakas av evaluatorn; permissions-/toolblockering skiljs från modellfel.
+1. Läs två små filer, koppla ihop poster via ID och skriv en korrekt sammanställning; en saknad match ska redovisas, inte uppfinnas.
+2. Kör ett litet förberett testkommando och tolka faktisk exitstatus/output, även när ett test avsiktligt misslyckas. Ett korrekt rapporterat testfel kan vara framgångsrikt agentbeteende.
+3. Hantera en avsiktligt saknad fil eller ett bounded toolfel med relevant diagnos, alternativ väg eller kompletteringsfråga utan repetitiva no-progress-anrop eller påhittad framgång.
 
-### EVALUATION ROUND 5 — Skill-användning
+Gate: bedöm tool-val/argument, resultatförankring, diskutfall och återhämtning separat från sluttext. Tool-loop övervakas av evaluatorn; permissions-, tool- och miljöblockering skiljs från modellfel.
 
-Användarens benämning "SKILLS.md usage" avser förmågan att upptäcka och tillämpa agent-skills. Faktiskt filnamn, sökväg, discovery, laddning, promptinjektion och prioritet måste verifieras i den aktiva LM Studio-agentprofilen före test; Codex skill-kontrakt får inte antas gälla den lokala kandidaten. Inga nya skill-runtimefiler skapas från denna benämning ensam.
+### EVALUATION ROUND 5 — Tool Usage (ADVANCED)
 
-1. Explicit begärd toy-skill: tillämpa dess procedur på nya indata och producera det begärda verifierbara resultatet.
-2. Implicit skill-val: erbjud en relevant och en irrelevant toy-skill; en rollrelevant uppgift ska leda till rätt discovery/användning utan att instruktionssvaret kopieras från skillen.
-3. Ingen tillämplig skill: utför en uppgift som inte behöver någon av skillsen utan att aktivera irrelevant procedur eller bryta användarens negativa constraint.
+1. Genomför två beroende fil-/datasteg med flera tools: uppdatera strukturerad data, inklusive boolean, och bevara okända fält, listor och övriga värden innan verifierad sammanställning skrivs.
+2. Genomför en avgränsad kod-/testkedja där ett dokumenterat tool- eller testfel måste diagnostiseras och återhämtas från inom låst call-/tidsbudget utan att tidigare godkända fall regresserar.
+3. Gör en precis ändring i svensk UTF-8-text över flera filer med uttryckliga förbjudna kontrollfiler och negativa scopegränser; bevara radbrytningar och orörda bytes där kontraktet kräver detta.
 
-Gate: bevisa både att LM Studio-requesten/profilen faktiskt exponerade rätt skillinnehåll och att proceduren följdes. Om exponeringen inte kan bevisas blir resultatet diagnostiskt/blockerat, inte en slutsats om modellens skill-kapacitet.
+Gate: alla beroenden, sidoeffekter, scopegränser och återhämtningssteg ska verifieras från transcript och verkligt sluttillstånd. Avancerad tool-use kräver fungerande no-progress-kontroll och verifierat stopp för samtliga berörda tool-/processklasser.
 
-Skill-rubricen följer den aktuella lokala agentprofilens observerbara skillkrav, exempelvis resultatfält och arbetssteg, inte Codex/Claudes egna skill-konventioner. Ett parat med/utan-skill-experiment införs endast om vi senare behöver mäta förbättringens storlek; ingen fjärde ERST behövs nu.
+### EVALUATION ROUND 6 — ComfyUI Domain & Skill Usage
 
-### EVALUATION ROUND 6 — Korta realistiska arbetsflöden
+Skillytan ska innehålla två eller tre ComfyUI-/WORKER-specifika evalskills med olika svårighetsgrad. Deras discovery, filformat, laddning, promptinjektion, prioritet och faktiska exponering i LM Studio-profil/request måste verifieras före kapacitetsbedömning; Codex skill-kontrakt får inte antas gälla den lokala kandidaten. Uppgifterna använder unika kopior från ComfyUI-playgrounden och kräver ingen modell-/checkpointladdning eller generering.
 
-1. Läs en liten kodfil och specifikation, implementera en avgränsad funktion, kör förberedda tester och rapportera verkligt resultat. Ge krav, inte lösningskoden.
-2. Reproducera en liten bug, identifiera orsaken, fixa inom scope och verifiera både felreproduktion och tidigare godkända fall.
-3. Kombinera källdata, en avgränsad filändring och slutkontroll i 3–5 beroende arbetssteg; bevara kontrollfiler och rapportera ofärdiga delsteg ärligt.
+1. Introducerande ComfyUI-ERST: inspektera ett UI-workflow och använd en explicit enkel skill för att döpa om exakt angivna noder enligt en tydlig namnregel; bevara samtliga övriga nodegenskaper, länkar och workflowdata samt verifiera JSON, diff och målresultat.
+2. Välj implicit rätt skill för att lägga till, ta bort eller koppla om noder och länkar i en ny fixture; irrelevanta skills ska ignoreras och saknat nodkontrakt ska ge korrekt avstående eller blockerarrapport.
+3. Tillämpa en avancerad flerstegsskill på ett workflow med subgraf eller projektspecifik nodtyp: orientera, mutera inom scope, kontrollera referensintegritet och redovisa verifierat sluttillstånd utan att läsa facit.
 
-Gate: hela kedjan ska fungera utan att Codex matar modellen med varje delbeslut. Bedöm första försöket och eventuell tillåten korrigering separat.
+Gate: bevisa både att rätt skill- och domänkontext faktiskt exponerades och att dess relevanta procedur följdes. Bedöm det statiska workflow-/grafslutläget, scope och verifieringen; lyckad ComfyUI-generering krävs inte och ska inte startas. Ej bevisad exponering eller saknat nödvändigt nodkontrakt ger diagnostiskt/blockerat utfall, inte modellslutsats.
 
-### EVALUATION ROUND 7 — Kontext och återupptagning
+### EVALUATION ROUND 7 — ComfyUI Sandbox Roadmap Execution
 
-1. Fortsätt samma korta arbetsflöde över flera chattmeddelanden och bevara tidigare krav, beslut och negativa constraints.
-2. Starta färsk konversation och återuppta ett halvfärdigt arbete från en liten explicit sparad status och diskdata, utan dold tidigare chatt.
-3. Återuppta efter dokumenterat fel eller blockerad deluppgift utan att radera felet, fabricera färdigställande eller blint repetera samma misslyckade steg.
+Round 7 är en utvecklings- och kvalificeringsround för hela agentinstallationen. Varje ERST använder en liten, koherent och disponibel ComfyUI-playground med workflow-JSON, nödvändiga stöd-/kontraktfiler, uttryckligt skyddade kontrollfiler och en verklig roadmap. Codex får efter verifierad icke-modellbrist förbättra rätt ägare mellan versionerade försök; coaching räknas aldrig som självständig framgång.
 
-Gate: verifiera vad som finns i faktisk kontext och på disk före/efter reset. Manuell ny konversation är tillåten när automatisk session-reset inte är säkert verifierad; automation får inte påstås finnas.
+1. Följ en avgränsad feature-roadmap som kräver en meningsfull nod-/länkändring i ett befintligt workflow och verifiera mål, graf, scope och orörda delar.
+2. Följ en bugfix-roadmap på ett avsiktligt skadat workflow: lokalisera felet, reparera det och verifiera både fail-to-pass och bevarade tidigare egenskaper.
+3. Följ en beroende multi-file-roadmap med workflow-JSON och relevant projektlokal stöd-/integrationsfil, eller återuppta en dokumenterat halvfärdig ComfyUI-ändring från explicit status och diskdata utan dold chatthistorik eller falskt färdigställande.
 
-### EVALUATION ROUND 8 — Oberoende bekräftelse och regressionssäkerhet
+Gate: modellen får krav, scope och acceptanskriterier men inte lösningskod eller föreskriven toolsekvens. Bedöm roadmapens faktiska slutläge, tester, scope, ärlighet och verifiering; inte kosmetisk implementationsstil. Playground och facit ska vara isolerade så att kandidaten inte kan läsa graderns svar.
 
-1. Kör en tidigare godkänd rollkritisk uppgift med nya namn, värden och innehåll som inte användes vid tuning; bekräfta faktisk överföring, inte memorering.
-2. Kör en motsvarande uppgift med en liten legitim störning, exempelvis ändrad filplacering eller saknad optional uppgift. Förväntad adaptation/stop ska vara fastställd före test.
-3. Jämför bästa baseline och en enda motiverad förbättring på samma lilla låsta guard-uppgift med oberoende varianter/upprepningar; granska kvalitet, scope, falska påståenden, tool-loop och tidskostnad.
+### EVALUATION ROUND 8 — Final ComfyUI Role-Lock Qualification
 
-Gate: ingen kandidat förklaras bättre om en tidigare obligatorisk styrka regresserar. Slutresultatet är en roll- och miljövillkorad kapacitetsprofil, inte en universell modellranking.
+Round 8 är en fryst held-out slutaudition. Exakt modell/kvantisering, template, sampling, WORKER-kontext, tools, skills, harnessversion, budget och stoppvillkor låses före rundan. Ingen tuning, oplanerad coaching eller villkorsändring sker mellan giltiga attempts; en bevisad eval-/harnessbrist ogiltigförklarar försöket och korrigeras endast genom nytt versionerat kontrakt.
+
+1. Genomför en tidigare osedd ComfyUI feature-roadmap i en färsk held-out workflow-sandbox och verifiera överföring till nya noder, länkar, namn och värden.
+2. Genomför en tidigare osedd ComfyUI-roadmap med ett realistiskt graf-/kontraktsfel eller en legitim saknad beroendefakta; bedöm korrekt diagnos, säker återhämtning eller ärlig blockerarrapportering enligt förhandskontraktet.
+3. Sista ComfyUI-ERST: skapa ett helt nytt UI-workflow-JSON från en tom fixture genom att återanvända endast nodtyper som finns i den låsta installerade/visade nodpaletten. Workflowet behöver inte vara semantiskt elegant eller producera en meningsfull bild/video, men ska vara strukturellt intakt, kunna öppnas/valideras utan kritiska format-, graf-, länk-, slot- eller referensfel och inte påstås ha körts. Icke-kritiska layout-/metadataavvikelser dokumenteras men ska inte ensamma ge FAIL.
+
+Gate: beslutet gäller om den reproducerbara kombinationen modell, konfiguration, kontext, tools, skills och LM Studio-harness är praktiskt lämplig för Team Masters privata, dagliga ComfyUI-arbete som 0-WORKER. Separera detta system-/rollbeslut från strikt modellspecifik kausal bedömning. Förhandslåsta beslutstillstånd är `lås för 0-WORKER`, `lås med dokumenterat begränsat scope` eller `lås inte ännu`; de exakta kraven måste beslutas före rundan och ska prioritera korrekt roadmaputförande, verkligt workflow-/projektslutläge, scope, verifiering, ärlighet och praktisk tid framför kosmetik.
+
+### ComfyUI-kontext inför Round 6–8
+
+- Kontexten ska vara modellneutral, liten och versions-/hashbunden per ERST. Den ska minst skilja ComfyUI UI-workflow från API prompt, beskriva de relevanta v0.4-graf-/länk-/subgrafstrukturerna, ange projektets lokala workflowregler och definiera proceduren snapshot → scoped mutation → parse/strukturkontroll → referensintegritet → diff → sluttillstånd.
+- Endast kontrakt för nodtyper som den aktuella fixturen och uppgiften faktiskt berör ska exponeras. Full nodinventering, journalsvar, färdiga lösningar och dolda graders ska inte injiceras.
+- Samma semantiska paket används först för alla kandidater. En Granite-specifik format-, ordnings- eller längdanpassning kräver reproducerbar evidens, egen versionsidentitet och separat conditioned-bedömning; den får inte smyga in nya lösningsfakta.
+- Denna kontext behöver inte vara färdig före nästa teknologioberoende Round 2-ERST, men är en obligatorisk preflight-gate före den första ComfyUI-specifika ERST:n.
 
 ## Playground och bedömning
 
-- Från Round 2 skapar Codex en ny liten playground under kandidatens egen eval-yta för varje oberoende ERST; några triviala text-/JSON-/kodfiler och kontrollfiler, inga riktiga arbetsfiler eller hemligheter. Round 7:s fortsättningsdelar delar playground endast när kontinuitet är det avsiktligt testade.
+- Från Round 3 skapar Codex en ny liten playground under kandidatens egen eval-yta för varje oberoende ERST; några triviala text-/JSON-/kodfiler och kontrollfiler, inga riktiga arbetsfiler eller hemligheter. Round 7:s fortsättningsdelar delar playground endast när kontinuitet är det avsiktligt testade.
+- `model_evaluations/comfy_ui_eval-playground/workflows/` är endast disponibelt källmaterial för ComfyUI-fixtures. Det är inte produktionskälla, synkad spegling eller facit. Varje muterande ERST får en unik kopia och ett manifest med relativ sökväg, ursprungshash, format/version, tillåtna ändringar och bevarandekrav; den gemensamma playgroundkopian muteras inte som delat testtillstånd.
+- Framtida ComfyUI-ERST får kreativt ändra noder, länkar, widgets och relevanta workflowstrukturer inom låst scope. De ska inte ladda modeller/checkpoints, köa prompts eller starta GPU-generering. Bedömningen använder i första hand parse/schema där tillämpligt, graf-/referensintegritet, deterministiska målkrav, diff, skyddade kontrollfiler och ärlig verifiering.
 - Snapshot före och efter, uttrycklig mutation-scope, separata input och resultaten. Skapa inte alla framtida fixtures eller skills innan nästa uppgift faktiskt kräver dem. Playground är inte säkerhetsisolering för godtycklig kod/shell.
 - Exakt byte-/strängmatch endast för exakt specificerade kontrakt. I övrigt struktur-/typ-/funktionsbedömning och en fördefinierad rubric för förklaring, omdöme och ärlighet; grammatisk variation ska inte räknas som kapacitetsfel.
 - Kalibrera gradern mot kända goda/dåliga resultat och mänsklig granskning. Codex/Claude-bedömning kompletterar, men ersätter inte fil-/toolbevis; skilj graderfel från agentfel.
@@ -157,7 +189,7 @@ Gate: ingen kandidat förklaras bättre om en tidigare obligatorisk styrka regre
 - Spara exakt instruktion, native svar/tool-evidens/runtime-fel, tillgänglig konfiguration och dess osäkerheter, källfingerprints, ändrade filer, bedömning, avbrott och variant. Markera otillräcklig/paginerad evidens som ofullständig.
 - Fixtures och loggresultat är separata: playground i profilens eval-yta, evaluation-oberoende rå evidens i sina ägarströmmar under `LM-Studio_logs/` och evalspecifika körningsfiler direkt under `model_evaluations/<eval-id>/<run-id>/`. Varje körning får unik sandbox och unik loggfil. LM Studios interna loggar förblir externa källor som fångas read-only. Ingen destruktiv återställning eller automatisk radering av tidigare evidens. Pretty/multiline JSON, UTF-8 utan BOM, läsbara tidsstämplar och relativa projektsökvägar där absoluta inte krävs.
 - Lokal sandbox är inte OS-isolering. Varje runner måste redovisa exakt vilka filer och gränser dess grader faktiskt övervakar; begränsat filskydd får inte beskrivas som skydd av hela disken. Codex måste granska native tool-evidens innan vidare godkännande.
-- Round 4/6:s kod-/kommandoexekvering väntar på verifierad OS-/processisolering och faktiska resursgränser, eller användarens explicita godkännande av en konkret dokumenterad begränsning av skaderadien. Testa skyddet med en ofarlig gränsöverträdelse mot disponibla kontrollfiler före tillit; container/VM/restricted account är kandidater, inte automatiskt valda komponenter. Ett godkännande av begränsad isolering gör inte åtkomligt facit oberoende.
+- Varje round med kod-/kommandoexekvering väntar på verifierad OS-/processisolering och faktiska resursgränser, eller användarens explicita godkännande av en konkret dokumenterad begränsning av skaderadien. Testa skyddet med en ofarlig gränsöverträdelse mot disponibla kontrollfiler före tillit; container/VM/restricted account är kandidater, inte automatiskt valda komponenter. Ett godkännande av begränsad isolering gör inte åtkomligt facit oberoende.
 - Server-, model lifecycle-, model-I/O- och hostobservationer ska fångas separat under `LM-Studio_logs/server_events/`, `model_lifecycle_events/`, `model_io_events/` och `host_resource_snapshots/`, med källa, tidsintervall och luckor. `model_io_events` är explicit opt-in. Observerad processförsvinnande är inte en bevisad krasch, och en native app-logg är inte automatiskt full inference-input. Capture ska vara read-only mot källorna, unik per körning och bounded i tid/disk; ingen ändring av original-loggar eller automatisk uppladdning av känslig raw-data.
 - Skilj modellfel från transport-, harness-, runtime-, verktygs-, permissions- och miljöfel. Tomt svar eller context-/toolfel är inte automatiskt modellinkapacitet.
 
@@ -205,6 +237,8 @@ Gate: ingen kandidat förklaras bättre om en tidigare obligatorisk styrka regre
 - Eval-id ska vara evalkörningens redan etablerade, unika id. Rapporten listar alla ingående run-id:n och skiljer giltiga bedömningskörningar från ogiltiga försök, avbrottsdiagnostik, assisterade försök och senare angränsande diagnostik. Ett efterhandskonstruerat run-id får inte presenteras som om det kom från runtime.
 - Rapporten ska vara självbärande men källbunden: syfte, kandidat och evaluator; låsta villkor och evidensluckor; uppgifter, råa svar och ursprungliga bedömningar; verklig 0-WORKER-relevans; avbrotts-/kontrollbevis; kända begränsningar; samt en relativ evidensförteckning med run-id, fil och relevant datapekare eller hash när tillgängligt.
 - Modellobservationer, LM Studio-/SDK-/harnessobservationer, uppgiftsutfall och evaluatorns egna processbrister ska ligga i tydligt separata avsnitt. Rapporten får inte göra ett observerat samspel till bevisad ensamorsak, räkna en textskriven tool-begäran som exekverad tool eller räkna ett harness-assisterat resultat som en retroaktiv baseline-framgång.
+- Rapportens modellspecifika prestationssammanfattning får endast innehålla positiv förmåga visad under verifierade och exakt avgränsade villkor samt negativa bedömningar där modellen bevisats vara ensam felägare. Ett praktiskt FAIL med oklar eller delad orsak redovisas endast som orsaksneutralt uppgiftsutfall och i rätt harness-/runtime-/projektjournal, inte som modellsvaghet.
+- Rå modelloutput kan vara relevant observation utan att vara en prestationsbedömning. Om konfiguration, template, instruktion, grader, harness, transport, runtime, tools, permissions eller miljö inte har kontrollerats bort som bidragande felorsak ska rapporten uttryckligen ange att ingen negativ modellspecifik slutsats är möjlig.
 - PASS/FAIL ska återge de låsta kriterier som faktiskt användes. Väsentliga kvalitetsbrister redovisas separat utan kosmetisk efterhandsbedömning, nya sidokriterier eller ändring av originalevidens. Ändrad analys ska versionsmärkas i rapportens revisionshistorik; råa körningsfiler skrivs aldrig om för att passa syntesen.
 - Rapporten ska avslutas med `EXTERNAL-REVIEW-QUESTIONS-EVAL-RESULT [ERQER]` och exakt dessa fyra frågeområden: vad namngiven Frontier-evaluator kunde ha gjort mycket bättre eller annorlunda; hur framtida kandidater kan ge mer användbara och försvarbara insikter på modellspecifik och modellneutral nivå; hur framtida EVALS kan förbättras icke-kosmetiskt och icke-trivialt; samt övriga mycket höga eller höga ROI-insikter evaluatorn bör adressera eller implementera.
 - Externa reviewers ska ombes prioritera konkreta ändringsförslag och för varje förslag ange evidensgrund, berörd ägare/lager, förväntad nytta, risk eller tradeoff och minsta verifiering. Rapporten ska synliggöra osäkerheter och öppna frågor så att reviewern kan ifrågasätta Codex analys, inte bara bekräfta den.

@@ -1,0 +1,3417 @@
+{
+  "id": "71824464-7da1-4b5a-9294-b6d4dd47fe03",
+  "revision": 3,
+  "last_node_id": 130,
+  "last_link_id": 287,
+  "nodes": [
+    {
+      "id": 72,
+      "type": "CLIPLoader",
+      "pos": [
+        -1387.1362983474976,
+        823.7355533995286
+      ],
+      "size": [
+        386.25,
+        113.9375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip_name",
+          "name": "clip_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "clip_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "type",
+          "name": "type",
+          "type": "COMBO",
+          "widget": {
+            "name": "type"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "device",
+          "name": "device",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "device"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CLIP",
+          "name": "CLIP",
+          "type": "CLIP",
+          "slot_index": 0,
+          "links": [
+            161,
+            179,
+            263
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPLoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "models": [
+          {
+            "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+            "directory": "text_encoders"
+          }
+        ],
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "wan",
+        "cpu"
+      ],
+      "widgets_values_named": {
+        "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "type": "wan",
+        "device": "cpu"
+      }
+    },
+    {
+      "id": 76,
+      "type": "UNETLoader",
+      "pos": [
+        320.05042221420456,
+        -1235.1689410350366
+      ],
+      "size": [
+        446.71875,
+        85.953125
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "unet_name",
+          "name": "unet_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "unet_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "weight_dtype",
+          "name": "weight_dtype",
+          "type": "COMBO",
+          "widget": {
+            "name": "weight_dtype"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODEL",
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            159
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "models": [
+          {
+            "name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+            "directory": "diffusion_models"
+          }
+        ],
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+        "default"
+      ],
+      "widgets_values_named": {
+        "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+        "weight_dtype": "default"
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 77,
+      "type": "UNETLoader",
+      "pos": [
+        323.8819567643123,
+        -1099.0003177356032
+      ],
+      "size": [
+        444.84375,
+        85.953125
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "unet_name",
+          "name": "unet_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "unet_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "weight_dtype",
+          "name": "weight_dtype",
+          "type": "COMBO",
+          "widget": {
+            "name": "weight_dtype"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODEL",
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            160
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UNETLoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "models": [
+          {
+            "name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+            "directory": "diffusion_models"
+          }
+        ],
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+        "default"
+      ],
+      "widgets_values_named": {
+        "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+        "weight_dtype": "default"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 79,
+      "type": "VAELoader",
+      "pos": [
+        85.11423150108362,
+        -413.343587882624
+      ],
+      "size": [
+        284.46875,
+        63.5
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "vae_name",
+          "name": "vae_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "vae_name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "VAE",
+          "name": "VAE",
+          "type": "VAE",
+          "slot_index": 0,
+          "links": [
+            164,
+            173,
+            267,
+            282
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "models": [
+          {
+            "name": "wan_2.1_vae.safetensors",
+            "url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors",
+            "directory": "vae"
+          }
+        ],
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "wan_2.1_vae.safetensors"
+      ],
+      "widgets_values_named": {
+        "vae_name": "wan_2.1_vae.safetensors"
+      }
+    },
+    {
+      "id": 80,
+      "type": "LoadImageOutput",
+      "pos": [
+        -3124.7383435153774,
+        -832.3423357540893
+      ],
+      "size": [
+        881.25,
+        1015
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            236
+          ]
+        },
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": null
+        }
+      ],
+      "title": "REQUIRED WF-2 OUTPUT - START KEYFRAME",
+      "properties": {
+        "Node name for S&R": "LoadImageOutput",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "upload": "image"
+      },
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 89,
+      "type": "LoadImageOutput",
+      "pos": [
+        -2226.9634386202156,
+        -832.620582629242
+      ],
+      "size": [
+        890.46875,
+        1015.15625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            237
+          ]
+        },
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": null
+        }
+      ],
+      "title": "REQUIRED WF-2 OUTPUT - MID KEYFRAME",
+      "properties": {
+        "Node name for S&R": "LoadImageOutput",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "upload": "image"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 105,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        -2513.8123815691024,
+        243.69162759800147
+      ],
+      "size": [
+        560,
+        400
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "STRING",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            260
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 01 PROMPT - START TO MID",
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline",
+        "cnr_id": "comfy-core",
+        "ver": "0.9.1",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "Mara stands at the base of the lighthouse wearing her navy coat. She looks up at the darkened lamp above the harbor. Mara begins walking towards the lamp post, taking slow steps in the wet grass. Her weight shifts from one foot to the other as she moves forward. The wind blows across the windows of the lighthouse, causing rainwater to move down the glass. Mara's gaze remains fixed on the lamp as she approaches it."
+      ],
+      "widgets_values_named": {
+        "value": "Mara stands at the base of the lighthouse wearing her navy coat. She looks up at the darkened lamp above the harbor. Mara begins walking towards the lamp post, taking slow steps in the wet grass. Her weight shifts from one foot to the other as she moves forward. The wind blows across the windows of the lighthouse, causing rainwater to move down the glass. Mara's gaze remains fixed on the lamp as she approaches it."
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 112,
+      "type": "PrimitiveInt",
+      "pos": [
+        -244.24583127329038,
+        -868.1409700043143
+      ],
+      "size": [
+        225,
+        81.984375
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "INT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "INT",
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            239,
+            240,
+            241,
+            242,
+            270
+          ]
+        }
+      ],
+      "title": "WAN FAST-DRAFT WIDTH - 256",
+      "properties": {
+        "Node name for S&R": "PrimitiveInt",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1"
+      },
+      "widgets_values": [
+        256,
+        "fixed"
+      ],
+      "widgets_values_named": {
+        "value": 256,
+        "fixed": "fixed"
+      },
+      "color": "#2b3242",
+      "bgcolor": "#3b465d"
+    },
+    {
+      "id": 113,
+      "type": "PrimitiveInt",
+      "pos": [
+        -244.04754036684426,
+        -733.9300436696772
+      ],
+      "size": [
+        225,
+        81.984375
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "INT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "INT",
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            243,
+            244,
+            245,
+            246,
+            271
+          ]
+        }
+      ],
+      "title": "WAN FAST-DRAFT HEIGHT - 448",
+      "properties": {
+        "Node name for S&R": "PrimitiveInt",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1"
+      },
+      "widgets_values": [
+        448,
+        "fixed"
+      ],
+      "widgets_values_named": {
+        "value": 448,
+        "fixed": "fixed"
+      },
+      "color": "#2b3242",
+      "bgcolor": "#3b465d"
+    },
+    {
+      "id": 114,
+      "type": "PrimitiveInt",
+      "pos": [
+        -241.92345881334313,
+        -603.3030213037204
+      ],
+      "size": [
+        253.40625,
+        81.984375
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "INT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "INT",
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            247,
+            272
+          ]
+        }
+      ],
+      "title": "WAN INTER-KF FRAMES - 97 (~6S AT 16 FPS)",
+      "properties": {
+        "Node name for S&R": "PrimitiveInt",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1"
+      },
+      "widgets_values": [
+        97,
+        "fixed"
+      ],
+      "widgets_values_named": {
+        "value": 97,
+        "fixed": "fixed"
+      },
+      "color": "#2b3242",
+      "bgcolor": "#3b465d"
+    },
+    {
+      "id": 120,
+      "type": "LoadImageOutput",
+      "pos": [
+        -1323.9937206861448,
+        -831.4029810545927
+      ],
+      "size": [
+        904.84375,
+        1010.15625
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "choose file to upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            238
+          ]
+        },
+        {
+          "localized_name": "MASK",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": null
+        }
+      ],
+      "title": "REQUIRED WF-2 OUTPUT - END KEYFRAME",
+      "properties": {
+        "Node name for S&R": "LoadImageOutput",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "",
+        "upload": "image"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 122,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        -1592.3042008998762,
+        239.40753041989174
+      ],
+      "size": [
+        560,
+        400
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "STRING",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            264
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 02 PROMPT - MID TO END",
+      "properties": {
+        "Node name for S&R": "PrimitiveStringMultiline",
+        "cnr_id": "comfy-core",
+        "ver": "0.9.1",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "Mara reaches the lantern room and removes the cracked glass panel from the frame. She cleans the wet metal with her hands, then carefully installs the replacement panel. As the clouds separate, Mara restarts the warm lamp beam sweeping across the quiet harbor."
+      ],
+      "widgets_values_named": {
+        "value": "Mara reaches the lantern room and removes the cracked glass panel from the frame. She cleans the wet metal with her hands, then carefully installs the replacement panel. As the clouds separate, Mara restarts the warm lamp beam sweeping across the quiet harbor."
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 78,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -2036.8851718532521,
+        744.4806419775227
+      ],
+      "size": [
+        548.90625,
+        224.21875
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 161
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            163,
+            266
+          ]
+        }
+      ],
+      "title": "NEGATIVE CONDITIONING - ANATOMY, TEXTURE, MOTION AND SCENE GUARD",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "anatomical distortion, malformed hands, extra fingers, missing fingers, extra limbs, fused limbs, duplicated body parts, identity drift, face drift, wardrobe drift, object duplication, geometry warping, melting textures, crawling textures, flicker, temporal jitter, frame skipping, abrupt pose snapping, impossible acceleration, camera jump, lighting shift, background replacement, scene transition, text, captions, watermark, border"
+      ],
+      "widgets_values_named": {
+        "text": "anatomical distortion, malformed hands, extra fingers, missing fingers, extra limbs, fused limbs, duplicated body parts, identity drift, face drift, wardrobe drift, object duplication, geometry warping, melting textures, crawling textures, flicker, temporal jitter, frame skipping, abrupt pose snapping, impossible acceleration, camera jump, lighting shift, background replacement, scene transition, text, captions, watermark, border"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 73,
+      "type": "ModelSamplingSD3",
+      "pos": [
+        808.4674569683353,
+        -1233.2015590869528
+      ],
+      "size": [
+        225,
+        61.953125
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 159
+        },
+        {
+          "localized_name": "shift",
+          "name": "shift",
+          "type": "FLOAT",
+          "widget": {
+            "name": "shift"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODEL",
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            168,
+            273
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelSamplingSD3",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        8.000000000000002
+      ],
+      "widgets_values_named": {
+        "shift": 8.000000000000002
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 74,
+      "type": "ModelSamplingSD3",
+      "pos": [
+        814.4666161731686,
+        -1097.248688884891
+      ],
+      "size": [
+        225,
+        61.953125
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 160
+        },
+        {
+          "localized_name": "shift",
+          "name": "shift",
+          "type": "FLOAT",
+          "widget": {
+            "name": "shift"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODEL",
+          "name": "MODEL",
+          "type": "MODEL",
+          "slot_index": 0,
+          "links": [
+            175,
+            274
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ModelSamplingSD3",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        8
+      ],
+      "widgets_values_named": {
+        "shift": 8
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 115,
+      "type": "ImageScale",
+      "pos": [
+        -2846.9002621089076,
+        -1174.013257909993
+      ],
+      "size": [
+        360,
+        180
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 236
+        },
+        {
+          "localized_name": "upscale_method",
+          "name": "upscale_method",
+          "type": "COMBO",
+          "widget": {
+            "name": "upscale_method"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 239
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 243
+        },
+        {
+          "localized_name": "crop",
+          "name": "crop",
+          "type": "COMBO",
+          "widget": {
+            "name": "crop"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            261
+          ]
+        }
+      ],
+      "title": "PREPARE START KEYFRAME FOR WAN",
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1",
+        "preparation_policy": "Downscales the 4:7 X keyframe to the shared 4:7 diagnostic canvas without geometric stretching or cropping."
+      },
+      "widgets_values": [
+        "lanczos",
+        320,
+        560,
+        "center"
+      ],
+      "widgets_values_named": {
+        "upscale_method": "lanczos",
+        "width": 320,
+        "height": 560,
+        "crop": "center"
+      },
+      "color": "#283a2e",
+      "bgcolor": "#38523f"
+    },
+    {
+      "id": 116,
+      "type": "ImageScale",
+      "pos": [
+        -2001.521057234111,
+        -1153.5096446859282
+      ],
+      "size": [
+        360,
+        180
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 237
+        },
+        {
+          "localized_name": "upscale_method",
+          "name": "upscale_method",
+          "type": "COMBO",
+          "widget": {
+            "name": "upscale_method"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 240
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 244
+        },
+        {
+          "localized_name": "crop",
+          "name": "crop",
+          "type": "COMBO",
+          "widget": {
+            "name": "crop"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            262,
+            268
+          ]
+        }
+      ],
+      "title": "PREPARE MID KEYFRAME FOR WAN",
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1",
+        "preparation_policy": "Downscales the 4:7 X keyframe to the shared 4:7 diagnostic canvas without geometric stretching or cropping."
+      },
+      "widgets_values": [
+        "lanczos",
+        320,
+        560,
+        "center"
+      ],
+      "widgets_values_named": {
+        "upscale_method": "lanczos",
+        "width": 320,
+        "height": 560,
+        "crop": "center"
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 121,
+      "type": "ImageScale",
+      "pos": [
+        -1104.6265794903334,
+        -1162.8909122934738
+      ],
+      "size": [
+        360,
+        180
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 238
+        },
+        {
+          "localized_name": "upscale_method",
+          "name": "upscale_method",
+          "type": "COMBO",
+          "widget": {
+            "name": "upscale_method"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 241
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 245
+        },
+        {
+          "localized_name": "crop",
+          "name": "crop",
+          "type": "COMBO",
+          "widget": {
+            "name": "crop"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            269
+          ]
+        }
+      ],
+      "title": "PREPARE END KEYFRAME FOR WAN",
+      "properties": {
+        "Node name for S&R": "ImageScale",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1",
+        "preparation_policy": "Downscales the 4:7 X keyframe to the shared 4:7 diagnostic canvas without geometric stretching or cropping."
+      },
+      "widgets_values": [
+        "lanczos",
+        320,
+        560,
+        "center"
+      ],
+      "widgets_values_named": {
+        "upscale_method": "lanczos",
+        "width": 320,
+        "height": 560,
+        "crop": "center"
+      },
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 90,
+      "type": "CLIPTextEncode",
+      "pos": [
+        -922.7349981275513,
+        765.541834321077
+      ],
+      "size": [
+        548.75,
+        236.09375
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 179
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 260
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            162
+          ]
+        }
+      ],
+      "title": "ENCODE INTER-KF INTERVAL 01 PROMPT - START TO MID",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        ""
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 123,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1177.2650018724487,
+        765.541834321077
+      ],
+      "size": [
+        548.75,
+        236.09375
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 263
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 264
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "slot_index": 0,
+          "links": [
+            265
+          ]
+        }
+      ],
+      "title": "ENCODE INTER-KF INTERVAL 02 PROMPT - MID TO END",
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        ""
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 81,
+      "type": "WanFirstLastFrameToVideo",
+      "pos": [
+        73.64994299327986,
+        -296.39049517200584
+      ],
+      "size": [
+        338.484375,
+        265.90625
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 162
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 163
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 164
+        },
+        {
+          "localized_name": "clip_vision_start_image",
+          "name": "clip_vision_start_image",
+          "shape": 7,
+          "type": "CLIP_VISION_OUTPUT",
+          "link": null
+        },
+        {
+          "localized_name": "clip_vision_end_image",
+          "name": "clip_vision_end_image",
+          "shape": 7,
+          "type": "CLIP_VISION_OUTPUT",
+          "link": null
+        },
+        {
+          "localized_name": "start_image",
+          "name": "start_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 261
+        },
+        {
+          "localized_name": "end_image",
+          "name": "end_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 262
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 242
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 246
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": 247
+        },
+        {
+          "localized_name": "batch_size",
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            231,
+            234
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            232,
+            235
+          ]
+        },
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            233
+          ]
+        }
+      ],
+      "title": "FLF2V INTER-KF INTERVAL 01 - START TO MID - 256x448 97F FAST DRAFT",
+      "properties": {
+        "Node name for S&R": "WanFirstLastFrameToVideo",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.48",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        256,
+        448,
+        97,
+        1
+      ],
+      "widgets_values_named": {
+        "width": 256,
+        "height": 448,
+        "length": 97,
+        "batch_size": 1
+      }
+    },
+    {
+      "id": 84,
+      "type": "KSamplerAdvanced",
+      "pos": [
+        392.20778737314646,
+        -892.2014846509138
+      ],
+      "size": [
+        357.78125,
+        370
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 168
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 231
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 232
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 233
+        },
+        {
+          "localized_name": "add_noise",
+          "name": "add_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "add_noise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "noise_seed",
+          "name": "noise_seed",
+          "type": "INT",
+          "widget": {
+            "name": "noise_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start_at_step",
+          "name": "start_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "start_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "end_at_step",
+          "name": "end_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "end_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "return_with_leftover_noise",
+          "name": "return_with_leftover_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "return_with_leftover_noise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            178
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 01 HIGH-NOISE EXPERT - STEPS 0-5",
+      "properties": {
+        "Node name for S&R": "KSamplerAdvanced",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "enable",
+        984554315526009,
+        "fixed",
+        12,
+        3.5,
+        "euler",
+        "simple",
+        0,
+        5,
+        "enable"
+      ],
+      "widgets_values_named": {
+        "add_noise": "enable",
+        "noise_seed": 984554315526009,
+        "control_after_generate": "fixed",
+        "steps": 12,
+        "cfg": 3.5,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": 5,
+        "return_with_leftover_noise": "enable"
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 87,
+      "type": "KSamplerAdvanced",
+      "pos": [
+        712.7378349231678,
+        -895.537798205923
+      ],
+      "size": [
+        359.484375,
+        370
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 175
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 234
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 235
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 178
+        },
+        {
+          "localized_name": "add_noise",
+          "name": "add_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "add_noise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "noise_seed",
+          "name": "noise_seed",
+          "type": "INT",
+          "widget": {
+            "name": "noise_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start_at_step",
+          "name": "start_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "start_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "end_at_step",
+          "name": "end_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "end_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "return_with_leftover_noise",
+          "name": "return_with_leftover_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "return_with_leftover_noise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            172
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 01 LOW-NOISE EXPERT - STEPS 5-12",
+      "properties": {
+        "Node name for S&R": "KSamplerAdvanced",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "disable",
+        0,
+        "fixed",
+        12,
+        3.5,
+        "euler",
+        "simple",
+        5,
+        10000,
+        "disable"
+      ],
+      "widgets_values_named": {
+        "add_noise": "disable",
+        "noise_seed": 0,
+        "control_after_generate": "fixed",
+        "steps": 12,
+        "cfg": 3.5,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 5,
+        "end_at_step": 10000,
+        "return_with_leftover_noise": "disable"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 85,
+      "type": "VAEDecode",
+      "pos": [
+        519.1458856209256,
+        -256.9242786102948
+      ],
+      "size": [
+        225,
+        53.96875
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 172
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 173
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            285
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 01 VAE DECODE",
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 83,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3750,
+        -1040
+      ],
+      "size": [
+        520,
+        1274.40625
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 287
+        },
+        {
+          "localized_name": "audio",
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": null
+        },
+        {
+          "localized_name": "meta_batch",
+          "name": "meta_batch",
+          "shape": 7,
+          "type": "VHS_BatchManager",
+          "link": null
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": null
+        },
+        {
+          "localized_name": "frame_rate",
+          "name": "frame_rate",
+          "type": "FLOAT",
+          "widget": {
+            "name": "frame_rate"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "loop_count",
+          "name": "loop_count",
+          "type": "INT",
+          "widget": {
+            "name": "loop_count"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "format",
+          "name": "format",
+          "type": "COMBO",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pingpong",
+          "name": "pingpong",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pingpong"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "save_output",
+          "name": "save_output",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_output"
+          },
+          "link": null
+        },
+        {
+          "name": "pix_fmt",
+          "type": [
+            "yuv420p",
+            "yuv420p10le"
+          ],
+          "widget": {
+            "name": "pix_fmt"
+          },
+          "link": null
+        },
+        {
+          "name": "crf",
+          "type": "INT",
+          "widget": {
+            "name": "crf"
+          },
+          "link": null
+        },
+        {
+          "name": "save_metadata",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_metadata"
+          },
+          "link": null
+        },
+        {
+          "name": "trim_to_audio",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "trim_to_audio"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "Filenames",
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null
+        }
+      ],
+      "title": "SAVE EXACTLY ONE WF-3 SEGMENT - 3 KEYFRAMES / 2 INTER-KF INTERVALS",
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 16,
+        "loop_count": 0,
+        "filename_prefix": "video/WF-3/WF-3_segment",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 16,
+        "save_metadata": true,
+        "trim_to_audio": false,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": null
+      },
+      "widgets_values_named": {
+        "frame_rate": 16,
+        "loop_count": 0,
+        "filename_prefix": "video/WF-3/WF-3_segment",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 16,
+        "save_metadata": true,
+        "trim_to_audio": false,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": null
+      }
+    },
+    {
+      "id": 124,
+      "type": "WanFirstLastFrameToVideo",
+      "pos": [
+        2173.64994299328,
+        -296.39049517200584
+      ],
+      "size": [
+        338.484375,
+        265.90625
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 265
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 266
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 267
+        },
+        {
+          "localized_name": "clip_vision_start_image",
+          "name": "clip_vision_start_image",
+          "shape": 7,
+          "type": "CLIP_VISION_OUTPUT",
+          "link": null
+        },
+        {
+          "localized_name": "clip_vision_end_image",
+          "name": "clip_vision_end_image",
+          "shape": 7,
+          "type": "CLIP_VISION_OUTPUT",
+          "link": null
+        },
+        {
+          "localized_name": "start_image",
+          "name": "start_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 268
+        },
+        {
+          "localized_name": "end_image",
+          "name": "end_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 269
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 270
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 271
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": 272
+        },
+        {
+          "localized_name": "batch_size",
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            275,
+            278
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            276,
+            279
+          ]
+        },
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            277
+          ]
+        }
+      ],
+      "title": "FLF2V INTER-KF INTERVAL 02 - MID TO END - 256x448 97F FAST DRAFT",
+      "properties": {
+        "Node name for S&R": "WanFirstLastFrameToVideo",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.48",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        256,
+        448,
+        97,
+        1
+      ],
+      "widgets_values_named": {
+        "width": 256,
+        "height": 448,
+        "length": 97,
+        "batch_size": 1
+      }
+    },
+    {
+      "id": 125,
+      "type": "KSamplerAdvanced",
+      "pos": [
+        2492.2077873731464,
+        -892.2014846509138
+      ],
+      "size": [
+        357.78125,
+        370
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 273
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 275
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 276
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 277
+        },
+        {
+          "localized_name": "add_noise",
+          "name": "add_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "add_noise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "noise_seed",
+          "name": "noise_seed",
+          "type": "INT",
+          "widget": {
+            "name": "noise_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start_at_step",
+          "name": "start_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "start_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "end_at_step",
+          "name": "end_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "end_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "return_with_leftover_noise",
+          "name": "return_with_leftover_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "return_with_leftover_noise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            280
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 02 HIGH-NOISE EXPERT - STEPS 0-5",
+      "properties": {
+        "Node name for S&R": "KSamplerAdvanced",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "enable",
+        984554315526009,
+        "fixed",
+        12,
+        3.5,
+        "euler",
+        "simple",
+        0,
+        5,
+        "enable"
+      ],
+      "widgets_values_named": {
+        "add_noise": "enable",
+        "noise_seed": 984554315526009,
+        "control_after_generate": "fixed",
+        "steps": 12,
+        "cfg": 3.5,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": 5,
+        "return_with_leftover_noise": "enable"
+      },
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 126,
+      "type": "KSamplerAdvanced",
+      "pos": [
+        2812.7378349231676,
+        -895.537798205923
+      ],
+      "size": [
+        359.484375,
+        370
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 274
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 278
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 279
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 280
+        },
+        {
+          "localized_name": "add_noise",
+          "name": "add_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "add_noise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "noise_seed",
+          "name": "noise_seed",
+          "type": "INT",
+          "widget": {
+            "name": "noise_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "start_at_step",
+          "name": "start_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "start_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "end_at_step",
+          "name": "end_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "end_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "return_with_leftover_noise",
+          "name": "return_with_leftover_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "return_with_leftover_noise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            281
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 02 LOW-NOISE EXPERT - STEPS 5-12",
+      "properties": {
+        "Node name for S&R": "KSamplerAdvanced",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "disable",
+        0,
+        "fixed",
+        12,
+        3.5,
+        "euler",
+        "simple",
+        5,
+        10000,
+        "disable"
+      ],
+      "widgets_values_named": {
+        "add_noise": "disable",
+        "noise_seed": 0,
+        "control_after_generate": "fixed",
+        "steps": 12,
+        "cfg": 3.5,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 5,
+        "end_at_step": 10000,
+        "return_with_leftover_noise": "disable"
+      },
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 127,
+      "type": "VAEDecode",
+      "pos": [
+        2619.1458856209256,
+        -256.9242786102948
+      ],
+      "size": [
+        225,
+        53.96875
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 281
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 282
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            284
+          ]
+        }
+      ],
+      "title": "INTER-KF INTERVAL 02 VAE DECODE",
+      "properties": {
+        "Node name for S&R": "VAEDecode",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.45",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 129,
+      "type": "ImageFromBatch",
+      "pos": [
+        2940,
+        -300
+      ],
+      "size": [
+        300,
+        120
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 284
+        },
+        {
+          "localized_name": "batch_index",
+          "name": "batch_index",
+          "type": "INT",
+          "widget": {
+            "name": "batch_index"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "length",
+          "name": "length",
+          "type": "INT",
+          "widget": {
+            "name": "length"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            286
+          ]
+        }
+      ],
+      "title": "DROP DUPLICATE MID BOUNDARY FRAME",
+      "properties": {
+        "Node name for S&R": "ImageFromBatch",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        1,
+        96
+      ],
+      "widgets_values_named": {
+        "batch_index": 1,
+        "length": 96
+      }
+    },
+    {
+      "id": 130,
+      "type": "BatchImagesNode",
+      "pos": [
+        3330,
+        -470
+      ],
+      "size": [
+        300,
+        120
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "localized_name": "images.image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 285
+        },
+        {
+          "label": "image1",
+          "localized_name": "images.image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 286
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            287
+          ]
+        }
+      ],
+      "title": "ASSEMBLE 2 INTER-KF INTERVALS INTO 1 SEGMENT",
+      "properties": {
+        "Node name for S&R": "BatchImagesNode",
+        "cnr_id": "comfy-core",
+        "ver": "0.21.1",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      }
+    }
+  ],
+  "links": [
+    [
+      159,
+      76,
+      0,
+      73,
+      0,
+      "MODEL"
+    ],
+    [
+      160,
+      77,
+      0,
+      74,
+      0,
+      "MODEL"
+    ],
+    [
+      161,
+      72,
+      0,
+      78,
+      0,
+      "CLIP"
+    ],
+    [
+      162,
+      90,
+      0,
+      81,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      163,
+      78,
+      0,
+      81,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      164,
+      79,
+      0,
+      81,
+      2,
+      "VAE"
+    ],
+    [
+      168,
+      73,
+      0,
+      84,
+      0,
+      "MODEL"
+    ],
+    [
+      172,
+      87,
+      0,
+      85,
+      0,
+      "LATENT"
+    ],
+    [
+      173,
+      79,
+      0,
+      85,
+      1,
+      "VAE"
+    ],
+    [
+      175,
+      74,
+      0,
+      87,
+      0,
+      "MODEL"
+    ],
+    [
+      178,
+      84,
+      0,
+      87,
+      3,
+      "LATENT"
+    ],
+    [
+      179,
+      72,
+      0,
+      90,
+      0,
+      "CLIP"
+    ],
+    [
+      231,
+      81,
+      0,
+      84,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      232,
+      81,
+      1,
+      84,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      233,
+      81,
+      2,
+      84,
+      3,
+      "LATENT"
+    ],
+    [
+      234,
+      81,
+      0,
+      87,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      235,
+      81,
+      1,
+      87,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      236,
+      80,
+      0,
+      115,
+      0,
+      "IMAGE"
+    ],
+    [
+      237,
+      89,
+      0,
+      116,
+      0,
+      "IMAGE"
+    ],
+    [
+      238,
+      120,
+      0,
+      121,
+      0,
+      "IMAGE"
+    ],
+    [
+      239,
+      112,
+      0,
+      115,
+      2,
+      "INT"
+    ],
+    [
+      240,
+      112,
+      0,
+      116,
+      2,
+      "INT"
+    ],
+    [
+      241,
+      112,
+      0,
+      121,
+      2,
+      "INT"
+    ],
+    [
+      242,
+      112,
+      0,
+      81,
+      7,
+      "INT"
+    ],
+    [
+      243,
+      113,
+      0,
+      115,
+      3,
+      "INT"
+    ],
+    [
+      244,
+      113,
+      0,
+      116,
+      3,
+      "INT"
+    ],
+    [
+      245,
+      113,
+      0,
+      121,
+      3,
+      "INT"
+    ],
+    [
+      246,
+      113,
+      0,
+      81,
+      8,
+      "INT"
+    ],
+    [
+      247,
+      114,
+      0,
+      81,
+      9,
+      "INT"
+    ],
+    [
+      260,
+      105,
+      0,
+      90,
+      1,
+      "STRING"
+    ],
+    [
+      261,
+      115,
+      0,
+      81,
+      5,
+      "IMAGE"
+    ],
+    [
+      262,
+      116,
+      0,
+      81,
+      6,
+      "IMAGE"
+    ],
+    [
+      263,
+      72,
+      0,
+      123,
+      0,
+      "CLIP"
+    ],
+    [
+      264,
+      122,
+      0,
+      123,
+      1,
+      "STRING"
+    ],
+    [
+      265,
+      123,
+      0,
+      124,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      266,
+      78,
+      0,
+      124,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      267,
+      79,
+      0,
+      124,
+      2,
+      "VAE"
+    ],
+    [
+      268,
+      116,
+      0,
+      124,
+      5,
+      "IMAGE"
+    ],
+    [
+      269,
+      121,
+      0,
+      124,
+      6,
+      "IMAGE"
+    ],
+    [
+      270,
+      112,
+      0,
+      124,
+      7,
+      "INT"
+    ],
+    [
+      271,
+      113,
+      0,
+      124,
+      8,
+      "INT"
+    ],
+    [
+      272,
+      114,
+      0,
+      124,
+      9,
+      "INT"
+    ],
+    [
+      273,
+      73,
+      0,
+      125,
+      0,
+      "MODEL"
+    ],
+    [
+      274,
+      74,
+      0,
+      126,
+      0,
+      "MODEL"
+    ],
+    [
+      275,
+      124,
+      0,
+      125,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      276,
+      124,
+      1,
+      125,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      277,
+      124,
+      2,
+      125,
+      3,
+      "LATENT"
+    ],
+    [
+      278,
+      124,
+      0,
+      126,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      279,
+      124,
+      1,
+      126,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      280,
+      125,
+      0,
+      126,
+      3,
+      "LATENT"
+    ],
+    [
+      281,
+      126,
+      0,
+      127,
+      0,
+      "LATENT"
+    ],
+    [
+      282,
+      79,
+      0,
+      127,
+      1,
+      "VAE"
+    ],
+    [
+      284,
+      127,
+      0,
+      129,
+      0,
+      "IMAGE"
+    ],
+    [
+      285,
+      85,
+      0,
+      130,
+      0,
+      "IMAGE"
+    ],
+    [
+      286,
+      129,
+      0,
+      130,
+      1,
+      "IMAGE"
+    ],
+    [
+      287,
+      130,
+      0,
+      83,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "MODEL LOADERS - WAN2.2 I2V A14B",
+      "bounding": [
+        310.0553849097379,
+        -1309.0495183621695,
+        762.7101073305344,
+        303.65680103281284
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "SEGMENT PROMPTS AND START / MID / END KEYFRAMES",
+      "bounding": [
+        -3189.733642717226,
+        -928.7950554178951,
+        2835.6020441441683,
+        2115.89234780702
+      ],
+      "color": "#444",
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "TWO INTERNAL INTER-KF DENOISING PASSES - 12 STEPS EACH",
+      "bounding": [
+        312.07922540735024,
+        -976.7707540428735,
+        2868.5,
+        820
+      ],
+      "color": "#7a4f8e",
+      "flags": {}
+    },
+    {
+      "id": 5,
+      "title": "FINAL SEGMENT ASSEMBLY - ONE FILE / ONE RUN",
+      "bounding": [
+        2860,
+        -1150,
+        1450,
+        1500
+      ],
+      "color": "#3f8e8e",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.36013436737431503,
+      "offset": [
+        2115.381653787775,
+        1507.2274408897447
+      ]
+    },
+    "frontendVersion": "1.43.11"
+  },
+  "version": 0.4
+}
