@@ -7,7 +7,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
-    $RepoRoot = (& git -C (Join-Path $PSScriptRoot "..") rev-parse --show-toplevel 2>$null).Trim()
+    $RepoRoot = (& git -C $PSScriptRoot rev-parse --show-toplevel 2>$null).Trim()
 }
 
 if ([string]::IsNullOrWhiteSpace($RepoRoot) -or -not (Test-Path $RepoRoot)) {
@@ -57,7 +57,6 @@ try {
     )
 }
 catch [System.IO.IOException] {
-    # Another watcher already owns the repo lock.
     exit 0
 }
 
@@ -89,6 +88,32 @@ function Test-GitOperationInProgress {
         }
     }
     return $false
+}
+
+function Get-UntrackedCollisions {
+    param([string]$LocalHead, [string]$RemoteHead)
+    $changed = Invoke-Git @("diff", "--name-only", "--diff-filter=AMCR", "--no-renames", $LocalHead, $RemoteHead)
+    $untracked = Invoke-Git @("ls-files", "--others", "--exclude-standard")
+    if ($changed.ExitCode -ne 0 -or $untracked.ExitCode -ne 0) {
+        throw "could not inspect untracked collision set"
+    }
+    if ([string]::IsNullOrWhiteSpace($changed.Output) -or [string]::IsNullOrWhiteSpace($untracked.Output)) {
+        return @()
+    }
+    $untrackedSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($path in ($untracked.Output -split "`n")) {
+        if (-not [string]::IsNullOrWhiteSpace($path)) {
+            [void]$untrackedSet.Add($path.TrimEnd("`r"))
+        }
+    }
+    $collisions = @()
+    foreach ($path in ($changed.Output -split "`n")) {
+        $candidate = $path.TrimEnd("`r")
+        if ($untrackedSet.Contains($candidate)) {
+            $collisions += $candidate
+        }
+    }
+    return $collisions
 }
 
 try {
@@ -160,10 +185,19 @@ try {
 
             $localIsAncestor = Invoke-Git @("merge-base", "--is-ancestor", $head.Output, $remote.Output)
             if ($localIsAncestor.ExitCode -eq 0) {
-                # Re-check immediately before the working-tree update.
+                $collisions = @(Get-UntrackedCollisions $head.Output $remote.Output)
+                if ($collisions.Count -gt 0) {
+                    $preview = (($collisions | Select-Object -First 3) -join ",")
+                    Set-State "SKIP_UNTRACKED_COLLISION" ("paths={0}" -f $preview)
+                    Start-Sleep -Seconds $IntervalSeconds
+                    continue
+                }
+
                 $branch2 = Invoke-Git @("rev-parse", "--abbrev-ref", "HEAD")
                 $status2 = Invoke-Git @("status", "--porcelain=v1", "--untracked-files=no")
-                if ($branch2.Output -ne "main" -or -not [string]::IsNullOrWhiteSpace($status2.Output) -or (Test-GitOperationInProgress)) {
+                $collisions2 = @(Get-UntrackedCollisions $head.Output $remote.Output)
+                if ($branch2.Output -ne "main" -or -not [string]::IsNullOrWhiteSpace($status2.Output)
+                        -or $collisions2.Count -gt 0 -or (Test-GitOperationInProgress)) {
                     Set-State "SKIP_RACE_GUARD" "state changed before fast-forward"
                     Start-Sleep -Seconds $IntervalSeconds
                     continue
