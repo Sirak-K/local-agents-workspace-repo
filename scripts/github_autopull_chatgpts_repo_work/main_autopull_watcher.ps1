@@ -196,8 +196,8 @@ try {
                 $branch2 = Invoke-Git @("rev-parse", "--abbrev-ref", "HEAD")
                 $status2 = Invoke-Git @("status", "--porcelain=v1", "--untracked-files=no")
                 $collisions2 = @(Get-UntrackedCollisions $head.Output $remote.Output)
-                if ($branch2.Output -ne "main" -or -not [string]::IsNullOrWhiteSpace($status2.Output)
-                        -or $collisions2.Count -gt 0 -or (Test-GitOperationInProgress)) {
+                $raceGuardTriggered = ($branch2.Output -ne "main") -or (-not [string]::IsNullOrWhiteSpace($status2.Output)) -or ($collisions2.Count -gt 0) -or (Test-GitOperationInProgress)
+                if ($raceGuardTriggered) {
                     Set-State "SKIP_RACE_GUARD" "state changed before fast-forward"
                     Start-Sleep -Seconds $IntervalSeconds
                     continue
