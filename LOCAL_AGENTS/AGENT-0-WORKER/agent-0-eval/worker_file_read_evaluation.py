@@ -11,15 +11,15 @@ import sys
 import time
 from uuid import uuid4
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[3]
 sys.path[:0] = [str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
                 str(ROOT / "LM-Studio_connections/LM-Studio_observability"),
                 str(ROOT / "tools"), str(Path(__file__).parent)]
+from evaluation_paths import create_run_directory, existing_run_directory, run_directory
 from interruptible_prediction import SdkPredictionProcess
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
 
-LOG_ROOT = ROOT / "LM-Studio_logs/frontier_evaluations"
 SDK_SCRIPT = Path(__file__).with_name("worker_file_read_prediction.mjs")
 TOOL_SOURCE = Path(__file__).parents[1] / "agent-0-tools/worker_workspace_text_tool.mjs"
 RELATIVE_FILE = "project/config/service.json"
@@ -27,10 +27,8 @@ TERMINAL = {"completed", "response_received", "verified_cancel", "verified_tool_
             "unverified", "failed", "not_started"}
 
 
-def directory_for(run_id: str) -> Path:
-    if len(run_id) != 32 or any(letter not in "0123456789abcdef" for letter in run_id):
-        raise ValueError("invalid run identifier")
-    return LOG_ROOT / run_id
+def directory_for(eval_id: str, run_id: str) -> Path:
+    return run_directory(eval_id, run_id)
 
 
 def read_evidence(path: Path) -> dict:
@@ -41,11 +39,13 @@ def read_evidence(path: Path) -> dict:
     return json.loads(body.decode("utf-8"))
 
 
-def request_stop(run_id: str, reason: str) -> bool:
+def request_stop(eval_id: str, run_id: str, reason: str) -> bool:
     if not reason.strip() or len(reason) > 240:
         raise ValueError("concrete bounded stop reason required")
-    directory = directory_for(run_id)
+    directory = existing_run_directory(eval_id, run_id)
     evidence = read_evidence(directory / "evidence.json")
+    if evidence.get("eval_id") != eval_id:
+        raise ValueError("run evidence belongs to another eval")
     if evidence["state"] in TERMINAL:
         return False
     temporary = directory / (".stop-" + uuid4().hex + ".tmp")
@@ -61,15 +61,14 @@ def request_stop(run_id: str, reason: str) -> bool:
         temporary.unlink(missing_ok=True)
 
 
-def run(run_id: str, model: str, diagnostic_delay_ms: int, tool_format_hint: bool = False,
-        granite_text_tool_bridge: bool = False) -> dict:
+def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
+        tool_format_hint: bool = False, granite_text_tool_bridge: bool = False) -> dict:
     if diagnostic_delay_ms not in (0, 3000):
         raise ValueError("only normal read or bounded stop diagnostic is supported")
     if granite_text_tool_bridge and model != "granite-4.1-3b":
         raise ValueError("Granite text tool bridge requires Granite 4.1 3B")
     token = resolve_token()
-    directory = directory_for(run_id)
-    directory.mkdir(parents=True, exist_ok=False)
+    directory = create_run_directory(eval_id, run_id)
     workspace = directory / "workspace"
     target = workspace / RELATIVE_FILE
     target.parent.mkdir(parents=True, exist_ok=False)
@@ -87,7 +86,7 @@ def run(run_id: str, model: str, diagnostic_delay_ms: int, tool_format_hint: boo
                 Path(__file__).parents[1] / "AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs",
                 ROOT / "LM-Studio_connections/LM-Studio_for_codex/interruptible_prediction.py",
                 ROOT / "LM-Studio_connections/LM-Studio_for_codex/package-lock.json")}
-    evidence = {"kind": "workspace_file_read", "run_id": run_id,
+    evidence = {"eval_id": eval_id, "kind": "workspace_file_read", "run_id": run_id,
         "state": "starting", "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "contract": {"model_identifier": model, "sdk_version": "1.5.0",
                      "allowed_relative_path": RELATIVE_FILE, "temperature": 0,
@@ -241,19 +240,23 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     start = commands.add_parser("start")
+    start.add_argument("--eval-id", required=True)
     start.add_argument("--model", required=True)
     start.add_argument("--diagnostic-tool-delay-ms", type=int, default=0)
     start.add_argument("--tool-format-hint", action="store_true")
     start.add_argument("--granite-text-tool-bridge", action="store_true")
     work = commands.add_parser("run")
+    work.add_argument("--eval-id", required=True)
     work.add_argument("--run-id", required=True)
     work.add_argument("--model", required=True)
     work.add_argument("--diagnostic-tool-delay-ms", type=int, default=0)
     work.add_argument("--tool-format-hint", action="store_true")
     work.add_argument("--granite-text-tool-bridge", action="store_true")
     inspect = commands.add_parser("inspect")
+    inspect.add_argument("--eval-id", required=True)
     inspect.add_argument("--run-id", required=True)
     stop = commands.add_parser("stop")
+    stop.add_argument("--eval-id", required=True)
     stop.add_argument("--run-id", required=True)
     stop.add_argument("--reason", required=True)
     args = parser.parse_args()
@@ -262,7 +265,8 @@ def main() -> int:
             if args.diagnostic_tool_delay_ms not in (0, 3000):
                 raise ValueError("unsupported diagnostic delay")
             run_id = uuid4().hex
-            argv = [sys.executable, str(Path(__file__).resolve()), "run", "--run-id", run_id,
+            argv = [sys.executable, str(Path(__file__).resolve()), "run",
+                    "--eval-id", args.eval_id, "--run-id", run_id,
                     "--model", args.model, "--diagnostic-tool-delay-ms",
                     str(args.diagnostic_tool_delay_ms)]
             if args.tool_format_hint:
@@ -273,26 +277,29 @@ def main() -> int:
                                      stderr=subprocess.DEVNULL, cwd=ROOT,
                                      creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
             deadline = time.monotonic() + 3
-            while not (directory_for(run_id) / "evidence.json").exists() and time.monotonic() < deadline:
+            while not (directory_for(args.eval_id, run_id) / "evidence.json").exists() and time.monotonic() < deadline:
                 if child.poll() is not None:
                     raise RuntimeError("file-read controller startup failed")
                 time.sleep(0.02)
-            if not (directory_for(run_id) / "evidence.json").exists():
+            if not (directory_for(args.eval_id, run_id) / "evidence.json").exists():
                 raise RuntimeError("file-read controller did not publish evidence")
-            print(json.dumps({"run_id": run_id, "controller_pid": child.pid}, indent=2))
+            print(json.dumps({"eval_id": args.eval_id, "run_id": run_id, "controller_pid": child.pid}, indent=2))
         elif args.command == "run":
-            outcome = run(args.run_id, args.model, args.diagnostic_tool_delay_ms,
+            outcome = run(args.eval_id, args.run_id, args.model, args.diagnostic_tool_delay_ms,
                           args.tool_format_hint, args.granite_text_tool_bridge)
-            print(json.dumps({"run_id": args.run_id, "state": outcome["state"]}, indent=2))
+            print(json.dumps({"eval_id": args.eval_id, "run_id": args.run_id,
+                              "state": outcome["state"]}, indent=2))
             return 0 if outcome["state"] in ("response_received", "verified_tool_abort") else 2
         elif args.command == "inspect":
-            report = read_evidence(directory_for(args.run_id) / "evidence.json")
-            print(json.dumps({"run_id": args.run_id, "state": report["state"],
+            report = read_evidence(existing_run_directory(args.eval_id, args.run_id) / "evidence.json")
+            if report.get("eval_id") != args.eval_id:
+                raise ValueError("run evidence belongs to another eval")
+            print(json.dumps({"eval_id": args.eval_id, "run_id": args.run_id, "state": report["state"],
                 "updated_at": report["updated_at"], "stop": report["stop"],
                 "result": report["result"], "verification": report["verification"],
                 "recent_events": report["events"][-5:]}, ensure_ascii=False, indent=2))
         else:
-            print(json.dumps({"stop_request_created": request_stop(args.run_id, args.reason)}, indent=2))
+            print(json.dumps({"stop_request_created": request_stop(args.eval_id, args.run_id, args.reason)}, indent=2))
         return 0
     except (OSError, ValueError, RuntimeError, KeyError):
         print("File-read control failed; inspect evidence. No stop or success is implied.", file=sys.stderr)
