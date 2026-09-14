@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseGraniteToolCallEnvelope } from "../PROJECT_LOCAL-AGENTS/LOCAL_AGENTS/AGENT-0-WORKER/AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs";
-import { workerWorkspaceTextTool } from "../PROJECT_LOCAL-AGENTS/LOCAL_AGENTS/AGENT-0-WORKER/agent-0-tools/worker_workspace_text_tool.mjs";
+import { parseGraniteToolCallEnvelope } from "../LOCAL_AGENTS/AGENT-0-WORKER/AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs";
+import { workerWorkspaceTextTool } from "../LOCAL_AGENTS/AGENT-0-WORKER/agent-0-tools/worker_workspace_text_tool.mjs";
 
 const accepted = '<tool_call>{"name":"read_workspace_text","arguments":{"path":"project/config/service.json"}}\n</tool_call>';
 
