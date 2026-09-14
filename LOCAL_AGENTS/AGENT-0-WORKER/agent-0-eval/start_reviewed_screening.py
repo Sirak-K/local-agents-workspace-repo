@@ -7,9 +7,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 from uuid import uuid4
 
 from controlled_run import ROOT, read_json, MAX_DOCUMENT_BYTES
@@ -56,15 +58,24 @@ def start(eval_id: str, run_id: str, baseline_run: str, probe: str,
     current = review_path.parent / ("review-" + uuid4().hex + ".json")
     write_capture(current, review)
     command = [sys.executable, str(Path(__file__).with_name("controlled_run.py")),
-               "start", "--eval-id", eval_id, "--run-id", run_id,
+               "run", "--eval-id", eval_id, "--run-id", run_id,
                "--model", review["model_identifier"], "--probe-id", probe,
-               "--baseline-run", baseline_run, "--duration", "30", "--max-tokens", "1024"]
+               "--baseline-file", str(current), "--duration", "30", "--max-tokens", "1024"]
     for predecessor in predecessors:
         command.extend(["--predecessor-run", predecessor])
-    response = subprocess.run(command, capture_output=True, timeout=5, check=True)
-    if len(response.stdout) > 4096:
-        raise ValueError("controller response exceeded budget")
-    return json.loads(response.stdout)
+    child = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, cwd=ROOT,
+                             creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
+    deadline = time.monotonic() + 2
+    evidence = target / "evidence.json"
+    while not evidence.exists() and time.monotonic() < deadline:
+        if child.poll() is not None:
+            raise RuntimeError("reviewed screening controller startup failed")
+        time.sleep(0.02)
+    if not evidence.exists():
+        raise RuntimeError("reviewed screening controller did not publish evidence")
+    return {"eval_id": eval_id, "run_id": run_id, "controller_pid": child.pid,
+            "state": "starting", "review": relative_to_project(current)}
 
 
 def main() -> int:
