@@ -11,17 +11,18 @@ import json
 import math
 import os
 from pathlib import Path
-import re
 import subprocess
 import sys
 import time
 from uuid import uuid4
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[3]
 ROLE = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
                 str(ROOT / "LM-Studio_connections/LM-Studio_observability"),
                 str(ROOT / "tools"), str(ROLE / "agent-0-tools"), str(Path(__file__).parent)]
+from evaluation_paths import (create_run_directory, eval_directory, existing_run_directory,
+                              run_directory)
 from interruptible_prediction import SdkPredictionProcess, stop_verdict
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
@@ -29,14 +30,15 @@ from worker_tool_process_control import WorkerToolProcessControl
 from instruction_following_grading import (task_contract, grade_answer, reconstruct_text,
                                           screening_gate, verify_baseline, require_recent_idle)
 
-LOG_ROOT = ROOT / "LM-Studio_logs/frontier_evaluations"
 TERMINAL = {"completed", "verified_cancel", "completed_race", "not_started", "unverified", "failed"}
 MAX_DOCUMENT_BYTES = 1048576
 
 
-def assessed_run(run_id: str) -> dict:
-    path = run_directory(run_id) / "evidence.json"
+def assessed_run(eval_id: str, run_id: str) -> dict:
+    path = existing_run_directory(eval_id, run_id) / "evidence.json"
     evidence = read_json(path, MAX_DOCUMENT_BYTES)
+    if evidence.get("eval_id") != eval_id:
+        raise ValueError("run evidence belongs to another eval")
     assessment_path = path.with_name("assessment.json")
     if assessment_path.exists():
         assessment = read_json(assessment_path, 32768)
@@ -47,8 +49,9 @@ def assessed_run(run_id: str) -> dict:
     return evidence
 
 
-def assess_grounding(run_id: str, criteria: list[str], reason: str, calibration_reviewed: bool) -> None:
-    evidence = assessed_run(run_id)
+def assess_grounding(eval_id: str, run_id: str, criteria: list[str], reason: str,
+                     calibration_reviewed: bool) -> None:
+    evidence = assessed_run(eval_id, run_id)
     if (evidence.get("probe", {}).get("id") != "evidence_bound_comparison"
             or evidence.get("assessment", {}).get("status") != "review_required"
             or evidence.get("state") != "completed"
@@ -56,9 +59,10 @@ def assess_grounding(run_id: str, criteria: list[str], reason: str, calibration_
         raise ValueError("only a valid unassessed grounding response can receive this review")
     if len(criteria) != 3 or not calibration_reviewed or not reason.strip() or len(reason) > 500:
         raise ValueError("three rubric judgments, calibration review and a bounded rationale are required")
-    path = run_directory(run_id) / "evidence.json"
+    path = existing_run_directory(eval_id, run_id) / "evidence.json"
     task = task_contract("evidence_bound_comparison")
-    assessment = {"status": "pass" if criteria == ["pass"] * 3 else "fail",
+    assessment = {"eval_id": eval_id, "run_id": run_id,
+                  "status": "pass" if criteria == ["pass"] * 3 else "fail",
                   "evaluator": "Codex", "assessed_at": timestamp_fields(),
                   "evidence_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                   "catalog_sha256": task["catalog_sha256"], "calibration_reviewed": True,
@@ -73,15 +77,6 @@ def assess_grounding(run_id: str, criteria: list[str], reason: str, calibration_
         temporary.unlink(missing_ok=True)
 
 
-def run_directory(run_id: str) -> Path:
-    if not re.fullmatch(r"[0-9a-f]{32}", run_id):
-        raise ValueError("run id must be 32 lowercase hexadecimal characters")
-    directory = LOG_ROOT / run_id
-    directory.resolve().relative_to(ROOT.resolve())
-    directory.resolve().relative_to(LOG_ROOT.resolve())
-    return directory
-
-
 def read_json(path: Path, byte_limit: int) -> dict:
     with path.open("rb") as handle:
         body = handle.read(byte_limit + 1)
@@ -93,18 +88,19 @@ def read_json(path: Path, byte_limit: int) -> dict:
     return payload
 
 
-def request_stop(run_id: str, reason: str) -> bool:
+def request_stop(eval_id: str, run_id: str, reason: str) -> bool:
     if not reason.strip() or len(reason) > 240:
         raise ValueError("a concrete stop reason of 1-240 characters is required")
-    directory = run_directory(run_id)
+    directory = existing_run_directory(eval_id, run_id)
     evidence = read_json(directory / "evidence.json", MAX_DOCUMENT_BYTES)
+    if evidence.get("eval_id") != eval_id:
+        raise ValueError("run evidence belongs to another eval")
     if evidence["state"] in TERMINAL or evidence.get("stop") is not None:
         return False
     temporary = directory / f".stop-{uuid4().hex}.tmp"
     try:
         write_capture(temporary, {"reason": sanitize_for_log(reason), "requested_at": timestamp_fields()})
         try:
-            # Atomic exclusive publication; concurrent commands cannot replace first reason.
             os.link(temporary, directory / "stop_request.json")
             return True
         except FileExistsError:
@@ -113,10 +109,12 @@ def request_stop(run_id: str, reason: str) -> bool:
         temporary.unlink(missing_ok=True)
 
 
-def inspect_run(run_id: str) -> dict:
-    evidence = read_json(run_directory(run_id) / "evidence.json", MAX_DOCUMENT_BYTES)
+def inspect_run(eval_id: str, run_id: str) -> dict:
+    evidence = read_json(existing_run_directory(eval_id, run_id) / "evidence.json", MAX_DOCUMENT_BYTES)
+    if evidence.get("eval_id") != eval_id:
+        raise ValueError("run evidence belongs to another eval")
     return {key: evidence.get(key) for key in
-            ("run_id", "state", "updated_at", "stop", "verification")} | {
+            ("eval_id", "run_id", "state", "updated_at", "stop", "verification")} | {
                 "result": None if evidence["result"] is None else {
                     "stats": evidence["result"].get("stats"),
                     "content_preview": text_preview(evidence["result"].get("content")),
@@ -127,7 +125,7 @@ def inspect_run(run_id: str) -> dict:
                                   for event in evidence["events"][-5:]],
                 "kind": evidence.get("kind"),
                 "probe_id": evidence.get("probe", {}).get("id"),
-                "assessment": assessed_run(run_id).get("assessment"),
+                "assessment": assessed_run(eval_id, run_id).get("assessment"),
                 "baseline_status": evidence.get("baseline_verification", {}).get("status"),
                 "note": "Initial screening is not confirmation; server acknowledgement is required for verified cancellation.",
             }
@@ -188,12 +186,14 @@ def run(args) -> tuple[str, dict]:
         if not args.baseline_file:
             raise ValueError("screening requires reviewed effective baseline and live receipts")
         baseline_path = Path(args.baseline_file).resolve()
-        baseline_path.relative_to(LOG_ROOT.resolve())
+        baseline_path.relative_to(eval_directory(args.eval_id).resolve())
         review = read_json(baseline_path, MAX_DOCUMENT_BYTES)
-        completion = read_json(run_directory(review["completion_run"]) / "evidence.json", MAX_DOCUMENT_BYTES)
-        cancellation = read_json(run_directory(review["cancellation_run"]) / "evidence.json", MAX_DOCUMENT_BYTES)
+        if review.get("eval_id") != args.eval_id:
+            raise ValueError("baseline review belongs to another eval")
+        completion = read_json(existing_run_directory(args.eval_id, review["completion_run"]) / "evidence.json", MAX_DOCUMENT_BYTES)
+        cancellation = read_json(existing_run_directory(args.eval_id, review["cancellation_run"]) / "evidence.json", MAX_DOCUMENT_BYTES)
         baseline = verify_baseline(review, completion, cancellation, args.model, system_prompt, fingerprints)
-        predecessors = [assessed_run(identifier) for identifier in (args.predecessor_run or [])]
+        predecessors = [assessed_run(args.eval_id, identifier) for identifier in (args.predecessor_run or [])]
         screening_gate(probe_id, predecessors)
         if any(item.get("baseline_verification", {}).get("configuration_sha256")
                != baseline["configuration_sha256"] for item in predecessors):
@@ -202,14 +202,16 @@ def run(args) -> tuple[str, dict]:
         raise ValueError("API token must never be part of model input")
     previous = args.previous_run
     if previous:
-        original = read_json(run_directory(previous) / "evidence.json", MAX_DOCUMENT_BYTES)
+        original = read_json(existing_run_directory(args.eval_id, previous) / "evidence.json", MAX_DOCUMENT_BYTES)
+        if original.get("eval_id") != args.eval_id:
+            raise ValueError("retry source belongs to another eval")
         if original["state"] not in TERMINAL or not args.change_reason:
             raise ValueError("retry requires a finished original and an explicit change reason")
     run_id = getattr(args, "run_id", None) or uuid4().hex
-    directory = run_directory(run_id)
-    directory.mkdir(parents=True, exist_ok=False)
+    directory = create_run_directory(args.eval_id, run_id)
     document = {
-        "run_id": run_id, "kind": "instruction_following" if probe else "transport_diagnostic", "state": "starting",
+        "eval_id": args.eval_id, "run_id": run_id,
+        "kind": "instruction_following" if probe else "transport_diagnostic", "state": "starting",
         "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "contract": {"transport": "lmstudio-js 1.5.0", "model_identifier": args.model,
                      "duration_seconds": args.duration, "stop_budget_seconds": args.stop_budget,
@@ -289,7 +291,6 @@ def run(args) -> tuple[str, dict]:
     try:
         persist()
         if baseline_path:
-            # Durable exclusive claim: crashes/failures cannot silently gain retries.
             claim = baseline_path.parent / (".claim-" + probe_id)
             descriptor = os.open(claim, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             os.close(descriptor)
@@ -399,6 +400,7 @@ def main() -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("start", "run"):
         start = commands.add_parser(name, help="diagnostic only; server and selected model must already be active")
+        start.add_argument("--eval-id", required=True)
         start.add_argument("--model", required=True, help="exact loaded SDK instance identifier")
         source = start.add_mutually_exclusive_group(required=True)
         source.add_argument("--input-file")
@@ -415,11 +417,14 @@ def main() -> int:
         if name == "run":
             start.add_argument("--run-id", help=argparse.SUPPRESS)
     inspect = commands.add_parser("inspect")
+    inspect.add_argument("--eval-id", required=True)
     inspect.add_argument("--run-id", required=True)
     stop = commands.add_parser("stop")
+    stop.add_argument("--eval-id", required=True)
     stop.add_argument("--run-id", required=True)
     stop.add_argument("--reason", required=True)
     assess = commands.add_parser("assess", help="explicit grounding-rubric review; never calls a model")
+    assess.add_argument("--eval-id", required=True)
     assess.add_argument("--run-id", required=True)
     assess.add_argument("--criterion", choices=("pass", "fail"), action="append", required=True)
     assess.add_argument("--reason", required=True)
@@ -429,6 +434,7 @@ def main() -> int:
         if args.command == "start":
             validate_budgets(args.duration, args.stop_budget, args.max_tokens)
             resolve_token()
+            eval_directory(args.eval_id)
             for file in (args.input_file, args.system_prompt_file):
                 if file and (not Path(file).is_file() or Path(file).stat().st_size > 16384):
                     raise ValueError("input file unavailable or too large")
@@ -437,7 +443,8 @@ def main() -> int:
                 if not args.baseline_file:
                     raise ValueError("baseline evidence is required before screening")
             run_id = uuid4().hex
-            argv = [sys.executable, str(Path(__file__).resolve()), "run", "--run-id", run_id]
+            argv = [sys.executable, str(Path(__file__).resolve()), "run",
+                    "--eval-id", args.eval_id, "--run-id", run_id]
             for option in ("model", "input_file", "system_prompt_file", "duration", "stop_budget",
                            "max_tokens", "previous_run", "change_reason"):
                 value = getattr(args, option)
@@ -457,25 +464,25 @@ def main() -> int:
                                      stderr=subprocess.DEVNULL, cwd=ROOT,
                                      creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
             deadline = time.monotonic() + 2
-            while not (run_directory(run_id) / "evidence.json").exists() and time.monotonic() < deadline:
+            while not (run_directory(args.eval_id, run_id) / "evidence.json").exists() and time.monotonic() < deadline:
                 if child.poll() is not None:
                     raise RuntimeError("controller startup failed")
                 time.sleep(0.02)
-            print(json.dumps({"run_id": run_id, "controller_pid": child.pid,
+            print(json.dumps({"eval_id": args.eval_id, "run_id": run_id, "controller_pid": child.pid,
                               "state": "starting", "note": "Inspect evidence; startup is not a success verdict."}, indent=2))
             return 0
         if args.command == "run":
             run_id, document = run(args)
-            print(json.dumps({"run_id": run_id, "state": document["state"],
+            print(json.dumps({"eval_id": args.eval_id, "run_id": run_id, "state": document["state"],
                               "verification": document["verification"]}, indent=2))
             return 0 if document["state"] in ("completed", "verified_cancel") else 2
         if args.command == "assess":
-            assess_grounding(args.run_id, args.criterion, args.reason, args.calibration_reviewed)
+            assess_grounding(args.eval_id, args.run_id, args.criterion, args.reason, args.calibration_reviewed)
             print("Grounding review saved; no continuation or model request was started.")
         elif args.command == "inspect":
-            print(json.dumps(inspect_run(args.run_id), ensure_ascii=False, indent=2))
+            print(json.dumps(inspect_run(args.eval_id, args.run_id), ensure_ascii=False, indent=2))
         else:
-            print(json.dumps({"stop_request_created": request_stop(args.run_id, args.reason)}, indent=2))
+            print(json.dumps({"stop_request_created": request_stop(args.eval_id, args.run_id, args.reason)}, indent=2))
         return 0
     except (OSError, ValueError, RuntimeError, KeyError):
         print("Control failed; inspect evidence and process state. No stop success is implied.", file=sys.stderr)
