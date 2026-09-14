@@ -121,3 +121,19 @@ Markera endast dina ChatGPT-ägda roadmaprader utförda när deras egna implemen
 Du äger suffixet: byt denna fils basnamn till ` - [COMPLETED].md` först när hela det avgränsade uppdraget här faktiskt är implementerat och verifierat. Separat lokal integration kan fortfarande vara pending även när denna avgränsade repo-handoff är färdig. Skapa inte en ny handoff eller initiera senare steg utan ett nytt uppdrag.
 
 **Initial status:** Ej startad. Inga implementationer eller tester har körts genom denna handoff.
+
+## 9. ChatGPT arbetsstatus 2026-09-14
+
+Status förblir **INCOMPLETE**. Repo-skrivning/commit via GitHub Connector fungerar. Connectorn erbjuder däremot ingen repo-monterad exekveringsyta, och den separata container-runtime som finns i sessionen kan inte nå GitHub-nätverket; därför har jag inte kört Python-/Node-/PowerShell-regressionskommandona och påstår inte gröna offline-tester.
+
+### RMS 1/18
+
+Implementerat på `main`: installerpath till samlokaliserad watcher, FF-only/dirty/branch/Git-operation-skydd, explicit kollisionsskydd för ospårad fil, temporär-repo-testkod, separat Local Agents Startup-launcher (`SSIRA-LocalAgents-MainAutoPull.cmd`) samt Windows PowerShell 5.1-parserfix. Team Master körde därefter installern lokalt och visade `STATE=SYNCED`; detta är separat lokal integrations-evidens från Team Master och inte ett ChatGPT-kört test. Handoffens egna temporära PowerShell-regressionstester återstår att exekvera av Codex.
+
+### RMS 3/18
+
+Implementerat/grovimplementerat på `main`: gemensam `evaluation_paths.py`; canonical `model_evaluations/<eval-id>/<run-id>/`; explicit eval-id i `controlled_run.py` och `worker_file_read_evaluation.py`; eval-id inuti ny evidence; readiness/baseline/review-kedjan bunden till eval/run; JS-SDK-importnivå reparerad; Node-tooltestens gamla `PROJECT_LOCAL-AGENTS`-imports reparerade; ny statisk `tests/test_eval_runner_ownership.py`; reviewed-screening-launchern rättad till faktisk `controlled_run.py run --eval-id --run-id --baseline-file`-kontrakt.
+
+Kvar innan denna handoff får markeras completed: `tests/test_worker_instruction_following.py` och `tests/test_lm_studio_interrupt_control.py` använder fortfarande pre-relocation imports/API-antaganden och måste migreras; `agent-0-eval/README.md` måste få exakta nya eval-id/run-id-kommandon; relevanta AutoPull-/Python-/Node-offlinetester måste faktiskt köras; eventuella fel som de avslöjar måste rättas. Kontrollera särskilt assessment-integritet, baseline/retry cross-eval-nekande och start/inspect/stop/assess-paths.
+
+PIPSA: ChatGPT:s repoimplementation har inte laddat modell, anropat LM Studio/localhost eller ändrat modell/servermiljö. Team Master startade separat den lokala AutoPull-watchern efter repoändringen. Codex bör verifiera commits/diff från `origin/main` i ren/isolerad yta om lokal tracked arbetsyta fortfarande är dirty.
