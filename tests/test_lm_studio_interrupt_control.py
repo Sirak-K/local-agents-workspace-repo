@@ -14,14 +14,16 @@ from threading import Thread
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
-ROLE = ROOT / "PROJECT_LOCAL-AGENTS/LOCAL_AGENTS/AGENT-0-WORKER"
+ROLE = ROOT / "LOCAL_AGENTS/AGENT-0-WORKER"
+EVAL = ROLE / "agent-0-eval"
 sys.path[:0] = [str(ROOT / "tools"), str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
-                str(ROLE / "agent-0-tools")]
+                str(ROLE / "agent-0-tools"), str(EVAL)]
 from interruptible_prediction import SdkPredictionProcess, stop_verdict
 from lm_studio_user_api_token import resolve_token
 from worker_tool_process_control import WorkerToolProcessControl
+import evaluation_paths as eval_paths
 
-spec = importlib.util.spec_from_file_location("controlled_run", ROLE / "agent-0-eval/controlled_run.py")
+spec = importlib.util.spec_from_file_location("controlled_run", EVAL / "controlled_run.py")
 controlled = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(controlled)
 
@@ -63,21 +65,28 @@ class RunControlContractTest(unittest.TestCase):
     def exercise(self, reason="userStopped", acknowledge=True):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            eval_root = root / "model_evaluations"
+            eval_root.mkdir()
+            eval_id = "EVAL_fixture"
             instruction = root / "instruction.txt"
             instruction.write_text("A clear instruction", encoding="utf-8")
-            args = Namespace(input_file=str(instruction), system_prompt_file=None, model="fixture",
-                             duration=10, stop_budget=1, max_tokens=10, previous_run=None,
-                             change_reason=None, tool_stop_probe=False)
+            args = Namespace(eval_id=eval_id, input_file=str(instruction), system_prompt_file=None,
+                             model="fixture", duration=10, stop_budget=1, max_tokens=10,
+                             previous_run=None, change_reason=None, tool_stop_probe=False)
             outcome, errors = [], []
+
             class FixtureSdk(FakeSdk):
                 result_reason = reason
             FixtureSdk.acknowledge = acknowledge
+
             def execute():
                 try:
                     outcome.append(controlled.run(args))
                 except BaseException as error:
                     errors.append(error)
-            with patch.object(controlled, "ROOT", root), patch.object(controlled, "LOG_ROOT", root / "logs"), \
+
+            with patch.object(controlled, "ROOT", root), \
+                    patch.object(eval_paths, "MODEL_EVALUATIONS_ROOT", eval_root), \
                     patch.object(controlled, "SdkPredictionProcess", FixtureSdk), \
                     patch.object(controlled, "resolve_token", return_value="fixture-secret"):
                 thread = Thread(target=execute)
@@ -85,21 +94,22 @@ class RunControlContractTest(unittest.TestCase):
                 deadline = time.monotonic() + 3
                 documents = []
                 while not documents and time.monotonic() < deadline:
-                    documents = list((root / "logs").glob("*/evidence.json"))
+                    documents = list((eval_root / eval_id).glob("*/evidence.json")) if (eval_root / eval_id).exists() else []
                     time.sleep(0.01)
                 self.assertTrue(documents)
                 run_id = documents[0].parent.name
-                self.assertTrue(controlled.request_stop(run_id, "verified fixture defect"))
-                self.assertFalse(controlled.request_stop(run_id, "must not overwrite original reason"))
+                self.assertTrue(controlled.request_stop(eval_id, run_id, "verified fixture defect"))
+                self.assertFalse(controlled.request_stop(eval_id, run_id, "must not overwrite original reason"))
                 thread.join(timeout=4)
                 self.assertFalse(thread.is_alive())
                 self.assertEqual(errors, [])
                 self.assertEqual(outcome[0][1]["stop"]["reason"], "verified fixture defect")
                 saved = controlled.read_json(documents[0], controlled.MAX_DOCUMENT_BYTES)
+                self.assertEqual(eval_id, saved["eval_id"])
                 self.assertNotIn("fixture-secret", documents[0].read_text(encoding="utf-8"))
                 self.assertFalse(documents[0].read_bytes().startswith(bytes([239, 187, 191])))
                 self.assertIn('\n  "run_id"', documents[0].read_text(encoding="utf-8"))
-                self.assertFalse(controlled.request_stop(run_id, "already finished"))
+                self.assertFalse(controlled.request_stop(eval_id, run_id, "already finished"))
                 return saved
 
     def test_separate_stop_works_before_first_token_and_preserves_partial_result(self):
@@ -116,7 +126,9 @@ class RunControlContractTest(unittest.TestCase):
 
     def test_scope_and_budget_guards(self):
         with self.assertRaises(ValueError):
-            controlled.run_directory("../outside")
+            eval_paths.run_directory("../outside", "a" * 32)
+        with self.assertRaises(ValueError):
+            eval_paths.run_directory("EVAL_fixture", "../outside")
         for duration, stop, tokens in [(float("nan"), 1, 1), (1, 6, 1), (1, 1, 1025)]:
             with self.assertRaises(ValueError):
                 controlled.validate_budgets(duration, stop, tokens)
@@ -130,12 +142,15 @@ class RunControlContractTest(unittest.TestCase):
                 return {"type": "result", "content": "OK", "stats": {"stopReason": "eosFound"}}
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
+            eval_root = root / "model_evaluations"
+            eval_root.mkdir()
             instruction = root / "instruction.txt"
             instruction.write_text("Return OK", encoding="utf-8")
-            args = Namespace(input_file=str(instruction), system_prompt_file=None, model="fixture",
-                             duration=10, stop_budget=1, max_tokens=10, previous_run=None,
-                             change_reason=None, tool_stop_probe=False)
-            with patch.object(controlled, "ROOT", root), patch.object(controlled, "LOG_ROOT", root / "logs"), \
+            args = Namespace(eval_id="EVAL_fixture", input_file=str(instruction), system_prompt_file=None,
+                             model="fixture", duration=10, stop_budget=1, max_tokens=10,
+                             previous_run=None, change_reason=None, tool_stop_probe=False)
+            with patch.object(controlled, "ROOT", root), \
+                    patch.object(eval_paths, "MODEL_EVALUATIONS_ROOT", eval_root), \
                     patch.object(controlled, "SdkPredictionProcess", CompletedSdk), \
                     patch.object(controlled, "resolve_token", return_value="fixture-secret"):
                 _, document = controlled.run(args)
@@ -280,6 +295,7 @@ class LiveSdkGenerationTest(unittest.TestCase):
         from capture_model_lifecycle_events import fetch_models
         self.fetch_models = fetch_models
         self.identifier = os.environ["LM_STUDIO_MODEL_IDENTIFIER"]
+        self.eval_id = os.environ.get("LM_STUDIO_EVAL_ID", "EVAL_live_interrupt_control")
         self.assertTrue(self.is_loaded(), "selected instance must be manually loaded")
 
     def is_loaded(self):
@@ -291,17 +307,17 @@ class LiveSdkGenerationTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary) / "instruction.txt"
             source.write_text(instruction, encoding="utf-8")
-            argv = [sys.executable, str(ROLE / "agent-0-eval/controlled_run.py"), "start",
-                    "--model", self.identifier, "--input-file", str(source), "--duration", "30", "--max-tokens", "1024"]
+            argv = [sys.executable, str(EVAL / "controlled_run.py"), "start",
+                    "--eval-id", self.eval_id, "--model", self.identifier, "--input-file", str(source),
+                    "--duration", "30", "--max-tokens", "1024"]
             if tool_probe:
                 argv.append("--tool-stop-probe")
             response = subprocess.run(argv, capture_output=True, timeout=5, check=True)
             import json
             run_id = json.loads(response.stdout)["run_id"]
-            path = controlled.run_directory(run_id) / "evidence.json"
-            # Child reads the input before publishing the initial evidence.
+            path = eval_paths.run_directory(self.eval_id, run_id) / "evidence.json"
             self.assertTrue(path.exists())
-        print("LIVE DIAGNOSTIC RUN", run_id, flush=True)
+        print("LIVE DIAGNOSTIC RUN", self.eval_id, run_id, flush=True)
         return run_id, path
 
     def wait_terminal(self, path, seconds=10):
@@ -317,6 +333,7 @@ class LiveSdkGenerationTest(unittest.TestCase):
         run_id, path = self.start_run("Write the integers from 1 to 5000 in ascending order, separated by spaces. Do not summarize or stop early.", True)
         deadline = time.monotonic() + 10
         try:
+            fragments = []
             while time.monotonic() < deadline:
                 document = controlled.read_json(path, controlled.MAX_DOCUMENT_BYTES)
                 fragments = [e for e in document["events"] if e["data"].get("type") == "fragment"]
@@ -325,8 +342,9 @@ class LiveSdkGenerationTest(unittest.TestCase):
                 self.assertNotIn(document["state"], controlled.TERMINAL, "generation ended before observation")
                 time.sleep(0.05)
             self.assertTrue(fragments, "must observe actual generated output before this stop probe")
-            response = subprocess.run([sys.executable, str(ROLE / "agent-0-eval/controlled_run.py"), "stop",
-                                       "--run-id", run_id, "--reason", "verify mandatory stop gate with disposable diagnostic fixture"],
+            response = subprocess.run([sys.executable, str(EVAL / "controlled_run.py"), "stop",
+                                       "--eval-id", self.eval_id, "--run-id", run_id,
+                                       "--reason", "verify mandatory stop gate with disposable diagnostic fixture"],
                                       capture_output=True, timeout=5, check=True)
             self.assertIn(b"true", response.stdout)
             document = self.wait_terminal(path)
@@ -338,7 +356,7 @@ class LiveSdkGenerationTest(unittest.TestCase):
             self.assertFalse((path.parent / "late-tool-write.txt").exists())
             self.assertTrue(self.is_loaded(), "stop must preserve the loaded model and active server")
         finally:
-            controlled.request_stop(run_id, "diagnostic test cleanup if unfinished")
+            controlled.request_stop(self.eval_id, run_id, "diagnostic test cleanup if unfinished")
 
     def test_legitimate_live_generation_finishes_without_cancel(self):
         run_id, path = self.start_run("Return exactly OK and nothing else.")
@@ -350,7 +368,7 @@ class LiveSdkGenerationTest(unittest.TestCase):
             self.assertFalse(document["verification"]["cancel_command_sent"])
             self.assertTrue(self.is_loaded())
         finally:
-            controlled.request_stop(run_id, "diagnostic test cleanup if unfinished")
+            controlled.request_stop(self.eval_id, run_id, "diagnostic test cleanup if unfinished")
 
 
 if __name__ == "__main__":
