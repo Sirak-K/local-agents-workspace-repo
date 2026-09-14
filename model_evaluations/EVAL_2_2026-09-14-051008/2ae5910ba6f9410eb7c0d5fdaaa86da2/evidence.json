@@ -1,0 +1,748 @@
+{
+  "eval_id": "EVAL_2_2026-09-14-051008",
+  "run_id": "2ae5910ba6f9410eb7c0d5fdaaa86da2",
+  "kind": "bounded_text_file_task",
+  "state": "failed",
+  "created_at": {
+    "local": "2026-09-14 | 05:20:36.561 +02:00",
+    "utc": "2026-09-14 | 03:20:36.561 UTC",
+    "epoch_ms": 1789356036561
+  },
+  "updated_at": {
+    "local": "2026-09-14 | 05:20:37.788 +02:00",
+    "utc": "2026-09-14 | 03:20:37.788 UTC",
+    "epoch_ms": 1789356037788
+  },
+  "task": {
+    "id": "file_creation_readback",
+    "catalog_sha256": "4c399911a173c68893ae8e7134f15631205076eb60405db5dceca9e7bee7e3d7",
+    "context_sha256": "65b14881e03202afd4a8831e7533bf5f3145ce50abfc30ae0c5ff524dab145da"
+  },
+  "contract": {
+    "model_identifier": "granite-4.1-3b",
+    "temperature": 0,
+    "fresh_chat": true,
+    "duration_seconds": 45,
+    "stop_budget_seconds": 5,
+    "max_tokens": 512,
+    "max_rounds": 6,
+    "max_tool_calls": 6,
+    "allowed_paths": [
+      "control.txt",
+      "result.txt"
+    ],
+    "enabled_tools": [
+      "create_workspace_text",
+      "read_workspace_text"
+    ],
+    "workspace_scope": "current disposable run only"
+  },
+  "instruction": {
+    "encoding": "utf-8",
+    "character_count": 427,
+    "sha256": "d3d9482c055e96a0330a39f89ceabf48dc0d8bd184e27f65d91b5eac1559cc4f",
+    "text_chunks": [
+      "Create a new file named `result.txt` containing exactly the two lines between BEGIN and END, with LF line endings and one final LF after the second line. The ma",
+      "rkers are not file content.\nBEGIN\nworker_ref=K7-42\nencoding=utf-8\nEND\nThen read `result.txt` back and report whether it exactly matches. Do not modify `control.",
+      "txt`. Initial SHA-256 values: control.txt=996562cdbd99b884a7e955ef77833ef89e7a61ce4e4eadafd8f5b87af9845a58."
+    ]
+  },
+  "instruction_sha256": "d3d9482c055e96a0330a39f89ceabf48dc0d8bd184e27f65d91b5eac1559cc4f",
+  "source_fingerprints": {
+    "worker_text_task_evaluation.py": "6af4c3cb479229abab4a9b4d88ec6a131788b5aa6bcac3a98a4075915fa2884e",
+    "basic_file_task_catalog.json": "4c399911a173c68893ae8e7134f15631205076eb60405db5dceca9e7bee7e3d7",
+    "bounded_file_work.md": "65b14881e03202afd4a8831e7533bf5f3145ce50abfc30ae0c5ff524dab145da",
+    "worker_file_task_prediction.mjs": "8482fe6cc65fd91c93b2b1ec4d2c45bcf9e30466c0f925f9bedc9e6bf09dd51e",
+    "tool_progress_control.py": "ec9f0bd76a2e3eb83fc9d31e4caefa6e3c9b4eb080f7ee5d5353ee195a4baca1",
+    "worker_workspace_access.mjs": "a8eb1ee4a9501831301f0253db18fa500d1cb5c2fa3f70d48572a236a88153df",
+    "worker_workspace_text_tool.mjs": "25bd76af9a2ef7a7791978778e76b8567fd38fcaafae407560fabe73d62bcd9f",
+    "worker_workspace_mutation_tool.mjs": "d55e266dd6bbb286e21dbeeb13527baba996704d7afbe6db727b92d675475abd",
+    "worker_workspace_creation_tool.mjs": "f0dbc4e6319d6cc54db9125b9b88382705519791c3f120e804d1c3a5e14b664b"
+  },
+  "fixture": {
+    "sha256_before": {
+      "control.txt": "996562cdbd99b884a7e955ef77833ef89e7a61ce4e4eadafd8f5b87af9845a58"
+    },
+    "after": {
+      "control.txt": {
+        "sha256": "996562cdbd99b884a7e955ef77833ef89e7a61ce4e4eadafd8f5b87af9845a58",
+        "content": "CONTROL=unchanged\n"
+      }
+    }
+  },
+  "events": [
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:36.766 +02:00",
+        "utc": "2026-09-14 | 03:20:36.766 UTC",
+        "epoch_ms": 1789356036766
+      },
+      "data": {
+        "type": "model_bound",
+        "model_info": {
+          "type": "llm",
+          "modelKey": "granite-4.1-3b",
+          "format": "gguf",
+          "displayName": "Granite 4.1 3B",
+          "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+          "sizeBytes": 2099501664,
+          "paramsString": "3B",
+          "architecture": "granite",
+          "quantization": {
+            "name": "Q4_K_M",
+            "bits": 4
+          },
+          "identifier": "granite-4.1-3b",
+          "instanceReference": "1NOzbxFiPqiRwQV5kDsRTE2I",
+          "vision": false,
+          "trainedForToolUse": true,
+          "maxContextLength": 131072,
+          "contextLength": 8192
+        }
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:36.772 +02:00",
+        "utc": "2026-09-14 | 03:20:36.772 UTC",
+        "epoch_ms": 1789356036772
+      },
+      "data": {
+        "type": "round_started",
+        "index": 0
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.229 +02:00",
+        "utc": "2026-09-14 | 03:20:37.229 UTC",
+        "epoch_ms": 1789356037229
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "<tool_call>{\""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.241 +02:00",
+        "utc": "2026-09-14 | 03:20:37.241 UTC",
+        "epoch_ms": 1789356037241
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "name"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.257 +02:00",
+        "utc": "2026-09-14 | 03:20:37.257 UTC",
+        "epoch_ms": 1789356037257
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\":"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.263 +02:00",
+        "utc": "2026-09-14 | 03:20:37.263 UTC",
+        "epoch_ms": 1789356037263
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " \""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.263 +02:00",
+        "utc": "2026-09-14 | 03:20:37.263 UTC",
+        "epoch_ms": 1789356037263
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "create"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.281 +02:00",
+        "utc": "2026-09-14 | 03:20:37.281 UTC",
+        "epoch_ms": 1789356037281
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "_"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.287 +02:00",
+        "utc": "2026-09-14 | 03:20:37.287 UTC",
+        "epoch_ms": 1789356037287
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "workspace"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.293 +02:00",
+        "utc": "2026-09-14 | 03:20:37.293 UTC",
+        "epoch_ms": 1789356037293
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "_"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.314 +02:00",
+        "utc": "2026-09-14 | 03:20:37.314 UTC",
+        "epoch_ms": 1789356037314
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "text"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.320 +02:00",
+        "utc": "2026-09-14 | 03:20:37.320 UTC",
+        "epoch_ms": 1789356037320
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\","
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.332 +02:00",
+        "utc": "2026-09-14 | 03:20:37.332 UTC",
+        "epoch_ms": 1789356037332
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " \""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.386 +02:00",
+        "utc": "2026-09-14 | 03:20:37.386 UTC",
+        "epoch_ms": 1789356037386
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "arguments"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.386 +02:00",
+        "utc": "2026-09-14 | 03:20:37.386 UTC",
+        "epoch_ms": 1789356037386
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\":"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.391 +02:00",
+        "utc": "2026-09-14 | 03:20:37.391 UTC",
+        "epoch_ms": 1789356037391
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " {\""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.393 +02:00",
+        "utc": "2026-09-14 | 03:20:37.393 UTC",
+        "epoch_ms": 1789356037393
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "path"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.393 +02:00",
+        "utc": "2026-09-14 | 03:20:37.393 UTC",
+        "epoch_ms": 1789356037393
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\":"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.397 +02:00",
+        "utc": "2026-09-14 | 03:20:37.397 UTC",
+        "epoch_ms": 1789356037397
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " \""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.399 +02:00",
+        "utc": "2026-09-14 | 03:20:37.399 UTC",
+        "epoch_ms": 1789356037399
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "result"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.402 +02:00",
+        "utc": "2026-09-14 | 03:20:37.402 UTC",
+        "epoch_ms": 1789356037402
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": ".txt"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.404 +02:00",
+        "utc": "2026-09-14 | 03:20:37.404 UTC",
+        "epoch_ms": 1789356037404
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\","
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.406 +02:00",
+        "utc": "2026-09-14 | 03:20:37.406 UTC",
+        "epoch_ms": 1789356037406
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " \""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.409 +02:00",
+        "utc": "2026-09-14 | 03:20:37.409 UTC",
+        "epoch_ms": 1789356037409
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "content"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.413 +02:00",
+        "utc": "2026-09-14 | 03:20:37.413 UTC",
+        "epoch_ms": 1789356037413
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\":"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.419 +02:00",
+        "utc": "2026-09-14 | 03:20:37.419 UTC",
+        "epoch_ms": 1789356037419
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": " \""
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.426 +02:00",
+        "utc": "2026-09-14 | 03:20:37.426 UTC",
+        "epoch_ms": 1789356037426
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "worker"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.433 +02:00",
+        "utc": "2026-09-14 | 03:20:37.433 UTC",
+        "epoch_ms": 1789356037433
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "_"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.441 +02:00",
+        "utc": "2026-09-14 | 03:20:37.441 UTC",
+        "epoch_ms": 1789356037441
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "ref"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.447 +02:00",
+        "utc": "2026-09-14 | 03:20:37.447 UTC",
+        "epoch_ms": 1789356037447
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "="
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.455 +02:00",
+        "utc": "2026-09-14 | 03:20:37.455 UTC",
+        "epoch_ms": 1789356037455
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "K"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.463 +02:00",
+        "utc": "2026-09-14 | 03:20:37.463 UTC",
+        "epoch_ms": 1789356037463
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "7"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.518 +02:00",
+        "utc": "2026-09-14 | 03:20:37.518 UTC",
+        "epoch_ms": 1789356037518
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "-"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.521 +02:00",
+        "utc": "2026-09-14 | 03:20:37.521 UTC",
+        "epoch_ms": 1789356037521
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "42"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.523 +02:00",
+        "utc": "2026-09-14 | 03:20:37.523 UTC",
+        "epoch_ms": 1789356037523
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\\n"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.526 +02:00",
+        "utc": "2026-09-14 | 03:20:37.526 UTC",
+        "epoch_ms": 1789356037526
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "encoding"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.529 +02:00",
+        "utc": "2026-09-14 | 03:20:37.529 UTC",
+        "epoch_ms": 1789356037529
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "=utf"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.531 +02:00",
+        "utc": "2026-09-14 | 03:20:37.531 UTC",
+        "epoch_ms": 1789356037531
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "-"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.534 +02:00",
+        "utc": "2026-09-14 | 03:20:37.534 UTC",
+        "epoch_ms": 1789356037534
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "8"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.534 +02:00",
+        "utc": "2026-09-14 | 03:20:37.534 UTC",
+        "epoch_ms": 1789356037534
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\\n"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.534 +02:00",
+        "utc": "2026-09-14 | 03:20:37.534 UTC",
+        "epoch_ms": 1789356037534
+      },
+      "data": {
+        "type": "fragment",
+        "index": 0,
+        "content": "\"}}\n"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.692 +02:00",
+        "utc": "2026-09-14 | 03:20:37.692 UTC",
+        "epoch_ms": 1789356037692
+      },
+      "data": {
+        "type": "tool_requested",
+        "index": 0,
+        "call_id": 3090936455310000,
+        "name": "read_workspace_text"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.695 +02:00",
+        "utc": "2026-09-14 | 03:20:37.695 UTC",
+        "epoch_ms": 1789356037695
+      },
+      "data": {
+        "type": "tool_started",
+        "path": "result.txt"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.698 +02:00",
+        "utc": "2026-09-14 | 03:20:37.698 UTC",
+        "epoch_ms": 1789356037698
+      },
+      "data": {
+        "type": "round_result",
+        "index": 0,
+        "stats": {
+          "stopReason": "toolCalls",
+          "tokensPerSecond": 130.96221317691095,
+          "timeToFirstTokenSec": 0.413074,
+          "totalTimeSec": 0.886493,
+          "promptTokensCount": 524,
+          "predictedTokensCount": 63,
+          "totalTokensCount": 587
+        },
+        "content": "<tool_call>{\"name\": \"create_workspace_text\", \"arguments\": {\"path\": \"result.txt\", \"content\": \"worker_ref=K7-42\\nencoding=utf-8\\n\"}}\n"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.709 +02:00",
+        "utc": "2026-09-14 | 03:20:37.709 UTC",
+        "epoch_ms": 1789356037709
+      },
+      "data": {
+        "type": "message",
+        "role": "assistant",
+        "content": "<tool_call>{\"name\": \"create_workspace_text\", \"arguments\": {\"path\": \"result.txt\", \"content\": \"worker_ref=K7-42\\nencoding=utf-8\\n\"}}\n"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.763 +02:00",
+        "utc": "2026-09-14 | 03:20:37.763 UTC",
+        "epoch_ms": 1789356037763
+      },
+      "data": {
+        "type": "tool_failed",
+        "path": "result.txt",
+        "code": "workspace_read_error"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:20:37.766 +02:00",
+        "utc": "2026-09-14 | 03:20:37.766 UTC",
+        "epoch_ms": 1789356037766
+      },
+      "data": {
+        "type": "act_interrupted",
+        "last_stop_reason": "toolCalls",
+        "tool_state": {
+          "read": {
+            "active": 0,
+            "completed": 0,
+            "aborted": 0,
+            "denied": 0
+          },
+          "write": {
+            "active": 0,
+            "completed": 0,
+            "committed": 0,
+            "aborted": 0,
+            "denied": 0
+          },
+          "create": {
+            "active": 0,
+            "completed": 0,
+            "committed": 0,
+            "aborted": 0,
+            "denied": 0
+          },
+          "validator": {
+            "active": 0,
+            "completed": 0,
+            "aborted": 0
+          }
+        },
+        "cancel_requested": false,
+        "text_tool_bridge_calls": 0
+      }
+    }
+  ],
+  "stop": null,
+  "result": null,
+  "assessment": {
+    "status": "fail",
+    "scope": "file_creation_readback",
+    "model_fault_attribution": "not_performed"
+  },
+  "verification": {
+    "generation": "not_started",
+    "cancel_command_sent": false,
+    "within_stop_budget": true,
+    "tools": {
+      "read": {
+        "active": 0,
+        "completed": 0,
+        "aborted": 0,
+        "denied": 0
+      },
+      "write": {
+        "active": 0,
+        "completed": 0,
+        "committed": 0,
+        "aborted": 0,
+        "denied": 0
+      },
+      "create": {
+        "active": 0,
+        "completed": 0,
+        "committed": 0,
+        "aborted": 0,
+        "denied": 0
+      },
+      "validator": {
+        "active": 0,
+        "completed": 0,
+        "aborted": 0
+      }
+    }
+  },
+  "evidence_gaps": [
+    "Task result does not by itself prove broad WORKER reliability."
+  ],
+  "task_verification": {
+    "status": "fail",
+    "exact_files": false,
+    "required_tool_receipts": false,
+    "unexpected_writes": false,
+    "source_stable": true,
+    "extra_files": []
+  },
+  "finished_at": {
+    "local": "2026-09-14 | 05:20:37.788 +02:00",
+    "utc": "2026-09-14 | 03:20:37.788 UTC",
+    "epoch_ms": 1789356037788
+  }
+}

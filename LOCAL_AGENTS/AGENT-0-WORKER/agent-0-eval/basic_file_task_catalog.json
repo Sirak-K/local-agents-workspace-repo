@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "context_file": "bounded_file_work.md",
+  "tasks": [
+    {
+      "id": "file_creation_readback",
+      "instruction": "Create a new file named `result.txt` containing exactly the two lines between BEGIN and END, with LF line endings and one final LF after the second line. The markers are not file content.\nBEGIN\nworker_ref=K7-42\nencoding=utf-8\nEND\nThe create tool performs and reports an independent exact-byte readback; use that receipt and do not make a redundant read call. Do not modify `control.txt`. Begin the final response with exactly `STATUS=SUCCESS` only if creation and verified readback succeeded; otherwise begin it with exactly `STATUS=FAILED`.",
+      "files": {"control.txt": "CONTROL=unchanged\n"},
+      "allowed_paths": ["control.txt", "result.txt"],
+      "enabled_tools": ["create_workspace_text"],
+      "expected_files": {
+        "control.txt": "CONTROL=unchanged\n",
+        "result.txt": "worker_ref=K7-42\nencoding=utf-8\n"
+      },
+      "required_tool_receipts": {"create": 1, "read": 0, "write": 0},
+      "completion_claim": {"success_prefix": "STATUS=SUCCESS", "failure_prefix": "STATUS=FAILED"},
+      "duration_seconds": 45,
+      "stop_budget_seconds": 5,
+      "max_tokens": 512
+    },
+    {
+      "id": "literal_text_replacement",
+      "instruction": "Read `settings.txt`. Replace exactly the single literal line `retries=2` with `retries=3` using the file's supplied SHA-256 condition. Preserve all other bytes in `settings.txt`, do not modify `control.txt`, then read `settings.txt` back. Begin the final response with exactly `STATUS=SUCCESS` only if the requested change and preservation succeeded; otherwise begin it with exactly `STATUS=FAILED`.",
+      "files": {
+        "settings.txt": "mode=preview\nretries=2\nowner=Mira\n",
+        "control.txt": "CONTROL=unchanged\n"
+      },
+      "allowed_paths": ["settings.txt", "control.txt"],
+      "enabled_tools": ["read_workspace_text", "replace_workspace_text"],
+      "expected_files": {
+        "settings.txt": "mode=preview\nretries=3\nowner=Mira\n",
+        "control.txt": "CONTROL=unchanged\n"
+      },
+      "required_tool_receipts": {"create": 0, "read": 2, "write": 1},
+      "completion_claim": {"success_prefix": "STATUS=SUCCESS", "failure_prefix": "STATUS=FAILED"},
+      "duration_seconds": 45,
+      "stop_budget_seconds": 5,
+      "max_tokens": 512
+    }
+  ]
+}

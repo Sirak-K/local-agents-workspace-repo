@@ -15,6 +15,15 @@ test("Granite envelope parser accepts the documented one-call shape, not repairs
   assert.equal(parseGraniteToolCallEnvelope(accepted.replace("</tool_call>", "")), null);
   assert.equal(parseGraniteToolCallEnvelope('{"name":"read_workspace_text","arguments":{"path":"project/config/service.json"}}}'), null);
   assert.equal(parseGraniteToolCallEnvelope(accepted.replace("read_workspace_text", "write_file")), null);
+  assert.deepEqual(parseGraniteToolCallEnvelope('<tool_call>{"name":"replace_workspace_text","arguments":{"path":"workflow.json","expected_sha256":"' + 'a'.repeat(64) + '","old_text":"old","new_text":"new"}}</tool_call>'), {
+    name: "replace_workspace_text", arguments: { path: "workflow.json",
+      expected_sha256: "a".repeat(64), old_text: "old", new_text: "new" },
+  });
+  assert.equal(parseGraniteToolCallEnvelope('<tool_call>{"name":"replace_workspace_text","arguments":{"path":"workflow.json"}}</tool_call>'), null);
+  assert.deepEqual(parseGraniteToolCallEnvelope('<tool_call>{"name":"create_workspace_text","arguments":{"path":"result.txt","content":"OK\\n"}}</tool_call>'), {
+    name: "create_workspace_text", arguments: { path: "result.txt", content: "OK\n" },
+  });
+  assert.equal(parseGraniteToolCallEnvelope('<tool_call>{"name":"create_workspace_text","arguments":{"path":"result.txt"}}</tool_call>'), null);
 });
 
 test("workspace reader enforces the one-file boundary and aborts in-flight work", async () => {
@@ -42,7 +51,10 @@ test("workspace reader enforces the one-file boundary and aborts in-flight work"
     assert.equal(reader.state.aborted, 1);
     assert.equal(reader.state.completed, 0);
     assert.deepEqual(events.filter(event => event.type.startsWith("tool_")).map(event => event.type),
-      ["tool_denied", "tool_started", "tool_aborted"]);
+      ["tool_handler_entered", "tool_denied", "tool_handler_receipt",
+        "tool_handler_entered", "tool_started", "tool_aborted", "tool_handler_receipt"]);
+    assert.deepEqual(events.filter(event => event.type === "tool_handler_receipt")
+      .map(event => event.status), ["denied", "aborted"]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

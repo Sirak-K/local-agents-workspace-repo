@@ -16,9 +16,12 @@ sys.path[:0] = [str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
                 str(ROOT / "LM-Studio_connections/LM-Studio_observability"),
                 str(ROOT / "tools"), str(Path(__file__).parent)]
 from evaluation_paths import create_run_directory, existing_run_directory, run_directory
+from evaluation_source_snapshot import capture_source_snapshot, runtime_source_paths, installed_runtime_identity
 from interruptible_prediction import SdkPredictionProcess
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
+from tool_dispatch_evidence import summarize_tool_dispatch
+from tool_transport_review import require_transport_review, matching_reviewed_instance
 
 SDK_SCRIPT = Path(__file__).with_name("worker_file_read_prediction.mjs")
 TOOL_SOURCE = Path(__file__).parents[1] / "agent-0-tools/worker_workspace_text_tool.mjs"
@@ -62,11 +65,15 @@ def request_stop(eval_id: str, run_id: str, reason: str) -> bool:
 
 
 def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
-        tool_format_hint: bool = False, granite_text_tool_bridge: bool = False) -> dict:
+        tool_format_hint: bool = False, granite_text_tool_bridge: bool = False,
+        *, reproduction_fixture: dict | None = None, expected_instance_reference: str | None = None,
+        transport_review_file: str | None = None) -> dict:
     if diagnostic_delay_ms not in (0, 3000):
         raise ValueError("only normal read or bounded stop diagnostic is supported")
     if granite_text_tool_bridge and model != "granite-4.1-3b":
         raise ValueError("Granite text tool bridge requires Granite 4.1 3B")
+    transport_review = (None if diagnostic_delay_ms or reproduction_fixture is not None
+                        else require_transport_review(transport_review_file, model))
     token = resolve_token()
     directory = create_run_directory(eval_id, run_id)
     workspace = directory / "workspace"
@@ -74,6 +81,11 @@ def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
     target.parent.mkdir(parents=True, exist_ok=False)
     fixture = {"service_name": "render-worker", "queue_name": "render-" + uuid4().hex[:8],
                "retry_limit": 3, "note": "Unrelated field; do not report unless asked."}
+    if reproduction_fixture is not None:
+        if reproduction_fixture != {"service_name": "render-worker", "queue_name": "render-diagnostic",
+                                     "retry_limit": 3, "note": "Unrelated field; do not report unless asked."}:
+            raise ValueError("unsupported reproduction fixture")
+        fixture = dict(reproduction_fixture)
     write_capture(target, fixture)
     fixture_hash = hashlib.sha256(target.read_bytes()).hexdigest()
     instruction = ("Read project/config/service.json using the available file tool. "
@@ -81,11 +93,15 @@ def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
     if tool_format_hint:
         instruction += (" If you request the tool, follow its exact call schema and put a newline "
                         "after <tool_call> and before </tool_call>.")
-    sources = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in
-               (Path(__file__), SDK_SCRIPT, TOOL_SOURCE,
-                Path(__file__).parents[1] / "AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs",
-                ROOT / "LM-Studio_connections/LM-Studio_for_codex/interruptible_prediction.py",
-                ROOT / "LM-Studio_connections/LM-Studio_for_codex/package-lock.json")}
+    source_paths = (Path(__file__), SDK_SCRIPT, TOOL_SOURCE,
+                    Path(__file__).with_name("tool_dispatch_evidence.py"),
+                    Path(__file__).with_name("evaluation_source_snapshot.py"),
+                    Path(__file__).with_name("lm_studio_tool_event_callbacks.mjs"),
+                    Path(__file__).parents[1] / "AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs",
+                    ROOT / "LM-Studio_connections/LM-Studio_for_codex/interruptible_prediction.py",
+                    ROOT / "LM-Studio_connections/LM-Studio_for_codex/package-lock.json")
+    source_snapshot = capture_source_snapshot(runtime_source_paths(source_paths))
+    sources = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in source_paths}
     evidence = {"eval_id": eval_id, "kind": "workspace_file_read", "run_id": run_id,
         "state": "starting", "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "contract": {"model_identifier": model, "sdk_version": "1.5.0",
@@ -98,14 +114,20 @@ def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
                      "granite_text_tool_bridge": granite_text_tool_bridge,
                      "fresh_chat": True, "project_system_prompt": "",
                      "workspace_scope": "this run's disposable workspace only"},
-        "instruction": instruction, "source_fingerprints": sources,
+        "instruction": instruction,
+        "instruction_sha256": hashlib.sha256(instruction.encode("utf-8")).hexdigest(),
+        "source_fingerprints": sources,
+        "source_snapshot": source_snapshot,
+        "runtime_identity": installed_runtime_identity(),
+        "transport_review": transport_review,
         "fixture": {"relative_path": RELATIVE_FILE, "sha256_before": fixture_hash,
                     "expected_queue_name": fixture["queue_name"],
                     "expected_retry_limit": fixture["retry_limit"]},
         "events": [], "stop": None, "result": None,
         "verification": {"generation": "not_started", "tool_activity": "not_started",
                          "cancel_command_sent": False, "within_stop_budget": None},
-        "assessment": {"status": "diagnostic_only" if diagnostic_delay_ms else "pending_evaluator_review"},
+        "assessment": {"status": "diagnostic_only" if diagnostic_delay_ms or reproduction_fixture is not None
+                       else "pending_evaluator_review"},
         "evidence_gaps": ["This is one isolated file-reading task, not broad WORKER reliability.",
                           "SDK client exit or timeout alone is never server stop proof."]}
     evidence_path = directory / "evidence.json"
@@ -169,7 +191,11 @@ def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
                                                 "data": sanitize_for_log(event)})
                 kind = event.get("type")
                 if kind == "model_bound":
-                    if event.get("model_info", {}).get("identifier") != model:
+                    if (event.get("model_info", {}).get("identifier") != model
+                            or (transport_review is not None and not matching_reviewed_instance(
+                                transport_review, event.get("model_info", {})))
+                            or (expected_instance_reference is not None
+                                and event.get("model_info", {}).get("instanceReference") != expected_instance_reference)):
                         evidence["stop"] = {"reason": "wrong loaded instance",
                                             "observed_at": timestamp_fields()}
                         stopped_at = time.monotonic()
@@ -209,6 +235,7 @@ def run(eval_id: str, run_id: str, model: str, diagnostic_delay_ms: int,
     evidence["fixture"]["sha256_after"] = hashlib.sha256(target.read_bytes()).hexdigest()
     state = terminal_event.get("tool_state", {}) if terminal_event else {}
     evidence["verification"]["tool_activity"] = state
+    evidence["tool_dispatch_trace"] = summarize_tool_dispatch(evidence["events"])
     if (terminal_event and terminal_event.get("type") == "result" and stopped_at is None
             and terminal_event.get("stats", {}).get("stopReason") == "eosFound"
             and state.get("active") == 0):
@@ -245,6 +272,7 @@ def main() -> int:
     start.add_argument("--diagnostic-tool-delay-ms", type=int, default=0)
     start.add_argument("--tool-format-hint", action="store_true")
     start.add_argument("--granite-text-tool-bridge", action="store_true")
+    start.add_argument("--transport-review-file")
     work = commands.add_parser("run")
     work.add_argument("--eval-id", required=True)
     work.add_argument("--run-id", required=True)
@@ -252,6 +280,7 @@ def main() -> int:
     work.add_argument("--diagnostic-tool-delay-ms", type=int, default=0)
     work.add_argument("--tool-format-hint", action="store_true")
     work.add_argument("--granite-text-tool-bridge", action="store_true")
+    work.add_argument("--transport-review-file")
     inspect = commands.add_parser("inspect")
     inspect.add_argument("--eval-id", required=True)
     inspect.add_argument("--run-id", required=True)
@@ -262,6 +291,8 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "start":
+            if not args.diagnostic_tool_delay_ms:
+                require_transport_review(args.transport_review_file, args.model)
             if args.diagnostic_tool_delay_ms not in (0, 3000):
                 raise ValueError("unsupported diagnostic delay")
             run_id = uuid4().hex
@@ -273,6 +304,8 @@ def main() -> int:
                 argv.append("--tool-format-hint")
             if args.granite_text_tool_bridge:
                 argv.append("--granite-text-tool-bridge")
+            if args.transport_review_file:
+                argv.extend(["--transport-review-file", args.transport_review_file])
             child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                                      stderr=subprocess.DEVNULL, cwd=ROOT,
                                      creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0)
@@ -286,7 +319,8 @@ def main() -> int:
             print(json.dumps({"eval_id": args.eval_id, "run_id": run_id, "controller_pid": child.pid}, indent=2))
         elif args.command == "run":
             outcome = run(args.eval_id, args.run_id, args.model, args.diagnostic_tool_delay_ms,
-                          args.tool_format_hint, args.granite_text_tool_bridge)
+                          args.tool_format_hint, args.granite_text_tool_bridge,
+                          transport_review_file=args.transport_review_file)
             print(json.dumps({"eval_id": args.eval_id, "run_id": args.run_id,
                               "state": outcome["state"]}, indent=2))
             return 0 if outcome["state"] in ("response_received", "verified_tool_abort") else 2

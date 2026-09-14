@@ -90,15 +90,17 @@ export async function main() {
         break;
       }
       const chat = predictionChat(command.system_prompt || "", command.instruction);
-      if (command.inspect_model) {
+      if (command.inspect_model || command.inspect_input_before_start) {
         // Public read-only SDK calls; no prediction, model load or private API.
         const contextLength = await model.getContextLength();
         const rendered = await model.applyPromptTemplate(chat);
         const inputTokens = await model.countTokens(rendered);
         await emit({ type: "model_inspection", model_info: info,
           context_length: contextLength, rendered_input: rendered, input_tokens: inputTokens });
-        finalReceived = true;
-        break;
+        if (command.inspect_model) {
+          finalReceived = true;
+          break;
+        }
       }
       if (command.require_start_approval && !(await startApproval)) {
         finalReceived = true;

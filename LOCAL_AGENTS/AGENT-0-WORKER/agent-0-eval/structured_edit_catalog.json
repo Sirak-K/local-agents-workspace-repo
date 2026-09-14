@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "purpose": "Technology-independent WORKER structured edit with explicit evaluation context",
+  "tasks": [
+    {
+      "id": "nested_record_edit",
+      "instruction": "Apply the three operations below to the input document, using the supplied edit rules. Return only the complete resulting JSON object. Do not use tools.\n\nInput: {\"meta\":{\"revision\":4,\"approved\":false,\"owner\":\"Mira\"},\"items\":[{\"id\":\"A\",\"value\":3,\"active\":true},{\"id\":\"B\",\"value\":8,\"active\":false}],\"note\":\"keep\"}\n\nOperations in order: (1) set items/1/value to the JSON number 9; (2) set meta/approved to the JSON boolean true; (3) set items/0/active to the JSON boolean false.",
+      "context": {
+        "file": "structured_edit_context.md",
+        "role": "system",
+        "sha256": "f76619bf511b6f81f5d47a470ea18026970a623dc5dfe7f9aa5f3a5d078ba6dc"
+      },
+      "duration_seconds": 30,
+      "stop_budget_seconds": 5,
+      "max_tokens": 512,
+      "temperature": 0,
+      "tools": [],
+      "grader": "exact_json_document",
+      "expected": {
+        "meta": {"revision": 4, "approved": true, "owner": "Mira"},
+        "items": [
+          {"id": "A", "value": 3, "active": false},
+          {"id": "B", "value": 9, "active": false}
+        ],
+        "note": "keep"
+      }
+    },
+    {
+      "id": "context_priority_selection",
+      "instruction": "Using only the supplied context, return one JSON object containing exactly the keys region, artifact_format, and max_retries. Select the settings that apply now rather than values retained only as an archived example. Do not use tools or add commentary.",
+      "context": {
+        "file": "context_priority_fixture.md",
+        "role": "system",
+        "sha256": "f31ac3e550dc01376c758121cd3e9b70298c34c23663f298465bac9a9fd3cdb5"
+      },
+      "duration_seconds": 30,
+      "stop_budget_seconds": 5,
+      "max_tokens": 256,
+      "temperature": 0,
+      "tools": [],
+      "grader": "exact_json_document",
+      "expected": {
+        "region": "eu-north",
+        "artifact_format": "zip",
+        "max_retries": 2
+      }
+    },
+    {
+      "id": "evidence_selected_limit_task",
+      "instruction": "Resume the supplied project state by returning only a JSON array of four objects in execution order. Each object must contain exactly action and target. Include every required action once, use the exact action names update_expectation, run_focused_test, implement, run_focused_test, and do not include protected or already completed work.",
+      "context": {
+        "file": "roadmap_resume_fixture.md",
+        "role": "system",
+        "sha256": "7a3d3f7bf18a9ccf4ba9d7ac4aeb41ec7046c3aec8c0f7e5ec3dc18761cf76cb"
+      },
+      "duration_seconds": 30,
+      "stop_budget_seconds": 5,
+      "max_tokens": 384,
+      "temperature": 0,
+      "tools": [],
+      "grader": "exact_json_document",
+      "expected": [
+        {"action": "update_expectation", "target": "test_validate_record"},
+        {"action": "run_focused_test", "target": "test_validate_record"},
+        {"action": "implement", "target": "write_summary"},
+        {"action": "run_focused_test", "target": "write_summary"}
+      ]
+    }
+  ]
+}

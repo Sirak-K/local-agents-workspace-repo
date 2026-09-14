@@ -4,6 +4,7 @@ import { z } from "../../../LM-Studio_connections/LM-Studio_for_codex/node_modul
 import { authenticatedOptions, predictionChat } from "../../../LM-Studio_connections/LM-Studio_for_codex/lm_studio_sdk_prediction.mjs";
 import { workerWorkspaceTextTool } from "../agent-0-tools/worker_workspace_text_tool.mjs";
 import { parseGraniteToolCallEnvelope } from "../AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs";
+import { lmStudioToolEventCallbacks } from "./lm_studio_tool_event_callbacks.mjs";
 import { createInterface } from "node:readline";
 import { pathToFileURL } from "node:url";
 
@@ -99,16 +100,17 @@ export async function main() {
           if (message.getRole() === "assistant") lastMessage = message.getText();
           emit({ type: "message", role: message.getRole(), content: message.getText() });
         },
-        onToolCallRequestFinalized(index, callId, info) {
-          emit({ type: "tool_requested", index, call_id: callId,
-            name: info.toolCallRequest.name });
-        },
+        ...lmStudioToolEventCallbacks(emit),
         guardToolCall(index, callId, { toolCallRequest, allow, deny }) {
           if (abort.signal.aborted || toolCallRequest.name !== "read_workspace_text"
               || toolState.active + toolState.completed >= 2) {
             emit({ type: "tool_guard_denied", index, call_id: callId });
+            emit({ type: "tool_request_guarded", index, call_id: callId,
+              name: toolCallRequest.name, decision: "denied_scope_or_budget" });
             deny("Tool unavailable or call budget exhausted.");
           } else {
+            emit({ type: "tool_request_guarded", index, call_id: callId,
+              name: toolCallRequest.name, decision: "allowed" });
             allow();
           }
         },
@@ -124,13 +126,17 @@ export async function main() {
         if (command.granite_text_tool_bridge && !abort.signal.aborted
             && lastResult?.stats?.stopReason === "eosFound" && toolState.completed === 0) {
           const request = parseGraniteToolCallEnvelope(lastMessage || lastResult.content);
-          if (request) {
+          if (request?.name === "read_workspace_text") {
             bridgeUsed = true;
             bridgeSourceContent = lastMessage || lastResult.content;
+            emit({ type: "adapter_tool_request_parsed", index: outcome.rounds,
+              call_id: 0, name: request.name, arguments: request.arguments,
+              raw_content: bridgeSourceContent });
             emit({ type: "text_tool_bridge_request", name: request.name,
               arguments: request.arguments });
             const toolContent = await reader.execute(request.arguments, {
-              signal: abort.signal, callId: 0, status() {}, warn() {},
+              signal: abort.signal, callId: 0, dispatchOrigin: "model_specific_adapter",
+              status() {}, warn() {},
             });
             abort.signal.throwIfAborted();
             chat.append({ role: "assistant", content: [{ type: "toolCallRequest",

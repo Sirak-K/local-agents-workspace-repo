@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 
 TOOLS_ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = TOOLS_ROOT / "lm_studio_user_api_token.py"
+MODULE_PATH = TOOLS_ROOT / "tools/lm_studio_user_api_token.py"
 SPEC = importlib.util.spec_from_file_location("lm_studio_user_api_token", MODULE_PATH)
 assert SPEC and SPEC.loader
 token_loader = importlib.util.module_from_spec(SPEC)

@@ -4,11 +4,11 @@
 
 - Arbetsmomentet förkortas PFMIE endast i arbetsdokumentation. Fullständigt namn används i planfilernas namn; implementation namnges efter permanent ansvar.
 - Förberedsgranskning utförd 2026-09-14 av Codex med en oberoende read-only underagent. Endast plan-/regelunderlag ändras i detta pass; inga runners, tools, fixtures, beroenden eller processer implementeras eller startas.
-- Primär designkälla är `model_evaluations/[EVAL] - [ARCH.] - [Frontier-As-Evaluator] - [Design].md` och Team Masters beslut. Den associerade roadmapen härleds från dessa frysta beslut och är inte en parallell designkälla.
+- Primär designkälla är `model_evaluations/[EVAL] - [ ARCH. ] - [Frontier-As-Evaluator] - [Design].md` och Team Masters beslut. Den associerade roadmapen härleds från dessa frysta beslut och är inte en parallell designkälla.
 - 0-WORKER:s primära slutmål är professionellt, precist, välstrukturerat och verifierbart ComfyUI-workflowarbete. Tidiga teknologioberoende uppgifter är kvalificeringsgrund, inte konkurrerande slutmål.
 - Behåll fem phases, åtta rounds och tre ERST per round. Ingen ny screening, stor upprepningskvot eller extra fas införs som förberedelsekrav.
 - Roadmapen omfattar återstående implementation och relevant lokal verifiering, inte själva nästa kandidat-evalen. Vid senare operativa arbetspass börjar uppdateringar med `RMS <steg>/18`; genomför inte roadmapen utan Team Masters startbesked.
-- Statusägarskap är uppdelat: `[PLAN] - [4] - [PREPARE FOR MASSIVELY IMPROVED EVALS] - [ROADMAP].md` ägs av ChatGPT för steg 1, 3, 5, 6, 8 och 11–15. `[PLAN] - [4] - [PREPARE FOR MASSIVELY IMPROVED EVALS] - [CODEX] - [ROADMAP].md` ägs av Codex för steg 2, 4, 7, 9, 10 och 16–18. Globala stegnummer och beroenden bevaras; inga dubbla statusrader. Varje aktör uppdaterar endast sin roadmap och lämnar den andres implementation/status orörd.
+- Team Master har avslutat ChatGPT:s PFMIE-arbete och gett Codex ansvar för hela återstående implementationen och verifieringen. Endast `[PLAN] - [4] - [PREPARE FOR MASSIVELY IMPROVED EVALS] - [ROADMAP].md` äger de 18 globala stegens status; den tidigare separata Codex-roadmapen är borttagen. Historiska handoff-commits och verifieringsnoteringar är evidens, inte parallellt statusägarskap.
 
 ## 2. Verifierade fynd och deras konsekvenser
 
@@ -25,14 +25,12 @@
 
 Radnummer gäller granskningstillfället. Historiska loggar/assessment-hashar ändras inte för att passa ny struktur. Tidigare live-framgång är inte bevis på att den flyttade koden fungerar nu.
 
-## 3. ChatGPT först; exakt lokal ansvarsskillnad
+## 3. Historisk ChatGPT-handoff och nuvarande Codex-ansvar
 
-- ChatGPT äger allt avgränsat grovjobb som kan utföras och granskas från tillgängliga repo-filer: kod, konfiguration, små källsnapshots, fixtures, kontextpaket, kataloger, offline-tester och direkt berörda dokument.
-- Ett arbetsstycke får inte göras Codex-ägt bara för att slutlig integration kräver Windows eller LM Studio. ChatGPT implementerar portabel kod och testdubblar; Codex gör separat lokal verifiering av verkligt provider-/OS-beteende.
+- ChatGPT genomförde den avgränsade första handoffen för AutoPull och kanoniska evalsökvägar. Från Team Masters nya beslut gör ChatGPT inget ytterligare PFMIE-arbete; Codex äger nu återstående portabel implementation, lokala kontroller och status i den enda roadmapen.
+- Portabla testdubblar kan visa kodkontrakt men inte äkta LM Studio-auth/cancel, Windows Job Objects, lokal fil-/processisolering eller frontendkompatibilitet. Codex verifierar sådana gränser separat när berörd slice kräver dem.
 - Screenshotens GitHub App-behörigheter bevisar repoauktorisering, inte att ChatGPT-sessionen har exponerade skrivverktyg eller testexekvering. Före varje handoff ska mottagaren bekräfta exakt skriv-/läsåtkomst och verklig testväg: tillgänglig runtime eller CI. Saknas exekvering redovisas tester som ej körda; inga påhittade gröna testresultat eller `[COMPLETED]`.
-- Offline testkod och eventuell liten CI-testväg får byggas av ChatGPT. Äkta LM Studio-auth/cancel, Windows Job Objects, lokal fil-/processisolering, frontendkompatibilitet och lokal inventory kan inte bevisas genom mocktester.
-- Konkreta handoffs följer endast `docs/docs_handoffs_to_ChatGPT/handoff_instructions_and_rules.md`. En handoff per sammanhängande slice; ingen överlappande skrivyta eller dubbel planstatusägare. Inga handoffs dispatchas/publiceras i denna förberedsgranskning.
-- Allt underlag som ChatGPT behöver måste finnas i dess faktiskt synliga repovy: plans, kod, utvald sanerad fixture och relevant källmanifest. Lokala sökvägar eller repoåtkomst ensamma ger inte åtkomst till källmaterialet.
+- Den tidigare handoffens ofullständiga suffix speglade att ChatGPT inte själv kunde köra lokala tester; Codex har senare körda testresultat dokumenterade i verifieringsunderlaget. Handoff-filen är historisk och inte en ny PFMIE-arbetskö.
 
 ## 4. Connector och befintlig FF-only AutoPull
 
@@ -40,7 +38,7 @@ Radnummer gäller granskningstillfället. Historiska loggar/assessment-hashar ä
 - Befintlig ägare är `scripts/github_autopull_chatgpts_repo_work/`. Återanvänd och reparera dess två skript; skapa ingen parallell watcher eller synkplattform.
 - Behåll endast `main`, tidsbegränsad polling, singleton/stoppsignal, fetch och säker FF. Dirty tracked/staged state, pågående Git-operation, divergens, fel branch eller kolliderande ospårade filer får aldrig lösas genom reset/rebase/clean/stash eller överskrivning.
 - Normalt upptäcks ändringar vid nästa poll, inte bokstavligen omedelbart. Vid osäker FF ska remote-resultat fortfarande kunna granskas utan att arbetsfiler ändras.
-- ChatGPT gör portabel korrigering och isolerade testsituationer; Codex verifierar lokal installation, rätt repo, säker mottagning och processstatus när operativ start har godkänts. Ingen bred Git-städning krävs av PFMIE.
+- Den första ChatGPT-leveransen är mottagen. Lokal installation, rätt repo, separat launcher, säker FF och processstatus är verifierade av Codex; ingen bred Git-städning krävs av PFMIE.
 - Den granskade [officiella GitHub-guiden](https://learn.chatgpt.com/docs/third-party/github) gäller Codex-repointegration/review och etablerar inte i sig ChatGPT-sessionens skriv-/exekveringsförmåga; den senare hålls uttryckligen verifieringsberoende.
 
 ## 5. Permanent ägarskap och minsta implementerbara slices
@@ -61,13 +59,13 @@ Radnummer gäller granskningstillfället. Historiska loggar/assessment-hashar ä
 - Ingen generisk shell-, nätverks-, ComfyUI-launcher-, modellload-/download- eller `/prompt`-tool exponeras. ComfyUI-checkpoints får aldrig laddas och GPU-generering får aldrig startas. LM Studio-kandidaten är däremot själva evalsystemet och får hanteras av evaluatorn enligt befintligt bounded mandat.
 - Mutation kräver expected-before-hash, UTF-8 utan BOM, tillåtna filer, total skriv-/fil-/anropsbudget, bounded atomisk commit och oberoende efterkontroll. Ogiltigt input eller stopp före commit lämnar originalfixture intakt.
 - Avbrott är inte rollback: en redan slutförd mutation bevaras som partiell evidens. Efter stoppkvitto får inga nya writes/dispatch ske; kontrollera inga aktiva ägda tools och inga sena sidoeffekter.
-- Bygg no-progress-watchdog ovanpå befintliga toolhändelser, med tidigare beslutade tre konsekutiva likvärdiga resultat utan relevant framsteg som startpolicy. Meningsfull effekt/hash/exitstatus räknas; brus/mtime ensam gör det inte. Legitima återhämtningssteg ska tillåtas.
+- Bygg no-progress-watchdog i filuppgiftsrunnerns orchestration ovanpå faktiska toolhändelser, med tidigare beslutade tre konsekutiva likvärdiga resultat utan relevant framsteg som startpolicy. Meningsfull effekt/hash/exitstatus räknas; brus/mtime ensam gör det inte. Legitima återhämtningssteg ska tillåtas. Den verktygsfria `controlled_run.py` ska inte bli ägare av denna tool-loop.
 - Round 4–5:s test-/validatoroperationer exponeras endast som fasta evaluatorägda, icke-tunga verifieringskommandon, utan shell och utan möjlighet att exekvera kandidatändrad kod. Kandidatvald kodexekvering kräver separat verklig OS-isolering före användning, inte en allmän förberedande installation av VM/container.
 
 ## 7. Kontext: vad, varifrån och vart
 
 - Före nästa Round 2 krävs endast de kontextkällor den utvalda teknologioberoende uppgiften använder. Befintlig `agent-0-context/agent-0-system_prompt.txt` är möjlig input, inte bevis för injektion. Inget stort ComfyUI-paket blockerar den rundan.
-- Före första ComfyUI-ERST byggs `LOCAL_AGENTS/AGENT-0-WORKER/agent-0-context/comfyui/` med `comfyui_workflow_contract.md`, `comfyui_project_contract.md`, `comfyui_mutation_verification.md`, `comfyui_node_palette.json` och `context_manifest.json`.
+- Före varje ComfyUI-ERST krävs endast ett task-specifikt, hashbundet kontexturval med deklarerad roll/ordning och de format-, nod- och verifieringsfakta just uppgiften behöver. För den låsta title-ändringen ägs detta av `agent-0-context/comfyui_workflow_editing.md`, fixturemanifestet och den visade nodpaletten. Skapa inte ett parallellt generellt kontextpaket eller tomma framtidsfiler innan en konkret senare uppgift behöver dem.
 - Projektkontext härleds från relevanta små specs/promptregler i `comfy_ui_workspace/docs/docs_comfyui-workflows/` och Team Masters workflowregler. Journals, gamla lösningar och graderfacit injiceras inte.
 - Formatfakta hämtas från [Workflow JSON 0.4](https://docs.comfy.org/specs/workflow_json_0.4), [Node Definition JSON](https://docs.comfy.org/specs/nodedef_json) och vid behov officiell frontend/custom-node-källkod för exakt låst fixture. Endast små relevanta utdrag/schema hämtas; ingen bred docsdownload eller nedladdning av modeller behövs.
 - Officiellt schema lagras separat som verifierardata i `agent-0-eval/schemas/workflow_ui_0_4.json`, med källa, hämtningstid, hash och dokumenterad schemadialekt. Nödvändigt JSON Schema-bibliotek versionsbinds i `requirements-eval.txt` först i validatorslicen; schema ger inte ensamt graf- eller frontendbevis.
@@ -96,6 +94,20 @@ Radnummer gäller granskningstillfället. Historiska loggar/assessment-hashar ä
 - Varje fullständig eval får exakt en REPORT SUMMARY med befintliga fyra ERQER-frågeområden, källreferenser och tydlig separation av orsaker. Automatisera evidenskompletthet/hashes, inte LLM-orsaksbevis eller påhittade kvalitativa verdicts.
 
 ## 10. Klarsignaler utan onödig blockering
+
+### Eftergranskning: transportdiagnostik före ytterligare tool-eval
+
+Aktuell livekontroll 2026-09-14: `EVAL_4_2026-09-14-152322` genomförde tre frysta native reads, samtliga utan toolrequest/handler/receipt och med oförändrad fixture. Samma source-set/avlästa villkor/instans, men olika fångad vanlig output mellan första och senare försöken; försök 2 och 3 hade samma fragmenthash. Ingen byte-identisk PASS/FAIL-jämförelse finns. Startspärren nekade den verkliga reviewen; fortsatt tool-eval hålls stängd utan ensamorsaksbedömning. Separat bounded lifecyclecapture avslutades normalt och registrerade avlastning; därefter stoppades servern. Nästa åtgärd är read-only-interface-/templategranskning, inte blind retry. Detaljer och ERQER finns i evalens REPORT SUMMARY.
+
+- EVAL 2:s lyckade native läsning och EVAL 3:s missade dispatch är inte ett kontrollerat A/B-par: flera projektkällor ändrades, EVAL 2 saknar rå-envelope och vissa effektiva inställningar är ofångade. De äldre källhasharna kan inte rekonstrueras från tillgängliga Git-blobs. Ingen retroaktiv kodsnapshot eller byte-identitet får påstås.
+- Alla aktiva runners sparar nu en bounded snapshot av exakta UTF-8-projektkällor med relativ path, innehåll, filhash och source-set-hash. Lokalt identifierbar importkedja och explicita JS-entrypoints ingår. Snapshoten ersätter inte versions-/artefaktidentitet för installerade dependencies, modellfil eller LM Studios interna backend; installerad SDK-entrypoint, Zod-entrypoint och Node-version redovisas separat med denna begränsning.
+- De publika SDK 1.5.0-callbacks för start, namn, argumentfragment, parsed request, finalized request, failure och dequeue fångas tillsammans med redan befintliga round-/fragment-/result-/receipt-händelser. Native och Granite-adapter hålls åtskilda. Rå tooltext är bounded; dess hash får inte felaktigt beskrivas som fångat komplett innehåll om råtexten saknas, är för stor eller redigerats.
+- Ingen publik textinjektionshook till native parser/dispatch är verifierad. `.act()` tar genererade toolrequest-händelser från server-/generatorlagret. Uteblivet klientevent lokaliserar en evidenslucka före callbacken, men isolerar inte automatiskt en viss Desktop-parser eller modellvikterna. Se [officiell act-dokumentation](https://lmstudio.ai/docs/typescript/agent/act) och [officiell generatorbeskrivning](https://github.com/lmstudio-ai/docs/blob/main/2_typescript/3_plugins/3_generator/tool-calling-generators.md).
+- `tool_transport_reproducibility.py` kör exakt tre sekventiella read-only-diagnostikförsök med samma fixture, instruktion, schema, sampling, source-set och laddade instans; varje försök får färsk Chat och befintlig 30 s kör-/5 s stoppbudget. Ändrade villkor, instansbyte eller overifierat avslut stoppar serien. Aktuellt run-id sparas före start och avbryts via befintlig read-runner. Serien laddar inte modeller och ger aldrig kandidatbedömning.
+- Serien jämför fångad output och eventtyper utan att anta identiskt interninnehåll. `public_tool_raw_byte_identity_established` gäller bara den fångade första predictionens publika toolråtext och fragment. Tre lyckade reads är begränsat transportbevis, inte garanterad reliabilitet eller bevis för andra toolklasser.
+- Ordinarie read/text/file-toolrunners kräver `--transport-review-file`: tre distinkta verifierade reads, oförändrad evidencehash/source-set/installerad runtime samt samma instans. Review gäller högst 30 minuter som operativ färskhetsbudget, inte statistisk modelltröskel. Saknad/ogiltig review stoppas före tokenhämtning och runskapande; instansmismatch stoppas före genereringstillstånd. Explicit bounded stoppdiagnostik är undantagen och förblir diagnostik.
+- Efter en misslyckad serie startas ingen full eval eller blind likadan serie. Utred första skillnaden mellan toolrequest, guard, handler och receipt; korrigera rätt ägare och dokumentera nytt versionerat försök först när en motiverad förändring eller kontrollerad diagnostisk fråga finns. Bevara tidigare lyckad screening, strikt adapter, mutationsscope, stopp och statiska graders.
+- Implementationen är offlineverifierad. Ingen ny live-diagnostik har körts under denna ändring; dispatchfelet är inte därmed löst och nya tool-evals är inte startklara förrän verklig transportreview lyckats. Historiska råfiler och bedömningar lämnas oförändrade.
 
 - Nästa teknologioberoende eval kräver relokerad fungerande runner, aktuellt transport-/stoppbevis och den specifika uppgiftens kontrakt/kontext/grader. ComfyUI-paket, skills och hela sena kvalificeringen får inte blockera denna start.
 - Roadmapens globala stegnummer visar rekommenderad bygg-/verifieringsordning, inte ett krav att slutföra alla 18 steg före nästa eval. Steg 17–18 tillämpas även vid varje tidigare relevant sliceboundary; tidig Round 2 kan bli startklar efter steg 3–5 och sin riktade integration/preflight. AutoPull är handoffinfrastruktur, inte ett mått på modellförmåga.

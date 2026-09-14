@@ -1,4 +1,4 @@
-"""One WORKER prediction: diagnostic or baseline-gated tools-free screening.
+"""One WORKER prediction: diagnostic or locked tools-free task.
 
 No model-facing tools are exposed yet. The optional process stop probe is an
 evaluator-owned fixture for testing combined cancellation, not agent tool use.
@@ -24,11 +24,14 @@ sys.path[:0] = [str(ROOT / "LM-Studio_connections/LM-Studio_for_codex"),
 from evaluation_paths import (create_run_directory, eval_directory, existing_run_directory,
                               run_directory)
 from interruptible_prediction import SdkPredictionProcess, stop_verdict
+from evaluation_source_snapshot import capture_source_snapshot, runtime_source_paths, installed_runtime_identity
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
 from worker_tool_process_control import WorkerToolProcessControl
 from instruction_following_grading import (task_contract, grade_answer, reconstruct_text,
                                           screening_gate, verify_baseline, require_recent_idle)
+from evaluation_contracts import task_contract as context_task_contract
+from evaluation_contracts import grade_answer as grade_context_answer
 
 TERMINAL = {"completed", "verified_cancel", "completed_race", "not_started", "unverified", "failed"}
 MAX_DOCUMENT_BYTES = 1048576
@@ -150,13 +153,25 @@ def run(args) -> tuple[str, dict]:
     validate_budgets(args.duration, args.stop_budget, args.max_tokens)
     token = resolve_token()
     probe_id = getattr(args, "probe_id", None)
+    task_id = getattr(args, "task_id", None)
     probe = task_contract(probe_id) if probe_id else None
+    context_task = context_task_contract(task_id) if task_id else None
+    if probe and context_task:
+        raise ValueError("one task source is required")
     if probe:
         if args.tool_stop_probe or args.previous_run or args.system_prompt_file:
             raise ValueError("screening has fixed conditioning, no tools or implicit retries")
         if args.duration != probe["duration_seconds"] or args.max_tokens != probe["max_tokens"]:
             raise ValueError("screening budgets must match the locked catalog")
         instruction = probe["instruction"]
+    elif context_task:
+        if args.tool_stop_probe or args.system_prompt_file or args.baseline_file:
+            raise ValueError("context task has fixed conditioning and no evaluator tool probe")
+        if (args.duration != context_task["duration_seconds"]
+                or args.stop_budget != context_task["stop_budget_seconds"]
+                or args.max_tokens != context_task["max_tokens"]):
+            raise ValueError("context task budgets must match the locked catalog")
+        instruction = context_task["instruction"]
     else:
         instruction_path = Path(args.input_file)
         if instruction_path.stat().st_size > 16384:
@@ -170,16 +185,25 @@ def run(args) -> tuple[str, dict]:
         system_prompt = prompt_path.read_text(encoding="utf-8")
     if probe:
         system_prompt = probe["system_prompt"]
+    elif context_task:
+        system_prompt = context_task["context_text"]
     fingerprints = {}
+    snapshot_paths = []
     for source in (Path(__file__), ROOT / "LM-Studio_connections/LM-Studio_for_codex/lm_studio_sdk_prediction.mjs",
                    ROOT / "LM-Studio_connections/LM-Studio_for_codex/interruptible_prediction.py",
                    ROOT / "LM-Studio_connections/LM-Studio_for_codex/package-lock.json",
                    ROLE / "agent-0-tools/worker_tool_process_control.py",
                    Path(__file__).with_name("instruction_following_grading.py"),
-                   Path(__file__).with_name("instruction_following_catalog.json")):
+                   Path(__file__).with_name("instruction_following_catalog.json"),
+                   Path(__file__).with_name("evaluation_contracts.py"),
+                   Path(__file__).with_name("json_document_comparison.py"),
+                   Path(__file__).with_name("structured_edit_catalog.json"),
+                   Path(__file__).with_name("structured_edit_context.md")):
         if source.is_file():
+            snapshot_paths.append(source)
             with source.open("rb") as handle:
                 fingerprints[source.name] = hashlib.file_digest(handle, "sha256").hexdigest()
+    source_snapshot = capture_source_snapshot(runtime_source_paths(snapshot_paths))
     baseline = None
     baseline_path = None
     if probe:
@@ -201,17 +225,20 @@ def run(args) -> tuple[str, dict]:
     if token in instruction or token in system_prompt:
         raise ValueError("API token must never be part of model input")
     previous = args.previous_run
+    previous_hash = None
     if previous:
-        original = read_json(existing_run_directory(args.eval_id, previous) / "evidence.json", MAX_DOCUMENT_BYTES)
+        original_path = existing_run_directory(args.eval_id, previous) / "evidence.json"
+        original = read_json(original_path, MAX_DOCUMENT_BYTES)
         if original.get("eval_id") != args.eval_id:
             raise ValueError("retry source belongs to another eval")
         if original["state"] not in TERMINAL or not args.change_reason:
             raise ValueError("retry requires a finished original and an explicit change reason")
+        previous_hash = hashlib.sha256(original_path.read_bytes()).hexdigest()
     run_id = getattr(args, "run_id", None) or uuid4().hex
     directory = create_run_directory(args.eval_id, run_id)
     document = {
         "eval_id": args.eval_id, "run_id": run_id,
-        "kind": "instruction_following" if probe else "transport_diagnostic", "state": "starting",
+        "kind": "instruction_following" if probe else "structured_edit" if context_task else "transport_diagnostic", "state": "starting",
         "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "contract": {"transport": "lmstudio-js 1.5.0", "model_identifier": args.model,
                      "duration_seconds": args.duration, "stop_budget_seconds": args.stop_budget,
@@ -222,8 +249,11 @@ def run(args) -> tuple[str, dict]:
         "instruction": sanitize_for_log(instruction),
         "instruction_sha256": hashlib.sha256(instruction.encode("utf-8")).hexdigest(),
         "source_fingerprints": fingerprints,
+        "source_snapshot": source_snapshot,
+        "runtime_identity": installed_runtime_identity(),
         "system_prompt": sanitize_for_log(system_prompt),
         "previous_run": previous, "change_reason": sanitize_for_log(args.change_reason),
+        "previous_run_sha256": previous_hash,
         "events": [], "stop": None, "result": None,
         "verification": {"generation": "not_started", "tools": "not_used"},
         "evidence_gaps": ["Diagnostic run; round/grader and controlled baseline gates are not implemented.",
@@ -236,6 +266,11 @@ def run(args) -> tuple[str, dict]:
                                                if not key.startswith("reference_")}
         document["assessment"] = {"status": "not_assessed"}
         document["evidence_gaps"][0] = "Initial screening only; independent fresh-input confirmations are not performed."
+    elif context_task:
+        document["task"] = {"id": context_task["id"], "catalog_sha256": context_task["catalog_sha256"],
+                            "context": context_task["context"]}
+        document["assessment"] = {"status": "not_assessed"}
+        document["evidence_gaps"][0] = "Tools-free structured edit; no actual file mutation or broad WORKER ability is demonstrated."
     evidence_path = directory / "evidence.json"
     dirty = True
     last_write = 0.0
@@ -247,6 +282,7 @@ def run(args) -> tuple[str, dict]:
     stop_time = None
     cancel_sent = False
     sdk = None
+    context_model_bound = False
     tools = WorkerToolProcessControl() if args.tool_stop_probe else None
     start_time = time.monotonic()
 
@@ -297,7 +333,8 @@ def run(args) -> tuple[str, dict]:
         print(f"RUN {run_id}", flush=True)
         sdk = SdkPredictionProcess(token, {"base_url": "ws://127.0.0.1:1234", "model": args.model,
             "instruction": instruction, "system_prompt": system_prompt, "max_tokens": args.max_tokens,
-            "require_start_approval": bool(probe)})
+            "inspect_input_before_start": bool(context_task),
+            "require_start_approval": bool(probe or context_task)})
         while True:
             now = time.monotonic()
             stop_file = directory / "stop_request.json"
@@ -328,8 +365,28 @@ def run(args) -> tuple[str, dict]:
                             stop("current idle-state evidence expired before generation")
                         else:
                             sdk.send({"command": "continue"})
+                elif kind == "model_bound" and context_task:
+                    if event.get("model_info", {}).get("identifier") != args.model:
+                        stop("loaded model does not match the locked task identifier")
+                    else:
+                        context_model_bound = True
+                elif kind == "model_inspection" and context_task:
+                    tokens, context_length = event.get("input_tokens"), event.get("context_length")
+                    fits = (context_model_bound and type(tokens) is int and tokens >= 0
+                            and type(context_length) is int and context_length > 0
+                            and isinstance(event.get("rendered_input"), str) and bool(event["rendered_input"])
+                            and tokens + args.max_tokens <= context_length)
+                    document["input_verification"] = {"status": "verified" if fits else "invalid",
+                        "input_tokens": tokens, "context_length": context_length,
+                        "rendered_input": sanitize_for_log(event.get("rendered_input"))}
+                    if not fits:
+                        stop("task input plus output budget does not fit verified model context")
+                    elif stop_time is None:
+                        sdk.send({"command": "continue"})
                 elif kind == "prediction_started":
                     started = True
+                    if context_task and document.get("input_verification", {}).get("status") != "verified":
+                        stop("prediction began before verified task input")
                     if stop_time is None:
                         document["state"] = "running"
                     if tools and stop_time is None:
@@ -391,6 +448,22 @@ def run(args) -> tuple[str, dict]:
             document["assessment"] = {"status": "invalid", "reason": "stop, truncation or changed/unverified conditions"}
         else:
             document["assessment"] = grade_answer(probe_id, reconstruct_text(document["result"]["content"]))
+    elif context_task:
+        natural_finish = result is not None and result.get("stats", {}).get("stopReason") == "eosFound"
+        if (document["state"] != "completed" or document["stop"] or not natural_finish
+                or document.get("input_verification", {}).get("status") != "verified"):
+            document["assessment"] = {"status": "invalid", "reason": "stop, truncation or unverified task conditions"}
+        else:
+            try:
+                current_task = context_task_contract(task_id)
+            except (OSError, ValueError, KeyError):
+                current_task = None
+            if (current_task is None or current_task["catalog_sha256"] != context_task["catalog_sha256"]
+                    or current_task["context"]["sha256"] != context_task["context"]["sha256"]):
+                document["assessment"] = {"status": "invalid", "reason": "task source changed during run"}
+            else:
+                document["assessment"] = grade_context_answer(
+                    task_id, reconstruct_text(document["result"]["content"]), contract=context_task)
     persist()
     return run_id, document
 
@@ -399,12 +472,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("start", "run"):
-        start = commands.add_parser(name, help="diagnostic only; server and selected model must already be active")
+        start = commands.add_parser(name, help="server and selected model must already be active")
         start.add_argument("--eval-id", required=True)
         start.add_argument("--model", required=True, help="exact loaded SDK instance identifier")
         source = start.add_mutually_exclusive_group(required=True)
         source.add_argument("--input-file")
         source.add_argument("--probe-id")
+        source.add_argument("--task-id")
         start.add_argument("--baseline-file")
         start.add_argument("--predecessor-run", action="append")
         start.add_argument("--system-prompt-file")
@@ -442,6 +516,8 @@ def main() -> int:
                 task_contract(args.probe_id)
                 if not args.baseline_file:
                     raise ValueError("baseline evidence is required before screening")
+            if args.task_id:
+                context_task_contract(args.task_id)
             run_id = uuid4().hex
             argv = [sys.executable, str(Path(__file__).resolve()), "run",
                     "--eval-id", args.eval_id, "--run-id", run_id]
@@ -452,7 +528,7 @@ def main() -> int:
                     if option in ("input_file", "system_prompt_file"):
                         value = Path(value).resolve()
                     argv.extend(["--" + option.replace("_", "-"), str(value)])
-            for option in ("probe_id", "baseline_file"):
+            for option in ("probe_id", "task_id", "baseline_file"):
                 value = getattr(args, option)
                 if value is not None:
                     argv.extend(["--" + option.replace("_", "-"), str(Path(value).resolve()) if option == "baseline_file" else value])

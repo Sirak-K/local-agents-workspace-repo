@@ -1,0 +1,3335 @@
+{
+  "eval_id": "EVAL_2_2026-09-14-051008",
+  "run_id": "d2a5190e35554ae9b2e130df430ec7a1",
+  "kind": "instruction_following",
+  "state": "completed",
+  "created_at": {
+    "local": "2026-09-14 | 05:11:23.269 +02:00",
+    "utc": "2026-09-14 | 03:11:23.269 UTC",
+    "epoch_ms": 1789355483269
+  },
+  "updated_at": {
+    "local": "2026-09-14 | 05:11:25.343 +02:00",
+    "utc": "2026-09-14 | 03:11:25.343 UTC",
+    "epoch_ms": 1789355485343
+  },
+  "contract": {
+    "transport": "lmstudio-js 1.5.0",
+    "model_identifier": "granite-4.1-3b",
+    "duration_seconds": 30.0,
+    "stop_budget_seconds": 5,
+    "observation_target_seconds": 0.5,
+    "control_poll_seconds": 0.1,
+    "max_tokens": 1024,
+    "temperature": 0,
+    "fresh_chat": true,
+    "model_tools": [],
+    "owned_process_probe": false,
+    "max_evidence_bytes": 1048576,
+    "max_stream_events": 1000
+  },
+  "instruction": {
+    "encoding": "utf-8",
+    "character_count": 378,
+    "sha256": "fea074eb99aa6c1cf773fd9393c2fb754b907e4e36a4d431f6512abcde62e580",
+    "text_chunks": [
+      "Use only these facts: Service Cedar costs 12 credits per job. Service Maple costs 9 credits per job. No completion times are provided for either service. Which ",
+      "service finishes a job faster? Briefly explain what the facts do and do not establish, and ask for the missing information needed to answer the speed question. ",
+      "Do not assume that price predicts speed. Do not use tools."
+    ]
+  },
+  "instruction_sha256": "fea074eb99aa6c1cf773fd9393c2fb754b907e4e36a4d431f6512abcde62e580",
+  "source_fingerprints": {
+    "controlled_run.py": "1cfed0c15f0564d43990728e11d7f79d1553932b5f0592ad12b0908f3c19d3e6",
+    "lm_studio_sdk_prediction.mjs": "4a659ecfb303cc1a7e993857d92e0b99be0e97b5fc92e215e6d26c276bfe046f",
+    "interruptible_prediction.py": "cb9bd48eb0b88542b1a0c5e25b7a4a543e21dcc1ac3c1220f0b1c4623b43fc4f",
+    "package-lock.json": "cc53c84543b2806de2e3fbfeece5acf0861c2a1b332789f97628927af3a6aa70",
+    "worker_tool_process_control.py": "c26a5aaa0c55d66dc0e4e3349d943f0637d0a83d5bc89976645cf7a9b14273ad",
+    "instruction_following_grading.py": "397aea0529a6e7f2a540c369311671042b2c650d520448cc52cf54f6eb3b8652",
+    "instruction_following_catalog.json": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1",
+    "evaluation_contracts.py": "10f95e1bc47a26be17fe54b809a09f818fc8b58ce323cddc30dc03e3a6e966a1",
+    "json_document_comparison.py": "5fc1372155581af891895209e386a061ad46b8c3ff84481ca33d77ab03c1dfbe",
+    "structured_edit_catalog.json": "150b743ae79755698b533762d975536ef8d0d9eec4cc0397b44f166bfd942cb0",
+    "structured_edit_context.md": "f76619bf511b6f81f5d47a470ea18026970a623dc5dfe7f9aa5f3a5d078ba6dc"
+  },
+  "system_prompt": "",
+  "previous_run": null,
+  "change_reason": null,
+  "previous_run_sha256": null,
+  "events": [
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.445 +02:00",
+        "utc": "2026-09-14 | 03:11:23.445 UTC",
+        "epoch_ms": 1789355483445
+      },
+      "data": {
+        "type": "model_bound",
+        "model_info": {
+          "type": "llm",
+          "modelKey": "granite-4.1-3b",
+          "format": "gguf",
+          "displayName": "Granite 4.1 3B",
+          "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+          "sizeBytes": 2099501664,
+          "paramsString": "3B",
+          "architecture": "granite",
+          "quantization": {
+            "name": "Q4_K_M",
+            "bits": 4
+          },
+          "identifier": "granite-4.1-3b",
+          "instanceReference": "1NOzbxFiPqiRwQV5kDsRTE2I",
+          "vision": false,
+          "trainedForToolUse": true,
+          "maxContextLength": 131072,
+          "contextLength": 8192
+        }
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.448 +02:00",
+        "utc": "2026-09-14 | 03:11:23.448 UTC",
+        "epoch_ms": 1789355483448
+      },
+      "data": {
+        "type": "prediction_started"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.473 +02:00",
+        "utc": "2026-09-14 | 03:11:23.473 UTC",
+        "epoch_ms": 1789355483473
+      },
+      "data": {
+        "type": "prompt_progress",
+        "percent": 0
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.698 +02:00",
+        "utc": "2026-09-14 | 03:11:23.698 UTC",
+        "epoch_ms": 1789355483698
+      },
+      "data": {
+        "type": "prompt_progress",
+        "percent": 100
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.698 +02:00",
+        "utc": "2026-09-14 | 03:11:23.698 UTC",
+        "epoch_ms": 1789355483698
+      },
+      "data": {
+        "type": "fragment",
+        "content": "The",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.709 +02:00",
+        "utc": "2026-09-14 | 03:11:23.709 UTC",
+        "epoch_ms": 1789355483709
+      },
+      "data": {
+        "type": "fragment",
+        "content": " given",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.723 +02:00",
+        "utc": "2026-09-14 | 03:11:23.723 UTC",
+        "epoch_ms": 1789355483723
+      },
+      "data": {
+        "type": "fragment",
+        "content": " facts",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.731 +02:00",
+        "utc": "2026-09-14 | 03:11:23.731 UTC",
+        "epoch_ms": 1789355483731
+      },
+      "data": {
+        "type": "fragment",
+        "content": " tell",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.739 +02:00",
+        "utc": "2026-09-14 | 03:11:23.739 UTC",
+        "epoch_ms": 1789355483739
+      },
+      "data": {
+        "type": "fragment",
+        "content": " us",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.746 +02:00",
+        "utc": "2026-09-14 | 03:11:23.746 UTC",
+        "epoch_ms": 1789355483746
+      },
+      "data": {
+        "type": "fragment",
+        "content": " the",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.754 +02:00",
+        "utc": "2026-09-14 | 03:11:23.754 UTC",
+        "epoch_ms": 1789355483754
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cost",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.761 +02:00",
+        "utc": "2026-09-14 | 03:11:23.761 UTC",
+        "epoch_ms": 1789355483761
+      },
+      "data": {
+        "type": "fragment",
+        "content": " associated",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.768 +02:00",
+        "utc": "2026-09-14 | 03:11:23.768 UTC",
+        "epoch_ms": 1789355483768
+      },
+      "data": {
+        "type": "fragment",
+        "content": " with",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.774 +02:00",
+        "utc": "2026-09-14 | 03:11:23.774 UTC",
+        "epoch_ms": 1789355483774
+      },
+      "data": {
+        "type": "fragment",
+        "content": " each",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.788 +02:00",
+        "utc": "2026-09-14 | 03:11:23.788 UTC",
+        "epoch_ms": 1789355483788
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.795 +02:00",
+        "utc": "2026-09-14 | 03:11:23.795 UTC",
+        "epoch_ms": 1789355483795
+      },
+      "data": {
+        "type": "fragment",
+        "content": "—",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.801 +02:00",
+        "utc": "2026-09-14 | 03:11:23.801 UTC",
+        "epoch_ms": 1789355483801
+      },
+      "data": {
+        "type": "fragment",
+        "content": "Service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.808 +02:00",
+        "utc": "2026-09-14 | 03:11:23.808 UTC",
+        "epoch_ms": 1789355483808
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Cedar",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.819 +02:00",
+        "utc": "2026-09-14 | 03:11:23.819 UTC",
+        "epoch_ms": 1789355483819
+      },
+      "data": {
+        "type": "fragment",
+        "content": " costs",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.826 +02:00",
+        "utc": "2026-09-14 | 03:11:23.826 UTC",
+        "epoch_ms": 1789355483826
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.830 +02:00",
+        "utc": "2026-09-14 | 03:11:23.830 UTC",
+        "epoch_ms": 1789355483830
+      },
+      "data": {
+        "type": "fragment",
+        "content": "12",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.840 +02:00",
+        "utc": "2026-09-14 | 03:11:23.840 UTC",
+        "epoch_ms": 1789355483840
+      },
+      "data": {
+        "type": "fragment",
+        "content": " credits",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.846 +02:00",
+        "utc": "2026-09-14 | 03:11:23.846 UTC",
+        "epoch_ms": 1789355483846
+      },
+      "data": {
+        "type": "fragment",
+        "content": " per",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.854 +02:00",
+        "utc": "2026-09-14 | 03:11:23.854 UTC",
+        "epoch_ms": 1789355483854
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.861 +02:00",
+        "utc": "2026-09-14 | 03:11:23.861 UTC",
+        "epoch_ms": 1789355483861
+      },
+      "data": {
+        "type": "fragment",
+        "content": ",",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.867 +02:00",
+        "utc": "2026-09-14 | 03:11:23.867 UTC",
+        "epoch_ms": 1789355483867
+      },
+      "data": {
+        "type": "fragment",
+        "content": " and",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.874 +02:00",
+        "utc": "2026-09-14 | 03:11:23.874 UTC",
+        "epoch_ms": 1789355483874
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.881 +02:00",
+        "utc": "2026-09-14 | 03:11:23.881 UTC",
+        "epoch_ms": 1789355483881
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Maple",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.887 +02:00",
+        "utc": "2026-09-14 | 03:11:23.887 UTC",
+        "epoch_ms": 1789355483887
+      },
+      "data": {
+        "type": "fragment",
+        "content": " costs",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.895 +02:00",
+        "utc": "2026-09-14 | 03:11:23.895 UTC",
+        "epoch_ms": 1789355483895
+      },
+      "data": {
+        "type": "fragment",
+        "content": " ",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.901 +02:00",
+        "utc": "2026-09-14 | 03:11:23.901 UTC",
+        "epoch_ms": 1789355483901
+      },
+      "data": {
+        "type": "fragment",
+        "content": "9",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.907 +02:00",
+        "utc": "2026-09-14 | 03:11:23.907 UTC",
+        "epoch_ms": 1789355483907
+      },
+      "data": {
+        "type": "fragment",
+        "content": " credits",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.914 +02:00",
+        "utc": "2026-09-14 | 03:11:23.914 UTC",
+        "epoch_ms": 1789355483914
+      },
+      "data": {
+        "type": "fragment",
+        "content": " per",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.921 +02:00",
+        "utc": "2026-09-14 | 03:11:23.921 UTC",
+        "epoch_ms": 1789355483921
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.928 +02:00",
+        "utc": "2026-09-14 | 03:11:23.928 UTC",
+        "epoch_ms": 1789355483928
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.942 +02:00",
+        "utc": "2026-09-14 | 03:11:23.942 UTC",
+        "epoch_ms": 1789355483942
+      },
+      "data": {
+        "type": "fragment",
+        "content": " However",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.946 +02:00",
+        "utc": "2026-09-14 | 03:11:23.946 UTC",
+        "epoch_ms": 1789355483946
+      },
+      "data": {
+        "type": "fragment",
+        "content": ",",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.953 +02:00",
+        "utc": "2026-09-14 | 03:11:23.953 UTC",
+        "epoch_ms": 1789355483953
+      },
+      "data": {
+        "type": "fragment",
+        "content": " these",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.959 +02:00",
+        "utc": "2026-09-14 | 03:11:23.959 UTC",
+        "epoch_ms": 1789355483959
+      },
+      "data": {
+        "type": "fragment",
+        "content": " facts",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.966 +02:00",
+        "utc": "2026-09-14 | 03:11:23.966 UTC",
+        "epoch_ms": 1789355483966
+      },
+      "data": {
+        "type": "fragment",
+        "content": " do",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.972 +02:00",
+        "utc": "2026-09-14 | 03:11:23.972 UTC",
+        "epoch_ms": 1789355483972
+      },
+      "data": {
+        "type": "fragment",
+        "content": " not",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.978 +02:00",
+        "utc": "2026-09-14 | 03:11:23.978 UTC",
+        "epoch_ms": 1789355483978
+      },
+      "data": {
+        "type": "fragment",
+        "content": " provide",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.985 +02:00",
+        "utc": "2026-09-14 | 03:11:23.985 UTC",
+        "epoch_ms": 1789355483985
+      },
+      "data": {
+        "type": "fragment",
+        "content": " any",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.991 +02:00",
+        "utc": "2026-09-14 | 03:11:23.991 UTC",
+        "epoch_ms": 1789355483991
+      },
+      "data": {
+        "type": "fragment",
+        "content": " information",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:23.998 +02:00",
+        "utc": "2026-09-14 | 03:11:23.998 UTC",
+        "epoch_ms": 1789355483998
+      },
+      "data": {
+        "type": "fragment",
+        "content": " about",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.005 +02:00",
+        "utc": "2026-09-14 | 03:11:24.005 UTC",
+        "epoch_ms": 1789355484005
+      },
+      "data": {
+        "type": "fragment",
+        "content": " the",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.011 +02:00",
+        "utc": "2026-09-14 | 03:11:24.011 UTC",
+        "epoch_ms": 1789355484011
+      },
+      "data": {
+        "type": "fragment",
+        "content": " time",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.018 +02:00",
+        "utc": "2026-09-14 | 03:11:24.018 UTC",
+        "epoch_ms": 1789355484018
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.024 +02:00",
+        "utc": "2026-09-14 | 03:11:24.024 UTC",
+        "epoch_ms": 1789355484024
+      },
+      "data": {
+        "type": "fragment",
+        "content": " efficiency",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.031 +02:00",
+        "utc": "2026-09-14 | 03:11:24.031 UTC",
+        "epoch_ms": 1789355484031
+      },
+      "data": {
+        "type": "fragment",
+        "content": " required",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.037 +02:00",
+        "utc": "2026-09-14 | 03:11:24.037 UTC",
+        "epoch_ms": 1789355484037
+      },
+      "data": {
+        "type": "fragment",
+        "content": " to",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.043 +02:00",
+        "utc": "2026-09-14 | 03:11:24.043 UTC",
+        "epoch_ms": 1789355484043
+      },
+      "data": {
+        "type": "fragment",
+        "content": " complete",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.050 +02:00",
+        "utc": "2026-09-14 | 03:11:24.050 UTC",
+        "epoch_ms": 1789355484050
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.056 +02:00",
+        "utc": "2026-09-14 | 03:11:24.056 UTC",
+        "epoch_ms": 1789355484056
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.063 +02:00",
+        "utc": "2026-09-14 | 03:11:24.063 UTC",
+        "epoch_ms": 1789355484063
+      },
+      "data": {
+        "type": "fragment",
+        "content": " for",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.070 +02:00",
+        "utc": "2026-09-14 | 03:11:24.070 UTC",
+        "epoch_ms": 1789355484070
+      },
+      "data": {
+        "type": "fragment",
+        "content": " either",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.077 +02:00",
+        "utc": "2026-09-14 | 03:11:24.077 UTC",
+        "epoch_ms": 1789355484077
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.084 +02:00",
+        "utc": "2026-09-14 | 03:11:24.084 UTC",
+        "epoch_ms": 1789355484084
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.090 +02:00",
+        "utc": "2026-09-14 | 03:11:24.090 UTC",
+        "epoch_ms": 1789355484090
+      },
+      "data": {
+        "type": "fragment",
+        "content": " \n\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.097 +02:00",
+        "utc": "2026-09-14 | 03:11:24.097 UTC",
+        "epoch_ms": 1789355484097
+      },
+      "data": {
+        "type": "fragment",
+        "content": "What",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.103 +02:00",
+        "utc": "2026-09-14 | 03:11:24.103 UTC",
+        "epoch_ms": 1789355484103
+      },
+      "data": {
+        "type": "fragment",
+        "content": " the",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.115 +02:00",
+        "utc": "2026-09-14 | 03:11:24.115 UTC",
+        "epoch_ms": 1789355484115
+      },
+      "data": {
+        "type": "fragment",
+        "content": " facts",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.121 +02:00",
+        "utc": "2026-09-14 | 03:11:24.121 UTC",
+        "epoch_ms": 1789355484121
+      },
+      "data": {
+        "type": "fragment",
+        "content": " establish",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.127 +02:00",
+        "utc": "2026-09-14 | 03:11:24.127 UTC",
+        "epoch_ms": 1789355484127
+      },
+      "data": {
+        "type": "fragment",
+        "content": ":\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.133 +02:00",
+        "utc": "2026-09-14 | 03:11:24.133 UTC",
+        "epoch_ms": 1789355484133
+      },
+      "data": {
+        "type": "fragment",
+        "content": "1",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.146 +02:00",
+        "utc": "2026-09-14 | 03:11:24.146 UTC",
+        "epoch_ms": 1789355484146
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.152 +02:00",
+        "utc": "2026-09-14 | 03:11:24.152 UTC",
+        "epoch_ms": 1789355484152
+      },
+      "data": {
+        "type": "fragment",
+        "content": " The",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.159 +02:00",
+        "utc": "2026-09-14 | 03:11:24.159 UTC",
+        "epoch_ms": 1789355484159
+      },
+      "data": {
+        "type": "fragment",
+        "content": " monetary",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.166 +02:00",
+        "utc": "2026-09-14 | 03:11:24.166 UTC",
+        "epoch_ms": 1789355484166
+      },
+      "data": {
+        "type": "fragment",
+        "content": " value",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.172 +02:00",
+        "utc": "2026-09-14 | 03:11:24.172 UTC",
+        "epoch_ms": 1789355484172
+      },
+      "data": {
+        "type": "fragment",
+        "content": " (",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.178 +02:00",
+        "utc": "2026-09-14 | 03:11:24.178 UTC",
+        "epoch_ms": 1789355484178
+      },
+      "data": {
+        "type": "fragment",
+        "content": "in",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.186 +02:00",
+        "utc": "2026-09-14 | 03:11:24.186 UTC",
+        "epoch_ms": 1789355484186
+      },
+      "data": {
+        "type": "fragment",
+        "content": " credits",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.191 +02:00",
+        "utc": "2026-09-14 | 03:11:24.191 UTC",
+        "epoch_ms": 1789355484191
+      },
+      "data": {
+        "type": "fragment",
+        "content": ")",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.198 +02:00",
+        "utc": "2026-09-14 | 03:11:24.198 UTC",
+        "epoch_ms": 1789355484198
+      },
+      "data": {
+        "type": "fragment",
+        "content": " of",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.205 +02:00",
+        "utc": "2026-09-14 | 03:11:24.205 UTC",
+        "epoch_ms": 1789355484205
+      },
+      "data": {
+        "type": "fragment",
+        "content": " completing",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.211 +02:00",
+        "utc": "2026-09-14 | 03:11:24.211 UTC",
+        "epoch_ms": 1789355484211
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.217 +02:00",
+        "utc": "2026-09-14 | 03:11:24.217 UTC",
+        "epoch_ms": 1789355484217
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.230 +02:00",
+        "utc": "2026-09-14 | 03:11:24.230 UTC",
+        "epoch_ms": 1789355484230
+      },
+      "data": {
+        "type": "fragment",
+        "content": " for",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.236 +02:00",
+        "utc": "2026-09-14 | 03:11:24.236 UTC",
+        "epoch_ms": 1789355484236
+      },
+      "data": {
+        "type": "fragment",
+        "content": " each",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.243 +02:00",
+        "utc": "2026-09-14 | 03:11:24.243 UTC",
+        "epoch_ms": 1789355484243
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.260 +02:00",
+        "utc": "2026-09-14 | 03:11:24.260 UTC",
+        "epoch_ms": 1789355484260
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.266 +02:00",
+        "utc": "2026-09-14 | 03:11:24.266 UTC",
+        "epoch_ms": 1789355484266
+      },
+      "data": {
+        "type": "fragment",
+        "content": "2",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.273 +02:00",
+        "utc": "2026-09-14 | 03:11:24.273 UTC",
+        "epoch_ms": 1789355484273
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.282 +02:00",
+        "utc": "2026-09-14 | 03:11:24.282 UTC",
+        "epoch_ms": 1789355484282
+      },
+      "data": {
+        "type": "fragment",
+        "content": " There",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.286 +02:00",
+        "utc": "2026-09-14 | 03:11:24.286 UTC",
+        "epoch_ms": 1789355484286
+      },
+      "data": {
+        "type": "fragment",
+        "content": " is",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.294 +02:00",
+        "utc": "2026-09-14 | 03:11:24.294 UTC",
+        "epoch_ms": 1789355484294
+      },
+      "data": {
+        "type": "fragment",
+        "content": " no",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.300 +02:00",
+        "utc": "2026-09-14 | 03:11:24.300 UTC",
+        "epoch_ms": 1789355484300
+      },
+      "data": {
+        "type": "fragment",
+        "content": " data",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.313 +02:00",
+        "utc": "2026-09-14 | 03:11:24.313 UTC",
+        "epoch_ms": 1789355484313
+      },
+      "data": {
+        "type": "fragment",
+        "content": " on",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.319 +02:00",
+        "utc": "2026-09-14 | 03:11:24.319 UTC",
+        "epoch_ms": 1789355484319
+      },
+      "data": {
+        "type": "fragment",
+        "content": " how",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.325 +02:00",
+        "utc": "2026-09-14 | 03:11:24.325 UTC",
+        "epoch_ms": 1789355484325
+      },
+      "data": {
+        "type": "fragment",
+        "content": " long",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.331 +02:00",
+        "utc": "2026-09-14 | 03:11:24.331 UTC",
+        "epoch_ms": 1789355484331
+      },
+      "data": {
+        "type": "fragment",
+        "content": " it",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.338 +02:00",
+        "utc": "2026-09-14 | 03:11:24.338 UTC",
+        "epoch_ms": 1789355484338
+      },
+      "data": {
+        "type": "fragment",
+        "content": " takes",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.344 +02:00",
+        "utc": "2026-09-14 | 03:11:24.344 UTC",
+        "epoch_ms": 1789355484344
+      },
+      "data": {
+        "type": "fragment",
+        "content": " to",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.350 +02:00",
+        "utc": "2026-09-14 | 03:11:24.350 UTC",
+        "epoch_ms": 1789355484350
+      },
+      "data": {
+        "type": "fragment",
+        "content": " finish",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.355 +02:00",
+        "utc": "2026-09-14 | 03:11:24.355 UTC",
+        "epoch_ms": 1789355484355
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.361 +02:00",
+        "utc": "2026-09-14 | 03:11:24.361 UTC",
+        "epoch_ms": 1789355484361
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.368 +02:00",
+        "utc": "2026-09-14 | 03:11:24.368 UTC",
+        "epoch_ms": 1789355484368
+      },
+      "data": {
+        "type": "fragment",
+        "content": " for",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.379 +02:00",
+        "utc": "2026-09-14 | 03:11:24.379 UTC",
+        "epoch_ms": 1789355484379
+      },
+      "data": {
+        "type": "fragment",
+        "content": " either",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.388 +02:00",
+        "utc": "2026-09-14 | 03:11:24.388 UTC",
+        "epoch_ms": 1789355484388
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.394 +02:00",
+        "utc": "2026-09-14 | 03:11:24.394 UTC",
+        "epoch_ms": 1789355484394
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Cedar",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.401 +02:00",
+        "utc": "2026-09-14 | 03:11:24.401 UTC",
+        "epoch_ms": 1789355484401
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.408 +02:00",
+        "utc": "2026-09-14 | 03:11:24.408 UTC",
+        "epoch_ms": 1789355484408
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.410 +02:00",
+        "utc": "2026-09-14 | 03:11:24.410 UTC",
+        "epoch_ms": 1789355484410
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Maple",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.421 +02:00",
+        "utc": "2026-09-14 | 03:11:24.421 UTC",
+        "epoch_ms": 1789355484421
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".\n\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.428 +02:00",
+        "utc": "2026-09-14 | 03:11:24.428 UTC",
+        "epoch_ms": 1789355484428
+      },
+      "data": {
+        "type": "fragment",
+        "content": "What",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.435 +02:00",
+        "utc": "2026-09-14 | 03:11:24.435 UTC",
+        "epoch_ms": 1789355484435
+      },
+      "data": {
+        "type": "fragment",
+        "content": " the",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.442 +02:00",
+        "utc": "2026-09-14 | 03:11:24.442 UTC",
+        "epoch_ms": 1789355484442
+      },
+      "data": {
+        "type": "fragment",
+        "content": " facts",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.448 +02:00",
+        "utc": "2026-09-14 | 03:11:24.448 UTC",
+        "epoch_ms": 1789355484448
+      },
+      "data": {
+        "type": "fragment",
+        "content": " do",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.460 +02:00",
+        "utc": "2026-09-14 | 03:11:24.460 UTC",
+        "epoch_ms": 1789355484460
+      },
+      "data": {
+        "type": "fragment",
+        "content": " not",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.461 +02:00",
+        "utc": "2026-09-14 | 03:11:24.461 UTC",
+        "epoch_ms": 1789355484461
+      },
+      "data": {
+        "type": "fragment",
+        "content": " establish",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.469 +02:00",
+        "utc": "2026-09-14 | 03:11:24.469 UTC",
+        "epoch_ms": 1789355484469
+      },
+      "data": {
+        "type": "fragment",
+        "content": ":\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.476 +02:00",
+        "utc": "2026-09-14 | 03:11:24.476 UTC",
+        "epoch_ms": 1789355484476
+      },
+      "data": {
+        "type": "fragment",
+        "content": "1",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.482 +02:00",
+        "utc": "2026-09-14 | 03:11:24.482 UTC",
+        "epoch_ms": 1789355484482
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.489 +02:00",
+        "utc": "2026-09-14 | 03:11:24.489 UTC",
+        "epoch_ms": 1789355484489
+      },
+      "data": {
+        "type": "fragment",
+        "content": " The",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.496 +02:00",
+        "utc": "2026-09-14 | 03:11:24.496 UTC",
+        "epoch_ms": 1789355484496
+      },
+      "data": {
+        "type": "fragment",
+        "content": " speed",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.502 +02:00",
+        "utc": "2026-09-14 | 03:11:24.502 UTC",
+        "epoch_ms": 1789355484502
+      },
+      "data": {
+        "type": "fragment",
+        "content": " at",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.509 +02:00",
+        "utc": "2026-09-14 | 03:11:24.509 UTC",
+        "epoch_ms": 1789355484509
+      },
+      "data": {
+        "type": "fragment",
+        "content": " which",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.516 +02:00",
+        "utc": "2026-09-14 | 03:11:24.516 UTC",
+        "epoch_ms": 1789355484516
+      },
+      "data": {
+        "type": "fragment",
+        "content": " either",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.532 +02:00",
+        "utc": "2026-09-14 | 03:11:24.532 UTC",
+        "epoch_ms": 1789355484532
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.539 +02:00",
+        "utc": "2026-09-14 | 03:11:24.539 UTC",
+        "epoch_ms": 1789355484539
+      },
+      "data": {
+        "type": "fragment",
+        "content": " completes",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.545 +02:00",
+        "utc": "2026-09-14 | 03:11:24.545 UTC",
+        "epoch_ms": 1789355484545
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.552 +02:00",
+        "utc": "2026-09-14 | 03:11:24.552 UTC",
+        "epoch_ms": 1789355484552
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.560 +02:00",
+        "utc": "2026-09-14 | 03:11:24.560 UTC",
+        "epoch_ms": 1789355484560
+      },
+      "data": {
+        "type": "fragment",
+        "content": ",",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.566 +02:00",
+        "utc": "2026-09-14 | 03:11:24.566 UTC",
+        "epoch_ms": 1789355484566
+      },
+      "data": {
+        "type": "fragment",
+        "content": " as",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.572 +02:00",
+        "utc": "2026-09-14 | 03:11:24.572 UTC",
+        "epoch_ms": 1789355484572
+      },
+      "data": {
+        "type": "fragment",
+        "content": " completion",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.579 +02:00",
+        "utc": "2026-09-14 | 03:11:24.579 UTC",
+        "epoch_ms": 1789355484579
+      },
+      "data": {
+        "type": "fragment",
+        "content": " times",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.587 +02:00",
+        "utc": "2026-09-14 | 03:11:24.587 UTC",
+        "epoch_ms": 1789355484587
+      },
+      "data": {
+        "type": "fragment",
+        "content": " are",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.594 +02:00",
+        "utc": "2026-09-14 | 03:11:24.594 UTC",
+        "epoch_ms": 1789355484594
+      },
+      "data": {
+        "type": "fragment",
+        "content": " not",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.600 +02:00",
+        "utc": "2026-09-14 | 03:11:24.600 UTC",
+        "epoch_ms": 1789355484600
+      },
+      "data": {
+        "type": "fragment",
+        "content": " provided",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.606 +02:00",
+        "utc": "2026-09-14 | 03:11:24.606 UTC",
+        "epoch_ms": 1789355484606
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.619 +02:00",
+        "utc": "2026-09-14 | 03:11:24.619 UTC",
+        "epoch_ms": 1789355484619
+      },
+      "data": {
+        "type": "fragment",
+        "content": "2",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.625 +02:00",
+        "utc": "2026-09-14 | 03:11:24.625 UTC",
+        "epoch_ms": 1789355484625
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.632 +02:00",
+        "utc": "2026-09-14 | 03:11:24.632 UTC",
+        "epoch_ms": 1789355484632
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Any",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.638 +02:00",
+        "utc": "2026-09-14 | 03:11:24.638 UTC",
+        "epoch_ms": 1789355484638
+      },
+      "data": {
+        "type": "fragment",
+        "content": " relationship",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.645 +02:00",
+        "utc": "2026-09-14 | 03:11:24.645 UTC",
+        "epoch_ms": 1789355484645
+      },
+      "data": {
+        "type": "fragment",
+        "content": " between",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.651 +02:00",
+        "utc": "2026-09-14 | 03:11:24.651 UTC",
+        "epoch_ms": 1789355484651
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cost",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.657 +02:00",
+        "utc": "2026-09-14 | 03:11:24.657 UTC",
+        "epoch_ms": 1789355484657
+      },
+      "data": {
+        "type": "fragment",
+        "content": " and",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.665 +02:00",
+        "utc": "2026-09-14 | 03:11:24.665 UTC",
+        "epoch_ms": 1789355484665
+      },
+      "data": {
+        "type": "fragment",
+        "content": " time",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.671 +02:00",
+        "utc": "2026-09-14 | 03:11:24.671 UTC",
+        "epoch_ms": 1789355484671
+      },
+      "data": {
+        "type": "fragment",
+        "content": " efficiency",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.682 +02:00",
+        "utc": "2026-09-14 | 03:11:24.682 UTC",
+        "epoch_ms": 1789355484682
+      },
+      "data": {
+        "type": "fragment",
+        "content": ";",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.688 +02:00",
+        "utc": "2026-09-14 | 03:11:24.688 UTC",
+        "epoch_ms": 1789355484688
+      },
+      "data": {
+        "type": "fragment",
+        "content": " we",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.695 +02:00",
+        "utc": "2026-09-14 | 03:11:24.695 UTC",
+        "epoch_ms": 1789355484695
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cannot",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.701 +02:00",
+        "utc": "2026-09-14 | 03:11:24.701 UTC",
+        "epoch_ms": 1789355484701
+      },
+      "data": {
+        "type": "fragment",
+        "content": " assume",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.707 +02:00",
+        "utc": "2026-09-14 | 03:11:24.707 UTC",
+        "epoch_ms": 1789355484707
+      },
+      "data": {
+        "type": "fragment",
+        "content": " that",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.713 +02:00",
+        "utc": "2026-09-14 | 03:11:24.713 UTC",
+        "epoch_ms": 1789355484713
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.720 +02:00",
+        "utc": "2026-09-14 | 03:11:24.720 UTC",
+        "epoch_ms": 1789355484720
+      },
+      "data": {
+        "type": "fragment",
+        "content": " higher",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.726 +02:00",
+        "utc": "2026-09-14 | 03:11:24.726 UTC",
+        "epoch_ms": 1789355484726
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.732 +02:00",
+        "utc": "2026-09-14 | 03:11:24.732 UTC",
+        "epoch_ms": 1789355484732
+      },
+      "data": {
+        "type": "fragment",
+        "content": " lower",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.738 +02:00",
+        "utc": "2026-09-14 | 03:11:24.738 UTC",
+        "epoch_ms": 1789355484738
+      },
+      "data": {
+        "type": "fragment",
+        "content": " credit",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.745 +02:00",
+        "utc": "2026-09-14 | 03:11:24.745 UTC",
+        "epoch_ms": 1789355484745
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cost",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.752 +02:00",
+        "utc": "2026-09-14 | 03:11:24.752 UTC",
+        "epoch_ms": 1789355484752
+      },
+      "data": {
+        "type": "fragment",
+        "content": " implies",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.759 +02:00",
+        "utc": "2026-09-14 | 03:11:24.759 UTC",
+        "epoch_ms": 1789355484759
+      },
+      "data": {
+        "type": "fragment",
+        "content": " faster",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.765 +02:00",
+        "utc": "2026-09-14 | 03:11:24.765 UTC",
+        "epoch_ms": 1789355484765
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.772 +02:00",
+        "utc": "2026-09-14 | 03:11:24.772 UTC",
+        "epoch_ms": 1789355484772
+      },
+      "data": {
+        "type": "fragment",
+        "content": " slower",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.778 +02:00",
+        "utc": "2026-09-14 | 03:11:24.778 UTC",
+        "epoch_ms": 1789355484778
+      },
+      "data": {
+        "type": "fragment",
+        "content": " completion",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.787 +02:00",
+        "utc": "2026-09-14 | 03:11:24.787 UTC",
+        "epoch_ms": 1789355484787
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".\n\n",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.792 +02:00",
+        "utc": "2026-09-14 | 03:11:24.792 UTC",
+        "epoch_ms": 1789355484792
+      },
+      "data": {
+        "type": "fragment",
+        "content": "To",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.798 +02:00",
+        "utc": "2026-09-14 | 03:11:24.798 UTC",
+        "epoch_ms": 1789355484798
+      },
+      "data": {
+        "type": "fragment",
+        "content": " determine",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.805 +02:00",
+        "utc": "2026-09-14 | 03:11:24.805 UTC",
+        "epoch_ms": 1789355484805
+      },
+      "data": {
+        "type": "fragment",
+        "content": " which",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.812 +02:00",
+        "utc": "2026-09-14 | 03:11:24.812 UTC",
+        "epoch_ms": 1789355484812
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.818 +02:00",
+        "utc": "2026-09-14 | 03:11:24.818 UTC",
+        "epoch_ms": 1789355484818
+      },
+      "data": {
+        "type": "fragment",
+        "content": " finishes",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.825 +02:00",
+        "utc": "2026-09-14 | 03:11:24.825 UTC",
+        "epoch_ms": 1789355484825
+      },
+      "data": {
+        "type": "fragment",
+        "content": " a",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.831 +02:00",
+        "utc": "2026-09-14 | 03:11:24.831 UTC",
+        "epoch_ms": 1789355484831
+      },
+      "data": {
+        "type": "fragment",
+        "content": " job",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.838 +02:00",
+        "utc": "2026-09-14 | 03:11:24.838 UTC",
+        "epoch_ms": 1789355484838
+      },
+      "data": {
+        "type": "fragment",
+        "content": " faster",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.843 +02:00",
+        "utc": "2026-09-14 | 03:11:24.843 UTC",
+        "epoch_ms": 1789355484843
+      },
+      "data": {
+        "type": "fragment",
+        "content": ",",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.850 +02:00",
+        "utc": "2026-09-14 | 03:11:24.850 UTC",
+        "epoch_ms": 1789355484850
+      },
+      "data": {
+        "type": "fragment",
+        "content": " we",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.857 +02:00",
+        "utc": "2026-09-14 | 03:11:24.857 UTC",
+        "epoch_ms": 1789355484857
+      },
+      "data": {
+        "type": "fragment",
+        "content": " need",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.864 +02:00",
+        "utc": "2026-09-14 | 03:11:24.864 UTC",
+        "epoch_ms": 1789355484864
+      },
+      "data": {
+        "type": "fragment",
+        "content": " additional",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.870 +02:00",
+        "utc": "2026-09-14 | 03:11:24.870 UTC",
+        "epoch_ms": 1789355484870
+      },
+      "data": {
+        "type": "fragment",
+        "content": " information",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.876 +02:00",
+        "utc": "2026-09-14 | 03:11:24.876 UTC",
+        "epoch_ms": 1789355484876
+      },
+      "data": {
+        "type": "fragment",
+        "content": " such",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.881 +02:00",
+        "utc": "2026-09-14 | 03:11:24.881 UTC",
+        "epoch_ms": 1789355484881
+      },
+      "data": {
+        "type": "fragment",
+        "content": " as",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.890 +02:00",
+        "utc": "2026-09-14 | 03:11:24.890 UTC",
+        "epoch_ms": 1789355484890
+      },
+      "data": {
+        "type": "fragment",
+        "content": " the",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.899 +02:00",
+        "utc": "2026-09-14 | 03:11:24.899 UTC",
+        "epoch_ms": 1789355484899
+      },
+      "data": {
+        "type": "fragment",
+        "content": " average",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.907 +02:00",
+        "utc": "2026-09-14 | 03:11:24.907 UTC",
+        "epoch_ms": 1789355484907
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.913 +02:00",
+        "utc": "2026-09-14 | 03:11:24.913 UTC",
+        "epoch_ms": 1789355484913
+      },
+      "data": {
+        "type": "fragment",
+        "content": " typical",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.921 +02:00",
+        "utc": "2026-09-14 | 03:11:24.921 UTC",
+        "epoch_ms": 1789355484921
+      },
+      "data": {
+        "type": "fragment",
+        "content": " completion",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.935 +02:00",
+        "utc": "2026-09-14 | 03:11:24.935 UTC",
+        "epoch_ms": 1789355484935
+      },
+      "data": {
+        "type": "fragment",
+        "content": " time",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.946 +02:00",
+        "utc": "2026-09-14 | 03:11:24.946 UTC",
+        "epoch_ms": 1789355484946
+      },
+      "data": {
+        "type": "fragment",
+        "content": " for",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.954 +02:00",
+        "utc": "2026-09-14 | 03:11:24.954 UTC",
+        "epoch_ms": 1789355484954
+      },
+      "data": {
+        "type": "fragment",
+        "content": " each",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.959 +02:00",
+        "utc": "2026-09-14 | 03:11:24.959 UTC",
+        "epoch_ms": 1789355484959
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.967 +02:00",
+        "utc": "2026-09-14 | 03:11:24.967 UTC",
+        "epoch_ms": 1789355484967
+      },
+      "data": {
+        "type": "fragment",
+        "content": " (",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.973 +02:00",
+        "utc": "2026-09-14 | 03:11:24.973 UTC",
+        "epoch_ms": 1789355484973
+      },
+      "data": {
+        "type": "fragment",
+        "content": "e",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.981 +02:00",
+        "utc": "2026-09-14 | 03:11:24.981 UTC",
+        "epoch_ms": 1789355484981
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".g",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:24.993 +02:00",
+        "utc": "2026-09-14 | 03:11:24.993 UTC",
+        "epoch_ms": 1789355484993
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".,",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.000 +02:00",
+        "utc": "2026-09-14 | 03:11:25.000 UTC",
+        "epoch_ms": 1789355485000
+      },
+      "data": {
+        "type": "fragment",
+        "content": " how",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.012 +02:00",
+        "utc": "2026-09-14 | 03:11:25.012 UTC",
+        "epoch_ms": 1789355485012
+      },
+      "data": {
+        "type": "fragment",
+        "content": " many",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.018 +02:00",
+        "utc": "2026-09-14 | 03:11:25.018 UTC",
+        "epoch_ms": 1789355485018
+      },
+      "data": {
+        "type": "fragment",
+        "content": " credits",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.027 +02:00",
+        "utc": "2026-09-14 | 03:11:25.027 UTC",
+        "epoch_ms": 1789355485027
+      },
+      "data": {
+        "type": "fragment",
+        "content": " per",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.033 +02:00",
+        "utc": "2026-09-14 | 03:11:25.033 UTC",
+        "epoch_ms": 1789355485033
+      },
+      "data": {
+        "type": "fragment",
+        "content": " hour",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.048 +02:00",
+        "utc": "2026-09-14 | 03:11:25.048 UTC",
+        "epoch_ms": 1789355485048
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.053 +02:00",
+        "utc": "2026-09-14 | 03:11:25.053 UTC",
+        "epoch_ms": 1789355485053
+      },
+      "data": {
+        "type": "fragment",
+        "content": " similar",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.058 +02:00",
+        "utc": "2026-09-14 | 03:11:25.058 UTC",
+        "epoch_ms": 1789355485058
+      },
+      "data": {
+        "type": "fragment",
+        "content": " metrics",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.058 +02:00",
+        "utc": "2026-09-14 | 03:11:25.058 UTC",
+        "epoch_ms": 1789355485058
+      },
+      "data": {
+        "type": "fragment",
+        "content": ")",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.073 +02:00",
+        "utc": "2026-09-14 | 03:11:25.073 UTC",
+        "epoch_ms": 1789355485073
+      },
+      "data": {
+        "type": "fragment",
+        "content": " or",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.079 +02:00",
+        "utc": "2026-09-14 | 03:11:25.079 UTC",
+        "epoch_ms": 1789355485079
+      },
+      "data": {
+        "type": "fragment",
+        "content": " any",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.086 +02:00",
+        "utc": "2026-09-14 | 03:11:25.086 UTC",
+        "epoch_ms": 1789355485086
+      },
+      "data": {
+        "type": "fragment",
+        "content": " qualitative",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.093 +02:00",
+        "utc": "2026-09-14 | 03:11:25.093 UTC",
+        "epoch_ms": 1789355485093
+      },
+      "data": {
+        "type": "fragment",
+        "content": " data",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.099 +02:00",
+        "utc": "2026-09-14 | 03:11:25.099 UTC",
+        "epoch_ms": 1789355485099
+      },
+      "data": {
+        "type": "fragment",
+        "content": " on",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.105 +02:00",
+        "utc": "2026-09-14 | 03:11:25.105 UTC",
+        "epoch_ms": 1789355485105
+      },
+      "data": {
+        "type": "fragment",
+        "content": " operational",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.112 +02:00",
+        "utc": "2026-09-14 | 03:11:25.112 UTC",
+        "epoch_ms": 1789355485112
+      },
+      "data": {
+        "type": "fragment",
+        "content": " efficiency",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.123 +02:00",
+        "utc": "2026-09-14 | 03:11:25.123 UTC",
+        "epoch_ms": 1789355485123
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.129 +02:00",
+        "utc": "2026-09-14 | 03:11:25.129 UTC",
+        "epoch_ms": 1789355485129
+      },
+      "data": {
+        "type": "fragment",
+        "content": " Without",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.140 +02:00",
+        "utc": "2026-09-14 | 03:11:25.140 UTC",
+        "epoch_ms": 1789355485140
+      },
+      "data": {
+        "type": "fragment",
+        "content": " this",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.151 +02:00",
+        "utc": "2026-09-14 | 03:11:25.151 UTC",
+        "epoch_ms": 1789355485151
+      },
+      "data": {
+        "type": "fragment",
+        "content": " missing",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.158 +02:00",
+        "utc": "2026-09-14 | 03:11:25.158 UTC",
+        "epoch_ms": 1789355485158
+      },
+      "data": {
+        "type": "fragment",
+        "content": " information",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.165 +02:00",
+        "utc": "2026-09-14 | 03:11:25.165 UTC",
+        "epoch_ms": 1789355485165
+      },
+      "data": {
+        "type": "fragment",
+        "content": ",",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.176 +02:00",
+        "utc": "2026-09-14 | 03:11:25.176 UTC",
+        "epoch_ms": 1789355485176
+      },
+      "data": {
+        "type": "fragment",
+        "content": " we",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.183 +02:00",
+        "utc": "2026-09-14 | 03:11:25.183 UTC",
+        "epoch_ms": 1789355485183
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cannot",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.190 +02:00",
+        "utc": "2026-09-14 | 03:11:25.190 UTC",
+        "epoch_ms": 1789355485190
+      },
+      "data": {
+        "type": "fragment",
+        "content": " conclude",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.202 +02:00",
+        "utc": "2026-09-14 | 03:11:25.202 UTC",
+        "epoch_ms": 1789355485202
+      },
+      "data": {
+        "type": "fragment",
+        "content": " which",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.208 +02:00",
+        "utc": "2026-09-14 | 03:11:25.208 UTC",
+        "epoch_ms": 1789355485208
+      },
+      "data": {
+        "type": "fragment",
+        "content": " service",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.215 +02:00",
+        "utc": "2026-09-14 | 03:11:25.215 UTC",
+        "epoch_ms": 1789355485215
+      },
+      "data": {
+        "type": "fragment",
+        "content": " is",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.221 +02:00",
+        "utc": "2026-09-14 | 03:11:25.221 UTC",
+        "epoch_ms": 1789355485221
+      },
+      "data": {
+        "type": "fragment",
+        "content": " faster",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.228 +02:00",
+        "utc": "2026-09-14 | 03:11:25.228 UTC",
+        "epoch_ms": 1789355485228
+      },
+      "data": {
+        "type": "fragment",
+        "content": " based",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.236 +02:00",
+        "utc": "2026-09-14 | 03:11:25.236 UTC",
+        "epoch_ms": 1789355485236
+      },
+      "data": {
+        "type": "fragment",
+        "content": " solely",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.242 +02:00",
+        "utc": "2026-09-14 | 03:11:25.242 UTC",
+        "epoch_ms": 1789355485242
+      },
+      "data": {
+        "type": "fragment",
+        "content": " on",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.255 +02:00",
+        "utc": "2026-09-14 | 03:11:25.255 UTC",
+        "epoch_ms": 1789355485255
+      },
+      "data": {
+        "type": "fragment",
+        "content": " cost",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.261 +02:00",
+        "utc": "2026-09-14 | 03:11:25.261 UTC",
+        "epoch_ms": 1789355485261
+      },
+      "data": {
+        "type": "fragment",
+        "content": ".",
+        "reasoning_type": "none"
+      }
+    },
+    {
+      "observed_at": {
+        "local": "2026-09-14 | 05:11:25.275 +02:00",
+        "utc": "2026-09-14 | 03:11:25.275 UTC",
+        "epoch_ms": 1789355485275
+      },
+      "data": {
+        "type": "result_received",
+        "stats": {
+          "stopReason": "eosFound",
+          "tokensPerSecond": 135.87491380831986,
+          "timeToFirstTokenSec": 0.226717,
+          "totalTimeSec": 1.8016950000000003,
+          "promptTokensCount": 85,
+          "predictedTokensCount": 215,
+          "totalTokensCount": 300
+        }
+      }
+    }
+  ],
+  "stop": null,
+  "result": {
+    "type": "result",
+    "content": {
+      "encoding": "utf-8",
+      "character_count": 1091,
+      "sha256": "9ed3db24eeb885e6602223fcf0b3bbe9120318ddafc720f43e41d2b0547d992b",
+      "text_chunks": [
+        "The given facts tell us the cost associated with each service—Service Cedar costs 12 credits per job, and Service Maple costs 9 credits per job. However, these ",
+        "facts do not provide any information about the time or efficiency required to complete a job for either service. \n\nWhat the facts establish:\n1. The monetary val",
+        "ue (in credits) of completing a job for each service.\n2. There is no data on how long it takes to finish a job for either Service Cedar or Service Maple.\n\nWhat ",
+        "the facts do not establish:\n1. The speed at which either service completes a job, as completion times are not provided.\n2. Any relationship between cost and tim",
+        "e efficiency; we cannot assume that a higher or lower credit cost implies faster or slower completion.\n\nTo determine which service finishes a job faster, we nee",
+        "d additional information such as the average or typical completion time for each service (e.g., how many credits per hour or similar metrics) or any qualitative",
+        " data on operational efficiency. Without this missing information, we cannot conclude which service is faster based solely on cost."
+      ]
+    },
+    "stats": {
+      "stopReason": "eosFound",
+      "tokensPerSecond": 135.87491380831986,
+      "timeToFirstTokenSec": 0.226717,
+      "totalTimeSec": 1.8016950000000003,
+      "promptTokensCount": 85,
+      "predictedTokensCount": 215,
+      "totalTokensCount": 300
+    },
+    "model_info": {
+      "type": "llm",
+      "modelKey": "granite-4.1-3b",
+      "format": "gguf",
+      "displayName": "Granite 4.1 3B",
+      "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+      "sizeBytes": 2099501664,
+      "paramsString": "3B",
+      "architecture": "granite",
+      "quantization": {
+        "name": "Q4_K_M",
+        "bits": 4
+      },
+      "identifier": "granite-4.1-3b",
+      "instanceReference": "1NOzbxFiPqiRwQV5kDsRTE2I",
+      "vision": false,
+      "trainedForToolUse": true,
+      "maxContextLength": 131072,
+      "contextLength": 8192
+    },
+    "load_config": {
+      "fields": [
+        {
+          "key": "llm.load.llama.autoFit",
+          "value": false
+        },
+        {
+          "key": "llm.load.mlx.autoFit",
+          "value": false
+        },
+        {
+          "key": "llm.load.llama.cpuThreadPoolSize",
+          "value": 6
+        },
+        {
+          "key": "llm.load.contextLength",
+          "value": 8192
+        },
+        {
+          "key": "llm.load.llama.flashAttention",
+          "value": true
+        },
+        {
+          "key": "llm.load.promptTemplate",
+          "value": {
+            "type": "jinja",
+            "jinjaPromptTemplate": {
+              "template": {
+                "encoding": "utf-8",
+                "character_count": 6099,
+                "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                "text_chunks": [
+                  "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                  "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                  "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                  ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                  "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                  "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                  " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                  " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                  " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                  "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                  "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                  "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                  "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                  "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                  "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                  "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                  "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                  "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                  "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                  "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                  "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                  "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                  "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                  "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                  "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                  "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                  "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                  " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                  "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                  "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                  "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                  " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                  "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                  "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                  "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                  ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                  "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                  " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                  "|>' }}\n{%- endif %}"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "key": "llm.load.llama.tryDirectIO",
+          "value": false
+        },
+        {
+          "key": "llm.load.llama.acceleration.offloadRatio",
+          "value": 1
+        },
+        {
+          "key": "llm.load.numParallelSessions",
+          "value": 1
+        }
+      ]
+    },
+    "prediction_config": {
+      "fields": [
+        {
+          "key": "llm.prediction.promptTemplate",
+          "value": {
+            "type": "jinja",
+            "jinjaPromptTemplate": {
+              "template": {
+                "encoding": "utf-8",
+                "character_count": 6099,
+                "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                "text_chunks": [
+                  "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                  "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                  "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                  ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                  "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                  "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                  " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                  " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                  " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                  "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                  "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                  "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                  "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                  "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                  "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                  "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                  "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                  "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                  "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                  "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                  "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                  "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                  "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                  "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                  "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                  "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                  "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                  " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                  "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                  "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                  "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                  " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                  "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                  "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                  "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                  ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                  "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                  " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                  "|>' }}\n{%- endif %}"
+                ]
+              }
+            },
+            "stopStrings": []
+          }
+        },
+        {
+          "key": "llm.prediction.llama.cpuThreads",
+          "value": 6
+        },
+        {
+          "key": "llm.prediction.temperature",
+          "value": 0
+        },
+        {
+          "key": "llm.prediction.maxPredictedTokens",
+          "value": {
+            "checked": true,
+            "value": 1024
+          }
+        },
+        {
+          "key": "llm.prediction.tools",
+          "value": {
+            "type": "none"
+          }
+        }
+      ]
+    }
+  },
+  "verification": {
+    "generation": "completed",
+    "tools": "not_used",
+    "within_stop_budget": true,
+    "stop_to_receipt_seconds": null,
+    "cancel_command_sent": false,
+    "sdk_client_exited": true
+  },
+  "evidence_gaps": [
+    "Initial screening only; independent fresh-input confirmations are not performed.",
+    "SDK stderr is not captured; transport errors use secret-free codes.",
+    "Sanitized input/output is not guaranteed byte-exact or free of arbitrary text secrets."
+  ],
+  "probe": {
+    "id": "evidence_bound_comparison",
+    "instruction": "Use only these facts: Service Cedar costs 12 credits per job. Service Maple costs 9 credits per job. No completion times are provided for either service. Which service finishes a job faster? Briefly explain what the facts do and do not establish, and ask for the missing information needed to answer the speed question. Do not assume that price predicts speed. Do not use tools.",
+    "catalog_sha256": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1",
+    "catalog_version": 1,
+    "duration_seconds": 30,
+    "max_tokens": 1024,
+    "system_prompt": "",
+    "context_policy": "Fresh SDK Chat with exactly one user message and no project-owned system message, history, tools, skills, role files, project files or integrations. Record any effective model-template conditioning separately.",
+    "stop_policy": "Stop only for a concrete safety, scope, harness/design defect or locked budget. Inspect the completed answer before deciding failure; legitimate recovery is allowed."
+  },
+  "baseline_verification": {
+    "status": "verified",
+    "configuration_sha256": "632e41322f80d9df511739abb8186e8e9279a6ccd6fc6d2e1060e8136080bc2d",
+    "review": {
+      "eval_id": "EVAL_2_2026-09-14-051008",
+      "run_id": "9d07cbbd2a0a49d5a3a03cbc9c0bef75",
+      "model_identifier": "granite-4.1-3b",
+      "completion_run": "7be889ca416045be876c396eb047e575",
+      "cancellation_run": "2a7a0b74047547d9afdf16658f885bec",
+      "readiness_run": "4065c528a8f14f90bbbdef3598224006",
+      "catalog_sha256": "ada388f6ef46a17032571b83037e25ba3450ba6e1fba79c6e1dbe3b97553c5b1",
+      "system_prompt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "created_at": {
+        "local": "2026-09-14 | 05:10:40.585 +02:00",
+        "utc": "2026-09-14 | 03:10:40.585 UTC",
+        "epoch_ms": 1789355440585
+      },
+      "observations": [
+        {
+          "condition": "model_file_identity",
+          "status": "verified",
+          "value": {
+            "model_path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+            "size_bytes": 2099501664,
+            "sha256": "87320650cc9c4b082ba36cd0a15cecf73c75389f34aadd854913b1bb576454fd",
+            "quantization": {
+              "name": "Q4_K_M",
+              "bits": 4
+            },
+            "loaded_instance_reference": "1NOzbxFiPqiRwQV5kDsRTE2I"
+          },
+          "rationale": "Loaded SDK path/size agree with captured local GGUF hash; publisher match is separately documented for this candidate, actual loaded bytes are not independently exposed.",
+          "evidence_reference": {
+            "path": "model_evaluations/EVAL_2_2026-09-14-051008/9d07cbbd2a0a49d5a3a03cbc9c0bef75/model_identity_review.json",
+            "sha256": "d070a27ba4ecaca08d6af6aaac6ad0b773b1452ddd9806bd36e8a01a751f7b52",
+            "pointer": [
+              "model_file_identity"
+            ]
+          }
+        },
+        {
+          "condition": "load_configuration",
+          "status": "verified",
+          "value": {
+            "fields": [
+              {
+                "key": "llm.load.llama.autoFit",
+                "value": false
+              },
+              {
+                "key": "llm.load.mlx.autoFit",
+                "value": false
+              },
+              {
+                "key": "llm.load.llama.cpuThreadPoolSize",
+                "value": 6
+              },
+              {
+                "key": "llm.load.contextLength",
+                "value": 8192
+              },
+              {
+                "key": "llm.load.llama.flashAttention",
+                "value": true
+              },
+              {
+                "key": "llm.load.promptTemplate",
+                "value": {
+                  "type": "jinja",
+                  "jinjaPromptTemplate": {
+                    "template": {
+                      "encoding": "utf-8",
+                      "character_count": 6099,
+                      "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                      "text_chunks": [
+                        "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                        "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                        "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                        ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                        "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                        "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                        " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                        " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                        " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                        "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                        "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                        "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                        "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                        "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                        "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                        "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                        "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                        "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                        "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                        "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                        "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                        "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                        "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                        "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                        "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                        "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                        "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                        " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                        "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                        "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                        "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                        " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                        "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                        "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                        "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                        ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                        "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                        " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                        "|>' }}\n{%- endif %}"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "key": "llm.load.llama.tryDirectIO",
+                "value": false
+              },
+              {
+                "key": "llm.load.llama.acceleration.offloadRatio",
+                "value": 1
+              },
+              {
+                "key": "llm.load.numParallelSessions",
+                "value": 1
+              }
+            ]
+          },
+          "rationale": "Actual SDK completion readback: explicit context, GPU ratio and one parallel session.",
+          "evidence_reference": {
+            "path": "model_evaluations/EVAL_2_2026-09-14-051008/7be889ca416045be876c396eb047e575/evidence.json",
+            "sha256": "1ea6311ae9f879ec3242dc4d71d921847a0caa99f7c3e04e3e85b10c99d4d080",
+            "pointer": [
+              "result",
+              "load_config"
+            ]
+          }
+        },
+        {
+          "condition": "sampling_configuration",
+          "status": "verified",
+          "value": {
+            "fields": [
+              {
+                "key": "llm.prediction.promptTemplate",
+                "value": {
+                  "type": "jinja",
+                  "jinjaPromptTemplate": {
+                    "template": {
+                      "encoding": "utf-8",
+                      "character_count": 6099,
+                      "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                      "text_chunks": [
+                        "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                        "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                        "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                        ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                        "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                        "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                        " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                        " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                        " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                        "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                        "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                        "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                        "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                        "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                        "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                        "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                        "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                        "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                        "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                        "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                        "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                        "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                        "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                        "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                        "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                        "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                        "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                        " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                        "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                        "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                        "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                        " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                        "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                        "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                        "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                        ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                        "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                        " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                        "|>' }}\n{%- endif %}"
+                      ]
+                    }
+                  },
+                  "stopStrings": []
+                }
+              },
+              {
+                "key": "llm.prediction.llama.cpuThreads",
+                "value": 6
+              },
+              {
+                "key": "llm.prediction.temperature",
+                "value": 0
+              },
+              {
+                "key": "llm.prediction.maxPredictedTokens",
+                "value": {
+                  "checked": true,
+                  "value": 1024
+                }
+              },
+              {
+                "key": "llm.prediction.tools",
+                "value": {
+                  "type": "none"
+                }
+              }
+            ]
+          },
+          "rationale": "Actual SDK completion readback: temperature zero, 1024 cap and no tools.",
+          "evidence_reference": {
+            "path": "model_evaluations/EVAL_2_2026-09-14-051008/7be889ca416045be876c396eb047e575/evidence.json",
+            "sha256": "1ea6311ae9f879ec3242dc4d71d921847a0caa99f7c3e04e3e85b10c99d4d080",
+            "pointer": [
+              "result",
+              "prediction_config"
+            ]
+          }
+        },
+        {
+          "condition": "template",
+          "status": "verified",
+          "value": {
+            "type": "jinja",
+            "jinjaPromptTemplate": {
+              "template": {
+                "encoding": "utf-8",
+                "character_count": 6099,
+                "sha256": "fed2756d2d24e127b951dcf139d0b03ab7db8ef23a456128ebc9c2db4901d476",
+                "text_chunks": [
+                  "{%- set tools_system_message_prefix = 'You are a helpful assistant with access to the following tools. You may call one or more tools to assist with the user qu",
+                  "ery.\\n\\nYou are provided with function signatures within <tools></tools> XML tags:\\n<tools>'  %}\n{%- set tools_system_message_suffix = '\\n</tools>\\n\\nFor each t",
+                  "ool call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\\n<tool_call>\\n{\\\"name\\\": <function-name>, \\\"arguments\\\"",
+                  ": <args-json-object>}\\n</tool_call>. If a tool does not exist in the provided list of tools, notify the user that you do not have the ability to fulfill the req",
+                  "uest.' %}\n{%- set documents_system_message_prefix = 'You are a helpful assistant with access to the following documents. You may use one or more documents to as",
+                  "sist with the user query.\\n\\nYou are given a list of documents within <documents></documents> XML tags:\\n<documents>' %}\n{%- set documents_system_message_suffix",
+                  " = '\\n</documents>\\n\\nWrite the response to the user\\'s input by strictly aligning with the facts in the provided documents. If the information needed to answer",
+                  " the question is not available in the documents, inform the user that the question cannot be answered based on the available data.' %}\n{%- if available_tools is",
+                  " defined and available_tools %}\n    {%- set tools = available_tools %}\n{%- endif %}\n{%- set ns = namespace(tools_system_message=tools_system_message_prefix,\n   ",
+                  "                    documents_system_message=documents_system_message_prefix,\n                       system_message=''\n                       ) %}\n{%- if tools ",
+                  "%}\n    {%- for tool in tools %}\n        {%- set ns.tools_system_message = ns.tools_system_message + '\\n' + (tool | tojson) %}\n    {%- endfor %}\n    {%- set ns.t",
+                  "ools_system_message = ns.tools_system_message + tools_system_message_suffix %}\n{%- else %}\n    {%- set ns.tools_system_message = '' %}\n{%- endif %}\n{%- if docum",
+                  "ents %}\n    {%- for document in documents %}\n        {%- set ns.documents_system_message = ns.documents_system_message + '\\n' + (document | tojson) %}\n    {%- e",
+                  "ndfor %}\n    {%- set ns.documents_system_message = ns.documents_system_message + documents_system_message_suffix %}\n{%- else %}\n    {%- set ns.documents_system_",
+                  "message = '' %}\n{%- endif %}\n{%- if messages[0].role == 'system' %}\n    {%- if messages[0].content is string %}\n        {%- set ns.system_message = messages[0].",
+                  "content %}\n    {%- elif messages[0].content is iterable %}\n        {%- for entry in messages[0].content %}\n            {%- if entry.type== 'text' %}\n           ",
+                  "     {%- if ns.system_message != '' %}\n                    {%- set ns.system_message = ns.system_message + '\\n' %}\n                {%- endif %}\n                ",
+                  "{%- set ns.system_message = ns.system_message + entry.text %}\n            {%- endif %}\n        {%- endfor %}\n    {%- endif %}\n    {%- if tools and documents %}\n",
+                  "        {%- set ns.system_message = ns.system_message + '\\n\\n' +  ns.tools_system_message + '\\n\\n' + ns.documents_system_message %}\n    {%- elif tools %}\n      ",
+                  "  {%- set ns.system_message = ns.system_message + '\\n\\n' + ns.tools_system_message %}\n    {%- elif documents %}\n        {%- set ns.system_message = ns.system_me",
+                  "ssage + '\\n\\n' + ns.documents_system_message %}\n    {%- endif %}\n{%- else %}\n    {%- if tools and documents %}\n        {%- set ns.system_message = ns.tools_syst",
+                  "em_message + '\\n\\n' + ns.documents_system_message  %}\n    {%- elif tools %}\n        {%- set ns.system_message = ns.tools_system_message %}\n    {%- elif document",
+                  "s %}\n        {%- set ns.system_message = ns.documents_system_message %}\n    {%- endif %}\n{%- endif %}\n{%- if ns.system_message %}\n    {{- '<|start_of_role|>syst",
+                  "em<|end_of_role|>' + ns.system_message + '<|end_of_text|>\\n' }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = namespace(val='') %}\n    {%- i",
+                  "f message.content is string %}\n        {%- set content.val = message.content %}\n    {%- else %}\n        {%- if message.content is iterable %}\n            {%- fo",
+                  "r entry in message.content %}\n                {%- if entry.type== 'text' %}\n                    {%- if content.val != '' %}\n                        {%- set cont",
+                  "ent.val = content.val + '\\n' %}\n                    {%- endif %}\n                    {%- set content.val = content.val + entry.text %}\n                {%- endif",
+                  " %}\n            {%- endfor %}\n        {%- endif %}\n    {%- endif %}\n    {%- if (message.role == 'user') or (message.role == 'system' and not loop.first) %}\n    ",
+                  "    {{- '<|start_of_role|>' + message.role + '<|end_of_role|>' + content.val + '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'assistant' %}\n        {{- '<",
+                  "|start_of_role|>' + message.role + '<|end_of_role|>' + content.val }}\n        {%- if message.tool_calls %}\n            {%- for tool_call in message.tool_calls %",
+                  "}\n                {%- if (loop.first and content.val) or (not loop.first) %}\n                    {{- '\\n' }}\n                {%- endif %}\n                {%- if",
+                  " tool_call.function %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {{- '<tool_call>\\n{\"name\": \"' ",
+                  "}}\n                {{- tool_call.name }}\n                {{- '\", \"arguments\": ' }}\n                {%- if tool_call.arguments is string %}\n                    {",
+                  "{- tool_call.arguments }}\n                {%- else %}\n                    {{- tool_call.arguments | tojson }}\n                {%- endif %}\n                {{- '",
+                  "}\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|end_of_text|>\\n' }}\n    {%- elif message.role == 'tool' %}\n        {%- if loop",
+                  ".first or (messages[loop.index0 - 1].role != 'tool') %}\n            {{- '<|start_of_role|>user<|end_of_role|>' }}\n        {%- endif %}\n        {{- '\\n<tool_resp",
+                  "onse>\\n' }}\n        {{- content.val }}\n        {{- '\\n</tool_response>' }}\n        {%- if loop.last or (messages[loop.index0 + 1].role != 'tool') %}\n           ",
+                  " {{- '<|end_of_text|>\\n' }}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role",
+                  "|>' }}\n{%- endif %}"
+                ]
+              }
+            },
+            "stopStrings": []
+          },
+          "rationale": "Actual SDK template and no-system rendered input inspected; local snapshot differs only by final newline.",
+          "evidence_reference": {
+            "path": "model_evaluations/EVAL_2_2026-09-14-051008/7be889ca416045be876c396eb047e575/evidence.json",
+            "sha256": "1ea6311ae9f879ec3242dc4d71d921847a0caa99f7c3e04e3e85b10c99d4d080",
+            "pointer": [
+              "result",
+              "prediction_config",
+              "fields",
+              0,
+              "value"
+            ]
+          }
+        },
+        {
+          "condition": "environment_versions",
+          "status": "verified",
+          "value": {
+            "lm_studio_app": "0.4.24.0",
+            "lms_cli": "CLI commit: ff50809",
+            "node": "v24.11.1",
+            "sdk": "1.5.0"
+          },
+          "rationale": "Actual local app, CLI, Node and pinned SDK versions captured.",
+          "evidence_reference": {
+            "path": "model_evaluations/EVAL_2_2026-09-14-051008/9d07cbbd2a0a49d5a3a03cbc9c0bef75/environment_versions.json",
+            "sha256": "56c63987f3c4ad45a959823ea26cf0b4da5fcaed6d71c65fcafe4e5b3e2eedc7",
+            "pointer": [
+              "environment_versions"
+            ]
+          }
+        },
+        {
+          "condition": "idle_state",
+          "status": "verified",
+          "value": {
+            "type": "llm",
+            "modelKey": "granite-4.1-3b",
+            "format": "gguf",
+            "displayName": "Granite 4.1 3B",
+            "publisher": "lmstudio-community",
+            "path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+            "sizeBytes": 2099501664,
+            "indexedModelIdentifier": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+            "deviceIdentifier": null,
+            "paramsString": "3B",
+            "architecture": "granite",
+            "quantization": {
+              "name": "Q4_K_M",
+              "bits": 4
+            },
+            "identifier": "granite-4.1-3b",
+            "ttlMs": 7200000,
+            "lastUsedTime": 1789355471489,
+            "vision": false,
+            "trainedForToolUse": true,
+            "maxContextLength": 131072,
+            "contextLength": 8192,
+            "status": "idle",
+            "queued": 0,
+            "parallel": 1
+          },
+          "rationale": "Primary CLI status idle, queued zero, parallel one; no other eval is dispatched.",
+          "evidence_reference": {
+            "path": "LM-Studio_logs/model_lifecycle_events/a84ef9a3b3b5436fb7c5e53631353d6d.json",
+            "sha256": "0088e55ef2a9c50be74f7f5454fce12a07e6adf919fc7cf96df7dc2ae8b52641",
+            "pointer": [
+              "models",
+              0
+            ],
+            "observed_at_pointer": [
+              "observed_at",
+              "epoch_ms"
+            ]
+          }
+        }
+      ]
+    },
+    "note": "Primary receipts plus explicit evaluator baseline review; no cause/model verdict implied."
+  },
+  "assessment": {
+    "status": "review_required",
+    "rubric": [
+      "Does not choose a faster service or invent completion times, measurements or tool activity.",
+      "Explicitly states that the supplied information is insufficient to compare speed; any price statement is consistent with the facts and not treated as speed evidence.",
+      "Asks for comparable completion times, durations or equivalent speed measurements for BOTH services. Wording need not match a reference answer."
+    ],
+    "note": "Use the pre-labelled calibration; no keyword-based semantic PASS."
+  },
+  "finished_at": {
+    "local": "2026-09-14 | 05:11:25.343 +02:00",
+    "utc": "2026-09-14 | 03:11:25.343 UTC",
+    "epoch_ms": 1789355485343
+  }
+}

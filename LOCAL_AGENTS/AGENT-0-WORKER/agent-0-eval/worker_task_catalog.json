@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "role": "0-WORKER",
+  "policy": "Recipes do not authorize automatic execution. Freeze exact instruction, fixture, context, grader and budgets before each attempt. Select adaptive tasks from prior evidence; preserve mandatory role gates.",
+  "rounds": [
+    {
+      "round": 1,
+      "purpose": "Decide whether the candidate is worth further evaluation",
+      "tasks": [
+        {"id": "record_transformation", "contract": "instruction_following_catalog.json", "runner": "controlled_run.py"},
+        {"id": "priority_routing", "contract": "instruction_following_catalog.json", "runner": "controlled_run.py"},
+        {"id": "evidence_bound_comparison", "contract": "instruction_following_catalog.json", "runner": "controlled_run.py"}
+      ]
+    },
+    {
+      "round": 2,
+      "purpose": "Explore relevant limits and controlled context effects",
+      "tasks": [
+        {"id": "nested_record_edit", "contract": "structured_edit_catalog.json", "runner": "controlled_run.py", "success": "Apply nested numeric/boolean edits and preserve all unrelated JSON values"},
+        {"id": "context_priority_selection", "requires_evaluator_design": true, "recipe": "Supply relevant and irrelevant task context with explicit priority; require a grounded useful result without invented facts"},
+        {"id": "evidence_selected_limit_task", "requires_evaluator_design": true, "recipe": "Freeze a task targeting the largest remaining uncertainty after the first five outcomes; do not improvise grading after output"}
+      ]
+    },
+    {
+      "round": 3,
+      "purpose": "Basic actual file/tool operation",
+      "tasks": [
+        {"id": "nested_file_read", "requires_evaluator_design": true, "recipe": "Read a nested disposable file and return a value absent from the instruction; preserve native vs bridged dispatch evidence"},
+        {"id": "file_creation_readback", "requires_evaluator_design": true, "recipe": "Create a specified small UTF-8 file, read back exact requested content and preserve a protected control file", "required_tool_capability": "bounded_file_creation"},
+        {"id": "literal_text_replacement", "requires_evaluator_design": true, "recipe": "Change exactly one specified text occurrence and preserve every other byte; verify hash and readback"}
+      ]
+    },
+    {
+      "round": 4,
+      "purpose": "Intermediate operation and meaningful recovery",
+      "tasks": [
+        {"id": "two_file_id_join", "requires_evaluator_design": true, "recipe": "Join two small files by ID and write a summary; report unmatched records rather than inventing values", "required_tool_capability": "task_selected_multiple_files"},
+        {"id": "validator_failure_interpretation", "requires_evaluator_design": true, "recipe": "Run a fixed trusted validator and correctly interpret real exit status including a deliberately failed check"},
+        {"id": "bounded_tool_error_recovery", "requires_evaluator_design": true, "recipe": "Respond usefully to a missing file or bounded tool error without repeating no-effect calls or claiming success"}
+      ]
+    },
+    {
+      "round": 5,
+      "purpose": "Advanced dependent operations",
+      "tasks": [
+        {"id": "structured_edit_and_summary", "requires_evaluator_design": true, "recipe": "Apply dependent JSON edits including a boolean, preserve unknown fields and write a verified summary"},
+        {"id": "trusted_test_repair_chain", "requires_evaluator_design": true, "recipe": "Diagnose a supplied fixed test/validator failure, repair the fixture and preserve prior passing invariants; never execute candidate-modified code"},
+        {"id": "swedish_multifile_preservation", "requires_evaluator_design": true, "recipe": "Make exact bounded Swedish UTF-8 edits in multiple files while preserving protected files and unrelated bytes", "required_tool_capability": "task_selected_multiple_files"}
+      ]
+    },
+    {
+      "round": 6,
+      "purpose": "ComfyUI domain context and observable skill procedure",
+      "tasks": [
+        {"id": "workflow_title_edit", "contract": "workflow_rename_fixture.json", "runner": "worker_file_task_evaluation.py", "skill_mode": "explicit", "skill_id": "workflow_title_preservation", "success": "Actual read, exactly requested node titles, preservation and final readback; static structure/precision only"},
+        {"id": "workflow_graph_skill_selection", "requires_evaluator_design": true, "recipe": "Implicitly select a relevant supplied skill for a node/link edit; ignore irrelevant skills and request missing node contracts"},
+        {"id": "workflow_diagnosis_procedure", "requires_evaluator_design": true, "recipe": "Use an advanced skill for a bounded defect/subgraph task after exact interface contracts are available"}
+      ]
+    },
+    {
+      "round": 7,
+      "purpose": "Coherent disposable ComfyUI roadmap work",
+      "tasks": [
+        {"id": "workflow_feature_roadmap", "requires_evaluator_design": true, "recipe": "Complete a small node/link feature roadmap and verify goal, graph, scope and preservation"},
+        {"id": "workflow_bugfix_roadmap", "requires_evaluator_design": true, "recipe": "Repair a damaged workflow with fail-to-pass evidence and regression checks"},
+        {"id": "workflow_multifile_resume", "requires_evaluator_design": true, "recipe": "Finish a dependent workflow/support-file roadmap or resume a documented partial change from explicit disk state"}
+      ]
+    },
+    {
+      "round": 8,
+      "purpose": "Decide whether the installed candidate is worth Team Master's regular daily use",
+      "tasks": [
+        {"id": "held_out_workflow_roadmap", "requires_evaluator_design": true, "recipe": "Perform a fresh held-out realistic ComfyUI roadmap without solution leakage or coaching"},
+        {"id": "verified_workflow_regression", "requires_evaluator_design": true, "recipe": "Preserve previously verified useful behavior on fresh isomorphic fixtures under locked conditions"},
+        {"id": "known_palette_workflow_creation", "requires_evaluator_design": true, "recipe": "Create a new structurally intact UI workflow from shown/verified node contracts. Creativity, layout and image quality are not failure criteria; no generation or weights access", "required_tool_capability": "bounded_file_creation"}
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # ssirak@hotmail.com [1 ÅTERSTÄLLNING]
 
-### 5h Reset: 23:20
+### 5h Reset: 18:50
 
-#### Weekly Left (R: 09-20): 70%
+#### Weekly Left (R: 09-20): 25%
 
 ---
 

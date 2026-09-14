@@ -1,0 +1,32 @@
+{
+  "eval_id": "EVAL_3_2026-09-14-140930",
+  "run_id": "724012d456784c24bbbd1fe5014d7af5",
+  "model_file_identity": {
+    "model_path": "lmstudio-community/granite-4.1-3b-GGUF/granite-4.1-3b-Q4_K_M.gguf",
+    "size_bytes": 2099501664,
+    "sha256": "87320650cc9c4b082ba36cd0a15cecf73c75389f34aadd854913b1bb576454fd",
+    "quantization": {
+      "name": "Q4_K_M",
+      "bits": 4
+    },
+    "loaded_instance_reference": "USntXbTGHH2UzS5wBsDbj8dK"
+  },
+  "sources": [
+    {
+      "path": "model_evaluations/EVAL_3_2026-09-14-140930/da3ecd73ebbf4da28163a199230fa5bc/evidence.json",
+      "sha256": "d9d0961970b7c7ae2a3d6ddef593ce4418760f7f6cdd8d119f47f60a551079ba",
+      "pointer": [
+        "result",
+        "model_info"
+      ]
+    },
+    {
+      "path": "model_evaluations/EVAL_3_2026-09-14-140930/676343071a4b480382e8c0093b0b9083/readiness.json",
+      "sha256": "dad2c384e42b3e1448b376d1b0f0645bea157f2787ae9bf4052634d7002c4d31",
+      "pointer": [
+        "local_file_identity"
+      ]
+    }
+  ],
+  "verification": "Loaded SDK path/size agree with captured local GGUF hash; publisher match is separately documented for this candidate, actual loaded bytes are not independently exposed."
+}

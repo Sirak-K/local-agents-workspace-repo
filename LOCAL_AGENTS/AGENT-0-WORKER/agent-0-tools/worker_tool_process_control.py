@@ -66,6 +66,7 @@ def _kernel():
         "TerminateJobObject": ([w.HANDLE, w.UINT], w.BOOL),
         "TerminateProcess": ([w.HANDLE, w.UINT], w.BOOL),
         "ResumeThread": ([w.HANDLE], w.DWORD),
+        "GetExitCodeProcess": ([w.HANDLE, c.POINTER(w.DWORD)], w.BOOL),
         "CloseHandle": ([w.HANDLE], w.BOOL),
         "CreateProcessW": ([w.LPCWSTR, w.LPWSTR, c.c_void_p, c.c_void_p, w.BOOL,
                             w.DWORD, c.c_void_p, w.LPCWSTR,
@@ -83,6 +84,7 @@ class WorkerToolProcessControl:
         self.kernel = _kernel()
         self.lock = RLock()
         self.stopping = False
+        self.process_handles = {}
         self.job = self.kernel.CreateJobObjectW(None, None)
         if not self.job:
             raise c.WinError(c.get_last_error())
@@ -130,13 +132,25 @@ class WorkerToolProcessControl:
                 self._check(self.kernel.AssignProcessToJobObject(self.job, info.process))
                 if self.kernel.ResumeThread(info.thread) == 0xFFFFFFFF:
                     raise c.WinError(c.get_last_error())
+                self.process_handles[int(info.pid)] = info.process
                 return int(info.pid)
             except BaseException:
                 self.kernel.TerminateProcess(info.process, 1)
                 raise
             finally:
                 self.kernel.CloseHandle(info.thread)
-                self.kernel.CloseHandle(info.process)
+                if int(info.pid) not in self.process_handles:
+                    self.kernel.CloseHandle(info.process)
+
+    def exit_status(self, pid: int) -> int | None:
+        """Retain the owned handle so the actual OS exit code can be verified."""
+        with self.lock:
+            handle = self.process_handles.get(pid)
+            if not handle:
+                raise ValueError("process is not owned by this job")
+            status = w.DWORD()
+            self._check(self.kernel.GetExitCodeProcess(handle, c.byref(status)))
+            return None if status.value == 259 else int(status.value)
 
     def accounting(self) -> dict[str, int]:
         with self.lock:
@@ -167,6 +181,9 @@ class WorkerToolProcessControl:
                 try:
                     self.stop()
                 finally:
+                    for handle in self.process_handles.values():
+                        self.kernel.CloseHandle(handle)
+                    self.process_handles.clear()
                     self.kernel.CloseHandle(self.job)
                     self.job = None
 

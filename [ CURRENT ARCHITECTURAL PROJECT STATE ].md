@@ -198,7 +198,7 @@ Följande ska inte antas vara generell färdig kapacitet:
 - Textuellt formulerade tool calls är inte automatiskt native tool dispatch.
 - Modellspecifika tool-envelope-adaptrar är diagnostiska kompatibilitetslager, inte modellneutral framgång.
 - Full read/write-WORKER-förmåga är inte bevisad bara för att läsning eller verktygsfri instruktionsefterlevnad fungerar.
-- Extern MCP-processkontroll, komplett OS-isolering och en verifierad no-progress-watchdog är inte etablerade som generell runtimegaranti.
+- Windows-jobb ger verifierad kontroll av ägda validatorprocesser och den aktuella filrunnern har en effektbaserad no-progress-watchdog; detta är fortfarande inte komplett OS-isolering eller en generell garanti för externa MCP-processer.
 - Käll- och testpaths måste vara bundna till den aktuella projekttoppen innan nästa eval får betraktas som reproducerbar efter en projektflytt.
 
 Arkitekturens avsikt är därför kontrollerad progression: minsta verklighetsnära uppgift, oberoende verifikation, bevarad evidens och nästa kapacitetsökning först när föregående lager är tillräckligt försvarbart.

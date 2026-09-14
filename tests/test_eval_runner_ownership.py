@@ -13,7 +13,8 @@ class EvalRunnerOwnershipTest(unittest.TestCase):
     def test_python_runners_parse(self):
         for name in ("controlled_run.py", "worker_file_read_evaluation.py", "evaluation_paths.py",
                      "capture_screening_baseline.py", "inspect_screening_readiness.py",
-                     "start_reviewed_screening.py"):
+                     "start_reviewed_screening.py", "worker_text_task_evaluation.py",
+                     "tool_dispatch_evidence.py"):
             with self.subTest(name=name):
                 ast.parse(self.source(name), filename=name)
 

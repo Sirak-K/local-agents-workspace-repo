@@ -1,0 +1,15 @@
+{
+  "eval_id": "EVAL_3_2026-09-14-140930",
+  "run_id": "724012d456784c24bbbd1fe5014d7af5",
+  "environment_versions": {
+    "lm_studio_app": "0.4.24.0",
+    "lms_cli": "CLI commit: ff50809",
+    "node": "v24.11.1",
+    "sdk": "1.5.0"
+  },
+  "observed_at": {
+    "local": "2026-09-14 | 14:12:02.068 +02:00",
+    "utc": "2026-09-14 | 12:12:02.068 UTC",
+    "epoch_ms": 1789387922068
+  }
+}

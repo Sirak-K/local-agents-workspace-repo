@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "purpose": "Evaluator-dispatched mutation during real SDK generation; never a candidate task result",
+  "instruction": "List consecutive integers starting at 1, one number per line, continuing until 10000. Do not use tools or explain.",
+  "request": {
+    "path": "workflow.json",
+    "expected_sha256": "519e91edd93673d9caa6f856f36e99fac01b7fa4b6676e2f496826840db5ec9c",
+    "old_text": "\"title\": \"OUTPUT WIDTH\"",
+    "new_text": "\"title\": \"DIAGNOSTIC WIDTH CONTROL\""
+  }
+}

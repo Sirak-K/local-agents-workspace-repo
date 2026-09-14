@@ -2,7 +2,7 @@
 
 Denna katalog äger 0-WORKER-rollens gemensamma eval-runners, fixtures och graders. Evalspecifik evidens ägs av `model_evaluations/<eval-id>/<run-id>/`; generiska LM Studio-driftloggar ligger separat under `LM-Studio_logs/`. Historiska evalresultat ska inte flyttas eller skrivas om.
 
-Gemensam design: [`model_evaluations/[EVAL] - [ARCH.] - [Frontier-As-Evaluator] - [Design].md`](<../../../model_evaluations/[EVAL] - [ARCH.] - [Frontier-As-Evaluator] - [Design].md>).
+Gemensam design: [`model_evaluations/[EVAL] - [ ARCH. ] - [Frontier-As-Evaluator] - [Design].md`](<../../../model_evaluations/[EVAL] - [ ARCH. ] - [Frontier-As-Evaluator] - [Design].md>).
 
 ## Identitets- och pathkontrakt
 
@@ -71,13 +71,55 @@ python $control assess --eval-id $evalId --run-id '<screening-run-id>' --criteri
 
 `assessment.json` binds till originalets SHA-256 och kataloghash och ska inte ersätta `evidence.json`.
 
+## Nästa verktygsfria kontextuppgift
+
+`structured_edit_catalog.json` låser en liten teknologioberoende JSON-ändring; `structured_edit_context.md` är en eval-fixture, inte en generell produktionsprompt. `evaluation_contracts.py` verifierar källhash, exakt system-/user-roll, låsta budgetar och oberoende JSON-sluttillstånd. SDK-Chat är färsk; inga tools, skills eller dold historik ingår. Kontextens innehåll/hash och instruktionens hash sparas i varje run. Uppgiften mäter en simulerad strukturerad ändring, inte faktisk filmutation.
+
+Server och exakt målmodell måste vara aktiva efter separat preflight. Starta endast ett avsiktligt försök med eget eval-id; ingen automatisk retry sker:
+
+```powershell
+python $control start --eval-id $evalId --model '<loaded-instance-id>' --task-id nested_record_edit --duration 30 --stop-budget 5 --max-tokens 512
+```
+
+`assessment.status` är uppgiftsutfall, inte modellfelorsak. Stopp, trunkering eller ändrad källa gör bedömningen ogiltig. Ett nytt försök efter korrigering ska länka originalet med `--previous-run` och `--change-reason`.
+
+## Uppgiftsrecept och progression
+
+`worker_task_catalog.json` bevarar den beslutade trajectoryn med åtta rounds och tre uppgifter per round. Endast poster med en faktisk lokal `contract` och `runner` är låsta kontrakt; övriga är adaptiva recept som uttryckligen kräver evaluatorns exakta uppgiftsdesign. `worker_task_progression.py` validerar katalogen och visar receptstatus men auktoriserar eller startar aldrig en körning. Därmed kan senare ERST anpassas efter evidens utan att efterhandskonstruerade fixtures eller graders framställs som förberedda.
+
+## Filmutation, validering och kandidatskills
+
+`worker_text_task_evaluation.py` äger Round 3:s teknologioberoende basic file tasks. `basic_file_task_catalog.json` version 2 låser för närvarande avgränsad skapelse med creation-toolens atomiska commit och oberoende exakta byte-readback samt hashvillkorad literal replacement med faktisk diskverifiering. Slutrapporten måste börja med exakt `STATUS=SUCCESS` eller `STATUS=FAILED`; `task_verification.self_report` jämför detta separat med observerat disk-/toolutfall och task PASS kräver överensstämmelse. Varje run får en egen workspace, skyddad kontrollfil, exakta tillåtna sökvägar, toolreceipts och separat `assessment.model_fault_attribution`; native och Granite-adapterförsök får inte slås ihop. Adaptern accepterar endast ett exakt komplett tool-envelope och reparerar aldrig argument heuristiskt.
+
+`tool_dispatch_evidence.py` sammanställer varje observerat tool-anrop per dispatchkälla och `call_id`: rå representation, parsad request, finaliserad request, guardbeslut, handler-start och receipt. Native SDK och modelladapter hålls separata. Ett saknat steg visar var kedjan upphörde men tilldelar ingen felorsak. Ett direkt evaluatoranrop till toolimplementationen är fortfarande endast en toolkontroll, aldrig bevis för modell/template/parser-dispatch.
+
+`worker_file_task_evaluation.py` äger den bounded fil-/tool-loopen. Nuvarande konkreta kontrakt är den statiska workflow-title-ändringen: en unik fixturekopia, expected-before-hash, bounded läsning, hashvillkorad atomisk replacement, faktisk readback, fast evaluatorägd validator och oberoende diskgrader. Watchdogen stoppar efter tre faktamässigt likvärdiga toolutfall utan relevant effekt; ändrad hash, exitstatus eller nytt validatorresultat får återhämtningen fortsätta.
+
+Tre modellneutrala kandidat-resurser finns i `agent-0-skills/`: title-preservation, graph-editing och workflow-diagnosis. De är lokala kandidatdata, inte Codex skills. `--skill-mode explicit --skill-id <id>` injicerar exakt en hashverifierad procedur; `--skill-mode discovery` exponerar bara katalogmetadata och ett separat bounded read-tool. Evidensen registrerar exakt exponering. Ett lyckat uppgiftsresultat bevisar inte att skillen orsakade framgången.
+
+Den statiska validatorn använder den lokalt pinnade officiella Workflow JSON 0.4-schemakopian och grafkontroller. `pass` betyder endast de kontrollerade statiska egenskaperna—aldrig frontendöppning, installerad nodruntime, Run-ready eller lyckad bildgenerering. Okänd subgraf-/nodsemantik kräver separat review.
+
+## Mekanisk evidensgranskning och REPORT SUMMARY
+
+`evaluation_evidence_review.py` kan efter en run verifiera identitet, instruktionens rekonstruktion/hash, källfingerprints, fixturemanifest, retrylänk, assessmentbindning, workspace-scope och stoppfält. Resultatet gör ingen modellfelsattribuering. REPORT SUMMARY-kontrollen kräver exakt en rapportfil och signalerar alltid att en mänsklig/Frontier-semantisk review måste kontrollera samtliga fyra ERQER-frågeområden, evidenslänkar och orsaksseparation.
+
+Före varje konkret start ska evaluatorn dessutom kontrollera exakt laddad modell, faktisk renderad input och tokenbudget, tom kö och exakt en parallell session, färsk Chat, uppgiftens kontrakt, fixture/scope, grader, stoppväg och relevanta tidigare regressionsutfall. Avvikande parallellitet är en blockerande konfigurationsmismatch men kallas inte drift utan jämförbar förändringsevidens. Ingen automatisk retry eller automatisk progression sker.
+
 ## WORKER filläsningsdiagnostik
+
+### Transportreview före kandidatens tooluppgifter
+
+`tool_transport_reproducibility.py --eval-id <eval-id> --run-id <nytt-run-id> --model <laddad-instans-id> --execute-series` kör exakt tre read-only-försök, aldrig en full eval. Modellen/servern ska redan vara aktiva; serien laddar inte modeller. Varje försök använder färsk Chat, samma fixture/input/schema/sampling och befintliga kör-/stoppbudgetar. `transport_review.json` sparar aktivt run-id före start; använd read-runnerns `inspect`/`stop` med detta id. Instans-/villkorsbyte eller overifierat avslut stoppar serien.
+
+Alla ordinarie read/text/file-toolkörningar måste ange `--transport-review-file model_evaluations/<eval-id>/<diagnostik-run-id>/transport_review.json`. Spärren verifierar tre distinkta lyckade reads, originalhashar, oförändrade projektkällor/installerad runtime, samma instans och högst 30 min ålder; instans kontrolleras på nytt före genereringstillstånd. Bounded explicita stoppdiagnostiklägen är undantagna, aldrig kandidatprestation. Review bevisar endast smal native read-transport, inte skriv-/skillförmåga eller generell stabilitet. Vid FAIL: ingen full tool-eval eller blind upprepning; undersök eventskillnaden och rätt ägare först.
+
+Evidence innehåller exakta bounded projektkällsnapshots samt publika tool-callbacks och råtext/hash när tillgängligt. Snapshoten gör projektkoden rekonstruerbar, inte LM Studios interna backend. Saknad eller redigerad råtext ger ingen byte-identitetsutsaga. Historiska evalfiler kompletteras inte retroaktivt.
 
 `worker_file_read_evaluation.py` skapar en disponibel run-workspace och exponerar endast den etablerade read-only-filen `project/config/service.json`. Den är en smal diagnostik, inte generell WORKER-validering.
 
 ```powershell
 $fileRead = 'LOCAL_AGENTS/AGENT-0-WORKER/agent-0-eval/worker_file_read_evaluation.py'
-$readRun = python $fileRead start --eval-id $evalId --model '<loaded-instance-id>' | ConvertFrom-Json
+$readRun = python $fileRead start --eval-id $evalId --model '<loaded-instance-id>' --transport-review-file $transportReview | ConvertFrom-Json
 python $fileRead inspect --eval-id $evalId --run-id $readRun.run_id
 python $fileRead stop --eval-id $evalId --run-id $readRun.run_id --reason 'Verifierad diagnostisk stopporsak'
 ```
@@ -86,7 +128,7 @@ python $fileRead stop --eval-id $evalId --run-id $readRun.run_id --reason 'Verif
 
 ## Bounded körning och evidens
 
-`controlled_run.py` håller bounded execution, stop-budget, evidence-budget och löpande snapshots. Den bevarar partiellt resultat och stoppreceipts. Standarddiagnostik använder 30 s körbudget, 5 s stop-budget och 512 outputtokens; screeningens låsta katalogvärden gäller när `--probe-id` används.
+`controlled_run.py` håller bounded execution, stop-budget, evidence-budget och löpande snapshots. Den bevarar partiellt resultat och stoppreceipts. Standarddiagnostik använder 30 s körbudget, 5 s stop-budget och 512 outputtokens; respektive katalogs låsta värden gäller vid `--probe-id` och `--task-id`.
 
 Evalspecifik evidence ska inte skrivas till `LM-Studio_logs/frontier_evaluations`. Evaluation-oberoende driftobservationer, exempelvis lifecycle/idle-captures, får fortsatt ligga under `LM-Studio_logs/` och länkas projektrelativt från eval-evidensen.
 

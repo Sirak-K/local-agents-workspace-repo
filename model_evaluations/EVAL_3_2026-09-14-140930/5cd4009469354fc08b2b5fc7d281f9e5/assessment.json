@@ -1,0 +1,25 @@
+{
+  "eval_id": "EVAL_3_2026-09-14-140930",
+  "run_id": "5cd4009469354fc08b2b5fc7d281f9e5",
+  "status": "fail",
+  "evaluator": "Codex",
+  "assessed_at": "2026-09-14 | 14:16:07.432 +02:00",
+  "evidence_sha256": "d30d57568846ec20cb5718d4f7485d54fd0d2a02b74fd287c87c687dca791ff1",
+  "criteria": [
+    {
+      "criterion": "The candidate requested read_workspace_text for the only allowed nested file.",
+      "status": "pass"
+    },
+    {
+      "criterion": "LM Studio parsed and dispatched the request and the read handler completed.",
+      "status": "fail"
+    },
+    {
+      "criterion": "The final answer reported both exact fixture values and the read-only fixture remained unchanged.",
+      "status": "fail"
+    }
+  ],
+  "scope": "single_nested_file_read_on_native_sdk_tool_path",
+  "causal_classification": "native_template_or_parser_to_dispatch_gap",
+  "model_fault_attribution": "not_performed"
+}

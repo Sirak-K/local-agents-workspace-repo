@@ -1,0 +1,25 @@
+{
+  "eval_id": "EVAL_3_2026-09-14-140930",
+  "run_id": "40f7e270cd8848ee9902c117926af5b6",
+  "status": "fail",
+  "evaluator": "Codex",
+  "assessed_at": "2026-09-14 | 14:16:07.432 +02:00",
+  "evidence_sha256": "429d3ebe90cd9187b36c3fc3f98275666bde20a023981bb8182dae8bccc6575e",
+  "criteria": [
+    {
+      "criterion": "The strict Granite adapter accepted an exact documented tool envelope without repairing or guessing arguments.",
+      "status": "fail"
+    },
+    {
+      "criterion": "A read handler completed and the final answer reported both exact fixture values.",
+      "status": "fail"
+    },
+    {
+      "criterion": "The read-only fixture remained unchanged.",
+      "status": "pass"
+    }
+  ],
+  "scope": "single_nested_file_read_with_strict_model_specific_adapter",
+  "causal_classification": "adapter_envelope_rejected_before_dispatch",
+  "model_fault_attribution": "not_performed"
+}
