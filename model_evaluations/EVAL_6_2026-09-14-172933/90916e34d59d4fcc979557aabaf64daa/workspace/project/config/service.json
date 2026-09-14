@@ -1,0 +1,6 @@
+{
+  "service_name": "render-worker",
+  "queue_name": "render-b2ede166",
+  "retry_limit": 3,
+  "note": "Unrelated field; do not report unless asked."
+}

@@ -17,8 +17,8 @@
       "purpose": "Explore relevant limits and controlled context effects",
       "tasks": [
         {"id": "nested_record_edit", "contract": "structured_edit_catalog.json", "runner": "controlled_run.py", "success": "Apply nested numeric/boolean edits and preserve all unrelated JSON values"},
-        {"id": "context_priority_selection", "requires_evaluator_design": true, "recipe": "Supply relevant and irrelevant task context with explicit priority; require a grounded useful result without invented facts"},
-        {"id": "evidence_selected_limit_task", "requires_evaluator_design": true, "recipe": "Freeze a task targeting the largest remaining uncertainty after the first five outcomes; do not improvise grading after output"}
+        {"id": "context_priority_selection", "contract": "structured_edit_catalog.json", "runner": "controlled_run.py", "success": "Select the current settings from supplied context rather than archived values"},
+        {"id": "evidence_selected_limit_task", "contract": "structured_edit_catalog.json", "runner": "controlled_run.py", "success": "Resume the supplied roadmap in exact execution order while preserving protected and completed work"}
       ]
     },
     {
@@ -26,15 +26,15 @@
       "purpose": "Basic actual file/tool operation",
       "tasks": [
         {"id": "nested_file_read", "requires_evaluator_design": true, "recipe": "Read a nested disposable file and return a value absent from the instruction; preserve native vs bridged dispatch evidence"},
-        {"id": "file_creation_readback", "requires_evaluator_design": true, "recipe": "Create a specified small UTF-8 file, read back exact requested content and preserve a protected control file", "required_tool_capability": "bounded_file_creation"},
-        {"id": "literal_text_replacement", "requires_evaluator_design": true, "recipe": "Change exactly one specified text occurrence and preserve every other byte; verify hash and readback"}
+        {"id": "file_creation_readback", "contract": "basic_file_task_catalog.json", "runner": "worker_text_task_evaluation.py", "success": "Create the specified UTF-8 file with an independent exact-byte readback receipt and preserve the protected control file", "required_tool_capability": "bounded_file_creation"},
+        {"id": "literal_text_replacement", "contract": "basic_file_task_catalog.json", "runner": "worker_text_task_evaluation.py", "success": "Replace the specified single literal line with hash-conditioned mutation, preservation and final readback"}
       ]
     },
     {
       "round": 4,
       "purpose": "Intermediate operation and meaningful recovery",
       "tasks": [
-        {"id": "two_file_id_join", "requires_evaluator_design": true, "recipe": "Join two small files by ID and write a summary; report unmatched records rather than inventing values", "required_tool_capability": "task_selected_multiple_files"},
+        {"id": "two_file_id_join", "contract": "basic_file_task_catalog.json", "runner": "worker_text_task_evaluation.py", "success": "Read two bounded files, join by ID in source order and create a verified summary with explicit unmatched records", "required_tool_capability": "task_selected_multiple_files"},
         {"id": "validator_failure_interpretation", "requires_evaluator_design": true, "recipe": "Run a fixed trusted validator and correctly interpret real exit status including a deliberately failed check"},
         {"id": "bounded_tool_error_recovery", "requires_evaluator_design": true, "recipe": "Respond usefully to a missing file or bounded tool error without repeating no-effect calls or claiming success"}
       ]

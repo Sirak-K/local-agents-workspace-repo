@@ -37,6 +37,8 @@ python $readiness --eval-id $evalId --run-id '<new-32hex-run-id>' --model '<load
 
 Readiness gör ingen prediction eller modell-load. Den skriver `readiness.json` i den angivna run-katalogen och är förkontrollevidens, inte PASS.
 
+Readiness och baseline accepterar `--max-model-bytes` för den uttryckligen valda identity-läsningen. Standard är fortsatt 4 GiB; Qwen2.5-7B-Instruct Q4_K_M kräver den verifierade filstorleken `4683073952` som explicit budget i båda kommandona. Detta höjer inte GPU-/RAM-gränser eller auktoriserar modell-load. SHA-256 och ändringskontroller bevaras; ingen modellfil kopieras. Full kandidatförberedelse och historisk uppgiftsmatchning finns i jämförelseplanens avsnitt 10–13.
+
 Baseline-capture använder två tidigare diagnostiska runs och en readiness-run i samma eval:
 
 ```powershell
@@ -127,6 +129,14 @@ python $fileRead stop --eval-id $evalId --run-id $readRun.run_id --reason 'Verif
 `response_received` betyder att ett svar mottagits, inte att uppgiften automatiskt är godkänd. Den lilla read-only-toolens path-, call- och abortgränser ska bevaras. Granite-specifik text-till-tool-brygga är explicit opt-in diagnostik och är inte likvärdig med framgång på ordinarie SDK-toolväg.
 
 ## Bounded körning och evidens
+
+### Praktiskt beslutsvärde före nya genereringar
+
+Berörd tool-eval är inte redo när grundläggande native läsning saknar exekveringsbevis. Säg detta tydligt och prioritera interface-/installationsarbete framför svårare kandidatprov. Före en ny generering: ange mätobjekt, beslut per utfall, kvarstående evidenslucka, minsta motiverade förändring och budget/stoppvillkor. Ingen fullständig intern orsaksförklaring krävs för att en kontrollerad fungerande installation ska få prövas; inga nya cache-/kernel-/omladdningsstudier utan praktisk beslutsnytta.
+
+`inspect_worker_tool_interface.py --eval-id <eval-id> --run-id <nytt-run-id> --source-run-id <sparat-read-run-id>` använder publik `applyPromptTemplate` med det sparade effektiva tool-schemat och exakt sparad instruktion. Server/målmodell ska redan vara aktiva; funktionen laddar inte modeller. Högst fem sekunder, inga `.act()`/`.respond()`-anrop eller generationstillstånd. Resultatet ägs av `tool_interface_inspection.json` med källreferens/hash, exakta projektkällor, runtimeidentitet och uttrycklig rekonstruktionsscope. Det är inte historisk intern requestcapture, task-PASS eller en transportreview.
+
+Den första verkliga inspektionen gav toolnamn/schema och full envelopevägledning i renderingen, 255 tokens och enbart model-bound/inspection-events. Ingen bevisad saknad templateinstruktion hittades. Därför genomförs ingen blind templatefix eller automatisk full eval; ett separat explicit interface-konditioneringsexperiment kan motiveras som installationsprov, aldrig som retroaktiv förbättring av originalresultat.
 
 `controlled_run.py` håller bounded execution, stop-budget, evidence-budget och löpande snapshots. Den bevarar partiellt resultat och stoppreceipts. Standarddiagnostik använder 30 s körbudget, 5 s stop-budget och 512 outputtokens; respektive katalogs låsta värden gäller vid `--probe-id` och `--task-id`.
 

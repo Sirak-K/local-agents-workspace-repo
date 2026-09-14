@@ -1,0 +1,3 @@
+mode=preview
+retries=3
+owner=Mira

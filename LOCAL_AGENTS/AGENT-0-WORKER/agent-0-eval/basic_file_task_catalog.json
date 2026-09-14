@@ -36,6 +36,28 @@
       "duration_seconds": 45,
       "stop_budget_seconds": 5,
       "max_tokens": 512
+    },
+    {
+      "id": "two_file_id_join",
+      "instruction": "Read `orders.csv` and `labels.csv`. Join each order to the label with the same id, preserving the order of `orders.csv`. Create `summary.csv` with exactly the header `id,part,qty,label` and one row per order. For an order with no matching label, use `UNMATCHED`; do not add rows for labels without an order. Use comma separators, no extra spaces or quotes, LF line endings and one final LF. Preserve both inputs and `control.txt`. The create tool performs an independent exact-byte readback; use that receipt without a redundant read. Begin the final response with exactly `STATUS=SUCCESS` only if creation and verified readback succeeded; otherwise begin it with exactly `STATUS=FAILED`.",
+      "files": {
+        "orders.csv": "id,part,qty\nA1,widget,2\nB2,gadget,1\nC3,widget,4\n",
+        "labels.csv": "id,label\nA1,ready\nC3,hold\nD4,unused\n",
+        "control.txt": "CONTROL=unchanged\n"
+      },
+      "allowed_paths": ["orders.csv", "labels.csv", "control.txt", "summary.csv"],
+      "enabled_tools": ["read_workspace_text", "create_workspace_text"],
+      "expected_files": {
+        "orders.csv": "id,part,qty\nA1,widget,2\nB2,gadget,1\nC3,widget,4\n",
+        "labels.csv": "id,label\nA1,ready\nC3,hold\nD4,unused\n",
+        "control.txt": "CONTROL=unchanged\n",
+        "summary.csv": "id,part,qty,label\nA1,widget,2,ready\nB2,gadget,1,UNMATCHED\nC3,widget,4,hold\n"
+      },
+      "required_tool_receipts": {"create": 1, "read": 2, "write": 0},
+      "completion_claim": {"success_prefix": "STATUS=SUCCESS", "failure_prefix": "STATUS=FAILED"},
+      "duration_seconds": 45,
+      "stop_budget_seconds": 5,
+      "max_tokens": 512
     }
   ]
 }

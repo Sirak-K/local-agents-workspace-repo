@@ -66,7 +66,7 @@ export async function main() {
       const command = JSON.parse(line);
       if (["cancel", "continue", "validation_result"].includes(command.command)) continue;
       if (command.command !== "start" || command.max_tokens !== 512
-          || command.max_rounds !== 6 || command.max_tool_calls !== 6
+          || command.max_rounds !== 6 || command.max_tool_calls !== 8
           || !command.require_start_approval || typeof command.instruction !== "string"
           || Buffer.byteLength(command.instruction, "utf8") > 4096
           || typeof command.system_prompt !== "string"
@@ -179,7 +179,7 @@ export async function main() {
               return;
             }
           }
-          if (abort.signal.aborted || toolRequests > 6
+          if (abort.signal.aborted || toolRequests > command.max_tool_calls
               || ![...enabled,
                 ...(command.skill_mode === "discovery" ? ["read_worker_skill"] : [])].includes(toolCallRequest.name)) {
             emit({ type: "tool_guard_denied", index, call_id: callId });
@@ -224,7 +224,7 @@ export async function main() {
               call_id: bridgeCalls + 1, name: request.name, arguments: request.arguments,
               raw_content: lastMessage });
             const selected = toolsByName.get(request.name);
-            if (!selected || !enabled.has(request.name) || toolRequests >= 6) {
+            if (!selected || !enabled.has(request.name) || toolRequests >= command.max_tool_calls) {
               emit({ type: "text_tool_bridge_denied", name: request.name });
               break;
             }
@@ -255,7 +255,7 @@ export async function main() {
           const preservedRequest = pendingBridgeRequests.shift() || null;
           const request = preservedRequest
             || parseGraniteToolCallEnvelope(lastMessage || lastResult.content);
-          if (!request || toolRequests >= 6) break;
+          if (!request || toolRequests >= command.max_tool_calls) break;
           if (!preservedRequest) toolRequests++;
           bridgeCalls++;
           emit({ type: "adapter_tool_request_parsed", index: outcome.rounds + bridgeCalls - 1,

@@ -91,6 +91,14 @@ Reviewens hashreferenser till de tre original-evidencefilerna har bevarats. Rapp
 
 ## EXTERNAL-REVIEW-QUESTIONS-EVAL-RESULT [ERQER]
 
+### Tillägg efter Team Masters ROI-omprioritering — separat read-only-inspektion
+
+Originalserien och dess evidens/bedömning är oförändrade. Befintliga fragment rekonstruerar sluttexten exakt; avvikelsen börjar vid teckenposition 16 (nollbaserat), där `name` respektive `path` följer samma prefix. Fragment är inte verifierade enskilda tokens och avvikelsepositionen isolerar inte cache eller GPU.
+
+Separat efterföljande inspektion: `06686f3aa3d1411896919b1250b45ff5/tool_interface_inspection.json`, `generation_requested=false`, endast `model_bound` och `model_inspection`. Public `applyPromptTemplate(chat, {toolDefinitions})` med exakt sparad instruktion/schema gav toolnamnet, korrekt schema och full `name`/`arguments`/avslutande tag-vägledning; inputantal 255. Det är en rekonstruktion med den då laddade instansens template, inte fångad historisk `.act()`-request. Samma tokenantal ensamt bevisar inte lika inputbytes.
+
+Praktiskt beslut: ingen uppenbar saknad interfaceinstruktion motiverar en blind templatefix. Inga fler predictions, full-evals, cache-/kernelstudier eller omladdningsserier har körts. Grundläggande native toolkompatibilitet är fortfarande inte godkänd; nästa eventuella generering måste ha en liten explicit intervention och ett förhandsbestämt installationsbeslut. Modellen avlastades och servern stoppades efter inspektionen.
+
 1. Vad kunde jag, Codex som Frontier-evaluator, gjort mycket bättre eller annorlunda? Prioritera om den valda tre-försöksdiagnostiken och captureluckorna gav rätt beslutsvärde.
 2. Hur kan framtida agentkandidater ge mer lönsamma, användbara och försvarsbara insikter på modellspecifik respektive modellneutral nivå? Vilket minsta verifierat interface-/conditioningexperiment skiljer praktisk installationsförmåga från transportglapp?
 3. Hur kan framtida EVALS förbättras icke-kosmetiskt och icke-trivialt? Föreslå ett faktiskt publikt genomförbart nästa experiment; varken oförändrad full-eval eller en icke-existerande text-till-native-parser-hook.

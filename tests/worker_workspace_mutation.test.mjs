@@ -41,13 +41,28 @@ test("one hash-conditional replacement commits and independently reads back", as
 });
 
 test("wrong hash, ambiguous match, denied path and exhausted budget never mutate", async t => {
-  const f = await fixture(t);
-  await assert.rejects(f.writer.execute({ ...replacement, expected_sha256: "0".repeat(64) }, f.context), /hash_mismatch/);
-  await assert.rejects(f.writer.execute({ ...replacement, old_text: '"' }, f.context), /match_not_unique/);
+  const f = await fixture(t, { maxReadCalls: 8, maxTotalReadBytes: 524288 });
+  assert.match(await f.writer.execute({ ...replacement, expected_sha256: "0".repeat(64) }, f.context), /hash_mismatch/);
+  assert.match(await f.writer.execute({ ...replacement, old_text: '"' }, f.context), /not unique/);
   assert.match(await f.writer.execute({ ...replacement, path: "../workflow.json" }, f.context), /invalid/);
   assert.equal(await readFile(join(f.root, alias), "utf8"), before);
   await f.writer.execute(replacement, f.context);
-  await assert.rejects(f.writer.execute({ ...replacement, expected_sha256: sha256(Buffer.from(before.replace('"title":"OLD"', '"title":"NEW"'))), old_text: "NEW", new_text: "NEXT" }, f.context), /budget/);
+  assert.match(await f.writer.execute({ ...replacement, expected_sha256: sha256(Buffer.from(before.replace('"title":"OLD"', '"title":"NEW"'))), old_text: "NEW", new_text: "NEXT" }, f.context), /budget/);
+  assert.equal(await readFile(join(f.root, alias), "utf8"), before.replace('"title":"OLD"', '"title":"NEW"'));
+});
+
+test("stale hash feedback permits a second bounded edit after readback", async t => {
+  const f = await fixture(t, { maxReadCalls: 8, maxTotalReadBytes: 524288, maxWriteCalls: 2 });
+  await f.writer.execute(replacement, f.context);
+  assert.match(await f.writer.execute({ ...replacement, old_text: '"title":"NEW"', new_text: '"title":"NEXT"' }, f.context), /hash_mismatch/);
+  const current = await f.access.readBytes(alias, f.controller.signal);
+  const corrected = { ...replacement, expected_sha256: current.sha256,
+    old_text: '"title":"NEW"', new_text: '"title":"NEXT"' };
+  const receipt = JSON.parse(await f.writer.execute(corrected, f.context));
+  assert.equal(receipt.before_sha256, current.sha256);
+  assert.equal(await readFile(join(f.root, alias), "utf8"), before.replace('"title":"OLD"', '"title":"NEXT"'));
+  assert.equal(f.writer.state.committed, 2);
+  assert.equal(f.writer.state.active, 0);
 });
 
 test("abort before the commit point leaves original and removes temporary file", async t => {

@@ -1,0 +1,2 @@
+worker_ref=K7-42
+eoding=utf-8

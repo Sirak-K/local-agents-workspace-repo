@@ -90,13 +90,19 @@ export async function main() {
         break;
       }
       const chat = predictionChat(command.system_prompt || "", command.instruction);
+      if (command.tool_definitions !== undefined && !command.inspect_model) {
+        throw new Error("invalid_command");
+      }
       if (command.inspect_model || command.inspect_input_before_start) {
         // Public read-only SDK calls; no prediction, model load or private API.
         const contextLength = await model.getContextLength();
-        const rendered = await model.applyPromptTemplate(chat);
+        const rendered = await model.applyPromptTemplate(chat,
+          command.tool_definitions === undefined ? {} : { toolDefinitions: command.tool_definitions });
         const inputTokens = await model.countTokens(rendered);
         await emit({ type: "model_inspection", model_info: info,
-          context_length: contextLength, rendered_input: rendered, input_tokens: inputTokens });
+          context_length: contextLength, rendered_input: rendered, input_tokens: inputTokens,
+          rendered_input_scope: command.tool_definitions === undefined
+            ? "public_template_render" : "public_template_render_with_explicit_tools_not_captured_act_request" });
         if (command.inspect_model) {
           finalReceived = true;
           break;

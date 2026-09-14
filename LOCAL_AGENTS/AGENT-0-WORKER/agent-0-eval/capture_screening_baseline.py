@@ -27,7 +27,9 @@ def _run_text(command: list[str]) -> str:
 
 
 def capture(eval_id: str, run_id: str, completion_run: str, cancellation_run: str,
-            readiness_run: str) -> Path:
+            readiness_run: str, *, max_model_bytes: int = 4294967296) -> Path:
+    if type(max_model_bytes) is not int or max_model_bytes < 1:
+        raise ValueError("positive explicit model identity byte budget required")
     pending = run_directory(eval_id, run_id)
     if pending.exists():
         raise ValueError("baseline run id already exists")
@@ -56,7 +58,7 @@ def capture(eval_id: str, run_id: str, completion_run: str, cancellation_run: st
             or model_relative.name != file_identity["filename"]
             or not model_file.is_file()):
         raise ValueError("live receipt and captured local GGUF identity do not match")
-    if model_file.stat().st_size > 4294967296:
+    if model_file.stat().st_size > max_model_bytes:
         raise ValueError("local GGUF exceeds identity capture budget")
     with model_file.open("rb") as handle:
         current_sha256 = hashlib.file_digest(handle, "sha256").hexdigest()
@@ -151,8 +153,11 @@ def main() -> int:
     parser.add_argument("--completion-run", required=True)
     parser.add_argument("--cancellation-run", required=True)
     parser.add_argument("--readiness-run", required=True)
+    parser.add_argument("--max-model-bytes", type=int, default=4294967296,
+                        help="explicit identity-read byte budget; default 4 GiB, not GPU admission")
     args = parser.parse_args()
-    print(capture(args.eval_id, args.run_id, args.completion_run, args.cancellation_run, args.readiness_run)
+    print(capture(args.eval_id, args.run_id, args.completion_run, args.cancellation_run, args.readiness_run,
+                  max_model_bytes=args.max_model_bytes)
           .relative_to(ROOT).as_posix())
     return 0
 

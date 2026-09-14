@@ -156,17 +156,37 @@ class InstructionFollowingGradingTest(unittest.TestCase):
             root = Path(temporary)
             eval_root = root / "model_evaluations"
             eval_root.mkdir()
+            selected_model = root / "fixture.gguf"
+            selected_model.write_bytes(b"GGUFfixture")
             with patch.object(readiness, "ROOT", root), \
                     patch.object(eval_paths, "MODEL_EVALUATIONS_ROOT", eval_root), \
                     patch.object(readiness, "resolve_token", return_value="fixture-secret"), \
                     patch.object(readiness, "SdkPredictionProcess", InspectionFixture):
-                path, report = readiness.capture("EVAL_fixture", "d" * 32, "fixture")
+                with self.assertRaisesRegex(ValueError, "byte budget"):
+                    readiness.capture("EVAL_fixture", "d" * 32, "fixture", str(selected_model),
+                                      max_model_bytes=selected_model.stat().st_size - 1)
+                path, report = readiness.capture("EVAL_fixture", "d" * 32, "fixture", str(selected_model),
+                                                  max_model_bytes=selected_model.stat().st_size)
                 self.assertFalse(report["generation_requested"])
                 self.assertEqual("blocked", report["status"])
                 self.assertEqual("not_loaded", report["required_checks"]["loaded_model"])
                 self.assertTrue(InspectionFixture.command["inspect_model"])
                 self.assertNotIn("max_tokens", InspectionFixture.command)
                 self.assertTrue(path.exists())
+                self.assertEqual(hashlib.sha256(selected_model.read_bytes()).hexdigest(),
+                                 report["local_file_identity"]["sha256"])
+                self.assertFalse(report["local_file_identity"]["loaded_identity_verified"])
+
+    def test_invalid_model_identity_budgets_fail_before_transport_or_evidence(self):
+        import capture_screening_baseline as baseline
+        for budget in (0, -1, True, "4683073952"):
+            with self.subTest(budget=budget), patch.object(readiness, "resolve_token") as token:
+                with self.assertRaisesRegex(ValueError, "byte budget"):
+                    readiness.capture("EVAL_fixture", "d" * 32, "fixture", max_model_bytes=budget)
+                token.assert_not_called()
+                with self.assertRaisesRegex(ValueError, "byte budget"):
+                    baseline.capture("EVAL_fixture", "d" * 32, "completion", "cancel", "readiness",
+                                     max_model_bytes=budget)
 
     def test_controller_approval_wrong_binding_and_duplicate_attempt_are_enforced(self):
         class PredictionFixture:

@@ -108,7 +108,7 @@ class FileTaskEvaluationTest(unittest.TestCase):
                     evidence = runner.run("EVAL_fixture", "a" * 32, "fixture", skill_mode=skill_mode,
                                           skill_id="workflow_title_preservation" if skill_mode == "explicit" else None)
                     self.assertTrue(SdkFixture.last.approved)
-                    self.assertEqual(6, SdkFixture.last.command["max_tool_calls"])
+                    self.assertEqual(8, SdkFixture.last.command["max_tool_calls"])
                     self.assertEqual(512, SdkFixture.last.command["max_tokens"])
                     self.assertTrue(SdkFixture.last.command["system_prompt"])
                     self.assertEqual(skill_mode, evidence["skill_exposure"]["mode"])

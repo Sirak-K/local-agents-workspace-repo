@@ -27,6 +27,14 @@ class TaskProgressionTest(unittest.TestCase):
         self.assertEqual("requires_exact_task_design", pending["status"])
         self.assertEqual("bounded_file_creation", pending["required_tool_capability"])
         self.assertNotIn("runner", pending)
+        for identifier in ("context_priority_selection", "evidence_selected_limit_task",
+                           "file_creation_readback", "literal_text_replacement", "two_file_id_join"):
+            with self.subTest(task=identifier):
+                locked = progression.selected_recipe(identifier)
+                self.assertEqual("locked_contract_requires_runtime_preflight", locked["status"])
+                self.assertFalse(locked["execution_authorized"])
+                contract = json.loads(progression.CATALOG.with_name(locked["contract"]).read_text(encoding="utf-8"))
+                self.assertIn(identifier, [task["id"] for task in contract["tasks"]])
 
     def test_duplicate_identity_and_unsafe_executable_claim_are_rejected(self):
         original = json.loads(progression.CATALOG.read_text(encoding="utf-8"))
@@ -34,7 +42,8 @@ class TaskProgressionTest(unittest.TestCase):
             catalog = Path(temporary) / progression.CATALOG.name
             for filename in ("instruction_following_catalog.json", "controlled_run.py",
                              "structured_edit_catalog.json", "workflow_rename_fixture.json",
-                             "worker_file_task_evaluation.py"):
+                             "worker_file_task_evaluation.py", "basic_file_task_catalog.json",
+                             "worker_text_task_evaluation.py"):
                 catalog.with_name(filename).write_bytes(b"fixture")
             with patch.object(progression, "CATALOG", catalog):
                 for mutation in ("duplicate", "executable"):
@@ -43,7 +52,9 @@ class TaskProgressionTest(unittest.TestCase):
                     if mutation == "duplicate":
                         task["id"] = "nested_record_edit"
                     else:
+                        task = payload["rounds"][3]["tasks"][1]
                         task["runner"] = "controlled_run.py"
                     catalog.write_text(json.dumps(payload), encoding="utf-8")
-                    with self.assertRaises(ValueError):
+                    with self.assertRaisesRegex(ValueError, "duplicate task identity" if mutation == "duplicate"
+                                                else "adaptive recipe"):
                         progression.task_recipes()

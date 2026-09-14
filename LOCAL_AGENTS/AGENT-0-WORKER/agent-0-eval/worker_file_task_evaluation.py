@@ -98,7 +98,7 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
         if diagnostic_contract["version"] != 1:
             raise ValueError("unsupported tool control diagnostic")
     if (locked["duration_seconds"] != 60 or locked["stop_budget_seconds"] != 5
-            or locked["max_tool_calls"] != 6 or locked["max_output_tokens"] != 512):
+            or locked["max_tool_calls"] != 8 or locked["max_output_tokens"] != 512):
         raise ValueError("unsupported workflow task budget")
     token = resolve_token()
     previous_hash = None
@@ -150,7 +150,7 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
         "state": "starting", "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "contract": {"model_identifier": model, "sdk_version": "1.5.0", "temperature": 0,
                      "max_tokens_per_prediction": 512, "max_prediction_rounds": 6,
-                     "max_tool_calls": 6, "max_file_bytes": 65536,
+                     "max_tool_calls": locked["max_tool_calls"], "max_file_bytes": 65536,
                      "max_read_calls": 8, "max_total_read_bytes": 524288,
                      "max_write_calls": 2, "max_total_write_bytes": 131072,
                      "duration_seconds": 60, "stop_budget_seconds": 5,
@@ -217,7 +217,7 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
             "granite_text_tool_bridge": granite_text_tool_bridge,
             "diagnostic_mutation_delay_ms": diagnostic_mutation_delay_ms,
             "diagnostic_request": diagnostic_contract["request"] if diagnostic_contract else None,
-            "max_tokens": 512, "max_rounds": 6, "max_tool_calls": 6,
+            "max_tokens": 512, "max_rounds": 6, "max_tool_calls": locked["max_tool_calls"],
             "require_start_approval": True}, worker_script=SDK_SCRIPT)
         while True:
             now = time.monotonic()

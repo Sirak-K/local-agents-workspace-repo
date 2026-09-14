@@ -18,6 +18,16 @@ class TextTaskEvaluationTest(unittest.TestCase):
         admission.start()
         self.addCleanup(admission.stop)
 
+    def test_two_file_join_contract_is_bounded_and_verifies_both_inputs_and_summary(self):
+        task = runner.task_contract("two_file_id_join")
+        self.assertEqual(["read_workspace_text", "create_workspace_text"], task["enabled_tools"])
+        self.assertEqual({"create": 1, "read": 2, "write": 0}, task["required_tool_receipts"])
+        self.assertEqual(set(task["allowed_paths"]), set(task["expected_files"]))
+        self.assertEqual(task["files"]["orders.csv"], task["expected_files"]["orders.csv"])
+        self.assertEqual(task["files"]["labels.csv"], task["expected_files"]["labels.csv"])
+        self.assertEqual("id,part,qty,label\nA1,widget,2,ready\nB2,gadget,1,UNMATCHED\nC3,widget,4,hold\n",
+                         task["expected_files"]["summary.csv"])
+
     def test_creation_and_replacement_require_real_receipts_and_exact_disk_state(self):
         class SdkFixture:
             task_id = None

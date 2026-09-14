@@ -113,6 +113,14 @@ export function workerWorkspaceMutationTool({ tool, z, access, controllerSignal,
         record({ type: "tool_handler_receipt", ...trace, status: "failed",
           committed });
       }
+      if (!committed && !signal.aborted) {
+        const feedback = {
+          workspace_hash_mismatch: "Error: hash_mismatch. Read the allowed file again and use its current SHA-256.",
+          workspace_match_not_unique: "Error: target text is absent or not unique. Read the allowed file and choose one unique exact fragment.",
+          workspace_write_budget_exhausted: "Error: write budget exhausted. Stop mutations and report the partial file state.",
+        }[error.message];
+        if (feedback) return feedback;
+      }
       throw error;
     } finally {
       if (temporary) await unlink(temporary).catch(() => {});

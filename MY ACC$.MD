@@ -8,17 +8,17 @@
 
 # sirak.dev@gmail.com [??? ÅTERSTÄLLNING]
 
-### 5h Reset: 00:25
+### 5h Reset: 20:10
 
-#### Weekly Left (R: 09-20): 70%
+#### Weekly Left (R: 09-20): 40%
 
 ---
 
 # haweykofficial@gmail.com [INGA ÅTERSTÄLLNINGAR!]
 
-### 5h Reset: 01:40
+### 5h Reset: 22:30
 
-#### Weekly Left (R: 09-20) : 70%
+#### Weekly Left (R: 09-20): 40%
 
 ---
 
@@ -45,3 +45,7 @@ ClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeCl
 # sirak.dev@gmail.com
 
 ### 5h Reset: 21:30
+
+# Sirak.H.Kahsay@gmail.com
+
+### 5h Reset: 18:40

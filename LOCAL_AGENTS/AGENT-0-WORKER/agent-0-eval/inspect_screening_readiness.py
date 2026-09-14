@@ -21,7 +21,10 @@ from observability_common import sanitize_for_log, timestamp_fields, write_captu
 from instruction_following_grading import task_contract
 
 
-def capture(eval_id: str, run_id: str, model: str, model_file: str | None = None) -> tuple[Path, dict]:
+def capture(eval_id: str, run_id: str, model: str, model_file: str | None = None,
+            *, max_model_bytes: int = 4294967296) -> tuple[Path, dict]:
+    if type(max_model_bytes) is not int or max_model_bytes < 1:
+        raise ValueError("positive explicit model identity byte budget required")
     pending = run_directory(eval_id, run_id)
     if pending.exists():
         raise ValueError("readiness run id already exists")
@@ -53,8 +56,8 @@ def capture(eval_id: str, run_id: str, model: str, model_file: str | None = None
     if model_file:
         path = Path(model_file)
         before = path.stat()
-        if path.suffix.lower() != ".gguf" or before.st_size > 4294967296:
-            raise ValueError("optional identity capture accepts only a GGUF file up to 4 GiB")
+        if path.suffix.lower() != ".gguf" or before.st_size > max_model_bytes:
+            raise ValueError("optional GGUF identity capture exceeds selected byte budget")
         with path.open("rb") as handle:
             digest = hashlib.file_digest(handle, "sha256").hexdigest()
         after = path.stat()
@@ -114,9 +117,12 @@ def main() -> int:
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--model", required=True, help="exact already-loaded SDK identifier")
     parser.add_argument("--model-file", help="optional explicit GGUF identity read; no model processing")
+    parser.add_argument("--max-model-bytes", type=int, default=4294967296,
+                        help="explicit identity-read byte budget; default 4 GiB, not GPU admission")
     args = parser.parse_args()
     try:
-        path, report = capture(args.eval_id, args.run_id, args.model, args.model_file)
+        path, report = capture(args.eval_id, args.run_id, args.model, args.model_file,
+                               max_model_bytes=args.max_model_bytes)
         print(path.relative_to(ROOT).as_posix())
         print("Status:", report["status"], "Loaded model:", report["required_checks"]["loaded_model"])
         return 2 if report["status"] == "blocked" else 0

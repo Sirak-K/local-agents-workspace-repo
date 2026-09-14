@@ -128,18 +128,24 @@ class TransportDiagnosticTest(unittest.TestCase):
                        "content": "render-diagnostic 3" if succeeded else "<tool_call>"}}
 
     def test_three_attempts_never_assign_candidate_pass_and_missing_raw_stays_unknown(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            (root / "evidence.json").write_text("fixture", encoding="utf-8")
-            with patch.object(diagnosis, "create_run_directory", return_value=root), \
-                 patch.object(diagnosis, "existing_run_directory", return_value=root), \
-                 patch.object(diagnosis, "run", side_effect=[self.evidence()] * 3) as run:
-                result = diagnosis.execute_series("EVAL_fixture", "a" * 32, "granite-4.1-3b")
-            self.assertEqual(3, run.call_count)
-            self.assertEqual("verified_native_read_transport", result["status"])
-            self.assertEqual("not_performed", result["candidate_assessment"])
-            self.assertFalse(result["public_tool_raw_byte_identity_established"])
-            self.assertEqual("instance", run.call_args.kwargs["expected_instance_reference"])
+        for model in ("granite-4.1-3b", "qwen2.5-7b-instruct"):
+            with self.subTest(model=model), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                (root / "evidence.json").write_text("fixture", encoding="utf-8")
+                with patch.object(diagnosis, "create_run_directory", return_value=root), \
+                     patch.object(diagnosis, "existing_run_directory", return_value=root), \
+                     patch.object(diagnosis, "run", side_effect=[self.evidence()] * 3) as run:
+                    result = diagnosis.execute_series("EVAL_fixture", "a" * 32, model)
+                self.assertEqual(3, run.call_count)
+                self.assertEqual("verified_native_read_transport", result["status"])
+                self.assertEqual("not_performed", result["candidate_assessment"])
+                self.assertFalse(result["public_tool_raw_byte_identity_established"])
+                self.assertEqual("instance", run.call_args.kwargs["expected_instance_reference"])
+                self.assertEqual(model, result["model_identifier"])
+                for call in run.call_args_list:
+                    self.assertEqual(model, call.args[2])
+                    self.assertEqual(0, call.args[3])
+                    self.assertEqual(diagnosis.FIXTURE, call.kwargs["reproduction_fixture"])
 
     def test_changed_conditions_stop_series_without_blind_retry(self):
         changed = self.evidence()
@@ -163,6 +169,55 @@ class TransportDiagnosticTest(unittest.TestCase):
         self.assertEqual(diagnosis.summarize_attempt(first)["observed_output"],
                          diagnosis.summarize_attempt(second)["observed_output"])
         self.assertFalse(diagnosis.summarize_attempt(first)["observed_output"]["complete_raw_available"])
+
+
+class ToolInterfaceInspectionTest(unittest.TestCase):
+    def test_public_inspection_uses_saved_schema_never_authorizes_generation(self):
+        import inspect_worker_tool_interface as inspection
+
+        class InspectionSdk:
+            def __init__(self, token, command, worker_script):
+                self.command = command
+                self.closed = False
+                self.events = iter([{"type": "model_bound", "model_info": {"identifier": "fixture"}},
+                    {"type": "model_inspection", "rendered_input": "tools read_workspace_text user Read the file",
+                     "input_tokens": 20, "context_length": 8192}])
+                instances.append(self)
+
+            def next_event(self, *_):
+                return next(self.events)
+
+            def send(self, *_):
+                raise AssertionError("read-only inspection must never send generation approval")
+
+            def close(self):
+                self.closed = True
+
+        instances = []
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = {"eval_id": "EVAL_fixture", "run_id": "a" * 32, "kind": "workspace_file_read",
+                      "state": "response_received", "instruction": "Read the file",
+                      "contract": {"project_system_prompt": "", "model_identifier": "fixture"},
+                      "result": {"prediction_config": {"fields": [{"key": "llm.prediction.tools",
+                          "value": {"tools": [{"type": "function", "function": {"name": "read_workspace_text"}}]}}]}}}
+            path = root / "evidence.json"
+            path.write_text(json.dumps(source), encoding="utf-8")
+            original = path.read_bytes()
+            with patch.object(inspection, "existing_run_directory", return_value=root), \
+                 patch.object(inspection, "create_run_directory", return_value=root), \
+                 patch.object(inspection, "relative_to_project", return_value="evidence.json"), \
+                 patch.object(inspection, "resolve_token", return_value="secret-fixture-token"), \
+                 patch.object(inspection, "installed_runtime_identity", return_value={}), \
+                 patch.object(inspection, "SdkPredictionProcess", InspectionSdk):
+                report = inspection.inspect_interface("EVAL_fixture", "b" * 32, "a" * 32)
+            self.assertEqual("inspected_without_generation", report["status"])
+            self.assertFalse(report["generation_requested"])
+            self.assertTrue(instances[0].command["inspect_model"])
+            self.assertEqual(source["result"]["prediction_config"]["fields"][0]["value"]["tools"],
+                             instances[0].command["tool_definitions"])
+            self.assertTrue(instances[0].closed)
+            self.assertEqual(original, path.read_bytes())
 
 
 if __name__ == "__main__":

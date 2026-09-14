@@ -35,6 +35,30 @@ test("new UTF-8 file is atomically published and read back", async t => {
     .map(event => event.status), ["completed"]);
 });
 
+test("abort before creation commit leaves no file or temporary artifact", async t => {
+  const f = await fixture(t);
+  const checkedCreationPath = f.access.checkedCreationPath;
+  let entered, release;
+  const reached = new Promise(resolve => { entered = resolve; });
+  const gate = new Promise(resolve => { release = resolve; });
+  f.access.checkedCreationPath = async (...args) => {
+    entered();
+    await gate;
+    return checkedCreationPath(...args);
+  };
+  const pending = f.creator.execute({ path: "result.txt", content: "safe\n" }, f.context);
+  await reached;
+  assert.equal(f.creator.state.active, 1);
+  f.controller.abort();
+  release();
+  await assert.rejects(pending);
+  assert.deepEqual(await readdir(f.root), []);
+  assert.equal(f.creator.state.active, 0);
+  assert.equal(f.creator.state.aborted, 1);
+  assert.equal(f.creator.state.committed, 0);
+  await assert.rejects(f.creator.execute({ path: "result.txt", content: "late" }, f.context), /dispatch_after_stop/);
+});
+
 test("existing, out-of-scope and invalid content targets are never overwritten", async t => {
   const f = await fixture(t);
   await writeFile(join(f.root, "control.txt"), "keep", "utf8");

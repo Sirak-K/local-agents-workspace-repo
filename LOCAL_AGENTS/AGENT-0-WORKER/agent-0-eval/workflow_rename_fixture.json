@@ -16,7 +16,7 @@
   },
   "duration_seconds": 60,
   "stop_budget_seconds": 5,
-  "max_tool_calls": 6,
+  "max_tool_calls": 8,
   "max_output_tokens": 512,
   "format_references": [
     "https://docs.comfy.org/specs/workflow_json",

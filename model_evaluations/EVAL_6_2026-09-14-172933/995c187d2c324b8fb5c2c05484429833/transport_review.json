@@ -1,0 +1,144 @@
+{
+  "kind": "tool_transport_reproducibility",
+  "eval_id": "EVAL_6_2026-09-14-172933",
+  "run_id": "995c187d2c324b8fb5c2c05484429833",
+  "model_identifier": "qwen2.5-7b-instruct",
+  "status": "verified_native_read_transport",
+  "planned_attempts": 3,
+  "created_at": {
+    "local": "2026-09-14 | 17:49:24.853 +02:00",
+    "utc": "2026-09-14 | 15:49:24.853 UTC",
+    "epoch_ms": 1789400964853
+  },
+  "runs": [
+    {
+      "run_id": "71a55dc1ea3f4ff7a1b4f4124ccfb711",
+      "evidence_sha256": "5829fca90ba455b73f052f8dd4cecb6f198a53aac0fcc3da1132676d45f99e2f",
+      "conditions_sha256": "14cfadd1a5ddcd7fa69bd5f22c676b74c9a64c2160e6de4614a3527d8c1ff7cf",
+      "instance_reference": "p2j36XTJQbR7pj1F7AemXUQw",
+      "succeeded": true,
+      "observed_output": {
+        "ordinary_fragment_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tool_raw_sha256": [
+          "48f1df076e78beeb82d11e26fcfd3aaac1bc60eeeaa5fb135baad52f345a6dc7"
+        ],
+        "complete_raw_available": true
+      },
+      "tool_event_sequence": [
+        "tool_request_started",
+        "tool_request_name_received",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_parsed",
+        "tool_request_guarded",
+        "tool_request_finalized",
+        "tool_handler_entered",
+        "tool_started",
+        "tool_completed",
+        "tool_handler_receipt"
+      ]
+    },
+    {
+      "run_id": "acd66131acc44cada7c67770521534f7",
+      "evidence_sha256": "7e7f71fa1e60d94f2b0a3dc42e32de4f72ee26053b60c19ba6ba9897652a2374",
+      "conditions_sha256": "14cfadd1a5ddcd7fa69bd5f22c676b74c9a64c2160e6de4614a3527d8c1ff7cf",
+      "instance_reference": "p2j36XTJQbR7pj1F7AemXUQw",
+      "succeeded": true,
+      "observed_output": {
+        "ordinary_fragment_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tool_raw_sha256": [
+          "48f1df076e78beeb82d11e26fcfd3aaac1bc60eeeaa5fb135baad52f345a6dc7"
+        ],
+        "complete_raw_available": true
+      },
+      "tool_event_sequence": [
+        "tool_request_started",
+        "tool_request_name_received",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_parsed",
+        "tool_request_guarded",
+        "tool_request_finalized",
+        "tool_handler_entered",
+        "tool_started",
+        "tool_completed",
+        "tool_handler_receipt"
+      ]
+    },
+    {
+      "run_id": "5c50909b7bf54d998fab863ad06e042f",
+      "evidence_sha256": "f2f38c114bb91360bc4028b8da1c4be1b57d0f6082b34b3700de90809efd53b9",
+      "conditions_sha256": "14cfadd1a5ddcd7fa69bd5f22c676b74c9a64c2160e6de4614a3527d8c1ff7cf",
+      "instance_reference": "p2j36XTJQbR7pj1F7AemXUQw",
+      "succeeded": true,
+      "observed_output": {
+        "ordinary_fragment_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "tool_raw_sha256": [
+          "48f1df076e78beeb82d11e26fcfd3aaac1bc60eeeaa5fb135baad52f345a6dc7"
+        ],
+        "complete_raw_available": true
+      },
+      "tool_event_sequence": [
+        "tool_request_started",
+        "tool_request_name_received",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_argument_fragment",
+        "tool_request_parsed",
+        "tool_request_guarded",
+        "tool_request_finalized",
+        "tool_handler_entered",
+        "tool_started",
+        "tool_completed",
+        "tool_handler_receipt"
+      ]
+    }
+  ],
+  "candidate_assessment": "not_performed",
+  "source_set_sha256": "c604eb36c04bcbf2927fc25b51f54c9bca78c9d3aa678738f771b4f43fc4f0c4",
+  "instance_reference": "p2j36XTJQbR7pj1F7AemXUQw",
+  "runtime_identity": {
+    "sdk_version": "1.5.0",
+    "node_version": "v24.11.1",
+    "dependency_artifact_sha256": {
+      "node_modules/@lmstudio/sdk/dist/index.mjs": "38be1d4550c1a00adce2e99b532f19f7a5a88d21bd6b0b96d05f2d00bf680a99",
+      "node_modules/zod/index.js": "6419c4ac0e637ff08463083e31886d10354f74cbcc4e584400b2b837e39ac881"
+    },
+    "backend_identity": "not_exposed_by_dependency_artifact_hashes"
+  },
+  "scope": "public_sdk_read_transport_same_instance_fresh_chat_not_model_capacity",
+  "causal_attribution": "not_performed",
+  "active_run_id": null,
+  "observed_outputs_identical": true,
+  "public_tool_raw_byte_identity_established": true,
+  "event_sequences_identical": true,
+  "finished_at": {
+    "local": "2026-09-14 | 17:49:32.649 +02:00",
+    "utc": "2026-09-14 | 15:49:32.649 UTC",
+    "epoch_ms": 1789400972649
+  },
+  "finished_epoch_seconds": 1789400972.6498408
+}
