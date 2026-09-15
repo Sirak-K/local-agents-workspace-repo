@@ -1,4 +1,4 @@
-Planen för **AGENT-2-STORYTELLER** är i praktiken en avsiktligt enkel, lokal och snabb personlig chattagent — optimerad för långa engelska fiktion-/story-konversationer snarare än agentarbete. Den ska vara frikopplad från **AGENT-0-WORKER** och behöver varken skriva filer, använda avancerade tools eller ha beständigt minne mellan sessioner.
+Planen avser nu **TAR-1 Storyteller**, vars befintliga lagringsyta fortfarande heter `AGENT-2-STORYTELLER`. TAR-1 är en separat agent-/modellprofil och maximalt en TAR är aktiv chattagent åt gången. Rollen är en avsiktligt enkel, lokal och snabb personlig chattagent — optimerad för långa engelska fiktion-/story-konversationer snarare än agentarbete. Den behöver varken skriva filer, använda avancerade tools eller ha beständigt minne mellan sessioner.
 
 ### Målet
 

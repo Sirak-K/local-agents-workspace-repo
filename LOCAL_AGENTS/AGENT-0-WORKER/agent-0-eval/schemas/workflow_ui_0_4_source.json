@@ -1,9 +1,0 @@
-{
-  "source_url": "https://docs.comfy.org/specs/workflow_json_0.4.md",
-  "retrieved_at": "2026-09-14",
-  "schema_file": "workflow_ui_0_4.json",
-  "schema_sha256": "2fb94dbc85f9f1f5a9d96bd153ce396d4adb84a81dabac0a8b78732baf1b843c",
-  "dialect": "http://json-schema.org/draft-07/schema#",
-  "normalization": "Extracted the official JSON code block, parsed and pretty-printed UTF-8 without BOM; no semantic edits",
-  "limits": "UI schema does not prove node semantics, subgraph correctness, installed inventory, frontend opening or generation."
-}

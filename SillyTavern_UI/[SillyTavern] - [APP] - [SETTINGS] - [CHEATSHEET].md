@@ -10,17 +10,17 @@
 
 ## Top-bar settings map
 
-| UI surface | Main purpose | High-ROI configuration / sections |
-|---|---|---|
-| **AI Response Configuration** | Generation behavior and provider-specific presets. | Text/Chat Completion preset identity; response length/output budget; context size; **Streaming**; temperature; Top-P/Top-K/Min-P and penalty/repetition controls; Chat Completion **Prompt Manager** when applicable. Change one variable at a time during debugging. |
-| **API Connections** | Select provider/backend and connect the UI to inference. | Connection Profile; API (`Text Completion`, `Chat Completion`, etc.); source/API type; endpoint/base URL; API key when applicable; context derivation; Connect; Auto-connect. |
-| **Advanced Formatting** | Text Completion prompt construction and instruct formatting; also shared formatting/stop/tokenizer controls. | **Context Template**, **Instruct Template**, **System Prompt**, template derivation/binding, Story String, Context Formatting, instruct sequences, Custom Stopping Strings, Tokenizer, Reasoning, Start Reply With. Do not assume its System Prompt/Instruct Template is the active layer for Chat Completion APIs. |
-| **World Info** | Lore/world-state injection into prompts. | World/lore entries; keys/triggers; activation; placement/order; scan/recursion/budget controls. Keep disabled/out of validation runs unless the test explicitly evaluates lore/RAG behavior. |
-| **User Settings** | UI behavior and general per-user interaction preferences. | UI Theme; Theme Colors; Character Handling; Chat/Message Handling; **Streaming FPS**; Smooth Streaming; Auto-scroll Chat; message timestamps; markdown/display behavior; Auto-Swipe; Auto-Continue; autocomplete. |
-| **Backgrounds** | Visual chat background management. | Select/upload/manage backgrounds and chat-specific background state. Cosmetic unless a visual workflow explicitly depends on it. |
-| **Extensions** | Built-in/system and installed extension controls. | Extension-specific configuration. High-ROI examples in this workspace: attachments, connection manager, memory, regex, token counter, vectors, image captioning/image generation/ComfyUI, translate, TTS. Image generation/ComfyUI is intentionally deferred to later multimodality work. |
-| **Persona Management** | Configure the human/user identity inserted into chat context. | Persona name/avatar; **Persona Description**; Position; Connections (`Default`, `Character`, `Chat`); persona switching/locking behavior. |
-| **Character Management** | Create/import/select/edit assistant character cards. | Character selection; favorites/tags/filter/sort; create/import; character card fields/instructions; per-character connections/settings. Default `Assistant` is sufficient for neutral harness tests. |
+| UI surface                    | Main purpose                                                                                                 | High-ROI configuration / sections                                                                                                                                                                                                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AI Response Configuration** | Generation behavior and provider-specific presets.                                                           | Text/Chat Completion preset identity; response length/output budget; context size; **Streaming**; temperature; Top-P/Top-K/Min-P and penalty/repetition controls; Chat Completion **Prompt Manager** when applicable. Change one variable at a time during debugging.                                               |
+| **API Connections**           | Select provider/backend and connect the UI to inference.                                                     | Connection Profile; API (`Text Completion`, `Chat Completion`, etc.); source/API type; endpoint/base URL; API key when applicable; context derivation; Connect; Auto-connect.                                                                                                                                       |
+| **Advanced Formatting**       | Text Completion prompt construction and instruct formatting; also shared formatting/stop/tokenizer controls. | **Context Template**, **Instruct Template**, **System Prompt**, template derivation/binding, Story String, Context Formatting, instruct sequences, Custom Stopping Strings, Tokenizer, Reasoning, Start Reply With. Do not assume its System Prompt/Instruct Template is the active layer for Chat Completion APIs. |
+| **World Info**                | Lore/world-state injection into prompts.                                                                     | World/lore entries; keys/triggers; activation; placement/order; scan/recursion/budget controls. Keep disabled/out of validation runs unless the test explicitly evaluates lore/RAG behavior.                                                                                                                        |
+| **User Settings**             | UI behavior and general per-user interaction preferences.                                                    | UI Theme; Theme Colors; Character Handling; Chat/Message Handling; **Streaming FPS**; Smooth Streaming; Auto-scroll Chat; message timestamps; markdown/display behavior; Auto-Swipe; Auto-Continue; autocomplete.                                                                                                   |
+| **Backgrounds**               | Visual chat background management.                                                                           | Select/upload/manage backgrounds and chat-specific background state. Cosmetic unless a visual workflow explicitly depends on it.                                                                                                                                                                                    |
+| **Extensions**                | Built-in/system and installed extension controls.                                                            | Extension-specific configuration. High-ROI examples in this workspace: attachments, connection manager, memory, regex, token counter, vectors, image captioning/image generation/ComfyUI, translate, TTS. Image generation/ComfyUI is intentionally deferred to later multimodality work.                           |
+| **Persona Management**        | Configure the human/user identity inserted into chat context.                                                | Persona name/avatar; **Persona Description**; Position; Connections (`Default`, `Character`, `Chat`); persona switching/locking behavior.                                                                                                                                                                           |
+| **Character Management**      | Create/import/select/edit assistant character cards.                                                         | Character selection; favorites/tags/filter/sort; create/import; character card fields/instructions; per-character connections/settings. Default `Assistant` is sufficient for neutral harness tests.                                                                                                                |
 
 ---
 
@@ -63,6 +63,7 @@ The Custom source is keyless-capable. Example local base: `http://127.0.0.1:5001
 Controls how chat history, character/persona/scenario and examples are assembled for **Text Completion**.
 
 High-ROI controls:
+
 - Context Template preset.
 - Story String.
 - Position.
@@ -75,6 +76,7 @@ High-ROI controls:
 Controls user/assistant/system role framing for Text Completion models.
 
 High-ROI controls:
+
 - Instruct Mode ON/OFF.
 - Instruct Template preset.
 - **Derive from model metadata** when available.
@@ -97,6 +99,7 @@ High-ROI controls:
 For Text Completion, controls the system-level instruction inserted into the serialized prompt.
 
 High-ROI controls:
+
 - System Prompt preset.
 - Prompt Content.
 - Post-History Instructions.
@@ -143,6 +146,7 @@ Behavioral validation then showed visible empty `<think>...</think>` blocks on e
 Used by Chat Completion APIs to construct the role-structured prompt/message stack.
 
 Important concepts:
+
 - **Main Prompt** — primary system instruction; project baseline belongs here on the corrected Defiant Chat Completion path.
 - Prompt order/enable state — determines which prompt fragments are actually sent.
 - Additional/jailbreak/NSFW/auxiliary prompts — can materially alter behavior; disable/empty during clean validation where possible.
@@ -208,6 +212,7 @@ Observed major groups:
 ## Persona Management — prompt impact
 
 Key fields:
+
 - Persona name/avatar.
 - **Persona Description** — can enter the prompt and therefore alter model behavior.
 - Position — controls where persona text is injected.

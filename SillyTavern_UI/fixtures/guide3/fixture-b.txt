@@ -1,8 +1,0 @@
-Guide 3 Fixture B
-
-Transit vessel: Ember Kite.
-Dock number: 42.
-Quartermaster: Oren Vale.
-The blue seal authorizes access only to the east storage bay.
-
-These facts are synthetic test data for SillyTavern document-reading verification.
