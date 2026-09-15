@@ -44,7 +44,7 @@ $stopPath = Join-Path $gitDir "main-autopull.stop"
 
 function Write-Log {
     param([string]$Message)
-    $line = "{0} {1}`r`n" -f ([DateTimeOffset]::Now.ToString("o")), $Message
+    $line = "{0} {1}`r`n" -f ([DateTimeOffset]::Now.ToString("yyyy-MM-dd | HH:mm:ss.fff zzz")), $Message
     [System.IO.File]::AppendAllText($logPath, $line, [System.Text.Encoding]::UTF8)
 }
 
@@ -178,7 +178,10 @@ try {
                 continue
             }
             if (-not [string]::IsNullOrWhiteSpace($trackedStatus.Output)) {
-                Set-State "SKIP_DIRTY_TRACKED" "local tracked/staged changes present"
+                $remoteOnly = Invoke-Git @("rev-list", "--count", ("{0}..{1}" -f $head.Output, $remote.Output))
+                $remoteOnlyCount = if ($remoteOnly.ExitCode -eq 0) { $remoteOnly.Output } else { "unknown" }
+                $shortRemote = $remote.Output.Substring(0, [Math]::Min(12, $remote.Output.Length))
+                Set-State "SKIP_DIRTY_TRACKED" ("origin/main fetched remote={0} remote_only_commits={1}; local main/worktree unchanged because tracked/staged changes are present" -f $shortRemote, $remoteOnlyCount)
                 Start-Sleep -Seconds $IntervalSeconds
                 continue
             }

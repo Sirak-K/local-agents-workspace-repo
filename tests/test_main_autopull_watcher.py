@@ -40,7 +40,8 @@ class AutoPullSourceContractTest(unittest.TestCase):
         text = WATCHER.read_text(encoding="utf-8")
         self.assertIn('"merge", "--ff-only"', text)
         self.assertIn("SKIP_UNTRACKED_COLLISION", text)
-        for forbidden in ('"reset"', '"rebase"', '"clean"', '"stash"'):
+        self.assertIn("origin/main fetched", text)
+        for forbidden in ('"reset"', '"rebase"', '"clean"', '"stash"', '"add"', '"commit"', '"push"'):
             self.assertNotIn(forbidden, text)
 
 
@@ -120,10 +121,17 @@ class AutoPullBehaviorTest(unittest.TestCase):
         before = git(self.local, "rev-parse", "HEAD")
         (self.local / "tracked.txt").write_text("dirty\n", encoding="utf-8")
         self.push_writer()
+        remote_head = git(self.writer, "rev-parse", "HEAD")
         self.start_watcher()
-        self.wait_for(lambda: self.log_contains("STATE=SKIP_DIRTY_TRACKED"))
+        expected_state = (
+            f"STATE=SKIP_DIRTY_TRACKED origin/main fetched remote={remote_head[:12]} "
+            "remote_only_commits=1; local main/worktree unchanged because tracked/staged changes are present"
+        )
+        self.wait_for(lambda: self.log_contains(expected_state))
+        self.assertEqual(remote_head, git(self.local, "rev-parse", "origin/main"))
         self.assertEqual(before, git(self.local, "rev-parse", "HEAD"))
         self.assertEqual("dirty\n", (self.local / "tracked.txt").read_text(encoding="utf-8"))
+        self.assertFalse((self.local / "remote.txt").exists())
 
     def test_divergence_is_reported_without_rewrite(self):
         (self.local / "local.txt").write_text("local\n", encoding="utf-8")
