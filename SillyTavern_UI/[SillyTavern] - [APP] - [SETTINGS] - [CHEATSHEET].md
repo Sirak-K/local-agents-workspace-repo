@@ -12,9 +12,9 @@
 
 | UI surface | Main purpose | High-ROI configuration / sections |
 |---|---|---|
-| **AI Response Configuration** | Generation behavior and text-generation presets. | Text Completion presets; response length/output budget; context size; **Streaming**; temperature; Top-P/Top-K/Min-P and repetition controls; seed/advanced samplers. Change one variable at a time during debugging. |
-| **API Connections** | Select provider/backend and connect the UI to inference. | Connection Profile; API (`Text Completion`, `Chat Completion`, etc.); API Type; endpoint URL; API key when applicable; **Derive context size from backend**; Connect; Auto-connect. Project baseline: `Text Completion -> KoboldCpp -> http://127.0.0.1:5001`. |
-| **Advanced Formatting** | Prompt construction, instruct/chat templates, system prompt, tokenizer and stop behavior. | **Context Template**, **Instruct Template**, **System Prompt**, template derivation/binding, Story String, Context Formatting, instruct sequences, Custom Stopping Strings, Tokenizer, Reasoning, Start Reply With. Highest-ROI surface for model/template correctness. |
+| **AI Response Configuration** | Generation behavior and provider-specific presets. | Text/Chat Completion preset identity; response length/output budget; context size; **Streaming**; temperature; Top-P/Top-K/Min-P and penalty/repetition controls; Chat Completion **Prompt Manager** when applicable. Change one variable at a time during debugging. |
+| **API Connections** | Select provider/backend and connect the UI to inference. | Connection Profile; API (`Text Completion`, `Chat Completion`, etc.); source/API type; endpoint/base URL; API key when applicable; context derivation; Connect; Auto-connect. |
+| **Advanced Formatting** | Text Completion prompt construction and instruct formatting; also shared formatting/stop/tokenizer controls. | **Context Template**, **Instruct Template**, **System Prompt**, template derivation/binding, Story String, Context Formatting, instruct sequences, Custom Stopping Strings, Tokenizer, Reasoning, Start Reply With. Do not assume its System Prompt/Instruct Template is the active layer for Chat Completion APIs. |
 | **World Info** | Lore/world-state injection into prompts. | World/lore entries; keys/triggers; activation; placement/order; scan/recursion/budget controls. Keep disabled/out of validation runs unless the test explicitly evaluates lore/RAG behavior. |
 | **User Settings** | UI behavior and general per-user interaction preferences. | UI Theme; Theme Colors; Character Handling; Chat/Message Handling; **Streaming FPS**; Smooth Streaming; Auto-scroll Chat; message timestamps; markdown/display behavior; Auto-Swipe; Auto-Continue; autocomplete. |
 | **Backgrounds** | Visual chat background management. | Select/upload/manage backgrounds and chat-specific background state. Cosmetic unless a visual workflow explicitly depends on it. |
@@ -24,13 +24,43 @@
 
 ---
 
-## Advanced Formatting — detailed high-ROI map
+## API mode split — high-ROI mental model
 
-This is the most important model-correctness panel for the current local-agent work.
+### Text Completion
+
+SillyTavern serializes the prompt itself. Highest-impact layers are **Advanced Formatting -> Context Template / Instruct Template / System Prompt**.
+
+Typical local path:
+
+```text
+Text Completion -> KoboldCpp -> http://127.0.0.1:5001
+```
+
+Use this only when SillyTavern can faithfully represent the model's required template.
+
+### Chat Completion
+
+SillyTavern sends role-structured messages to an OpenAI-compatible chat endpoint. Model Jinja/template processing may occur in the backend. The system-prompt layer is **Chat Completion Prompt Manager / Main Prompt**, not the Advanced Formatting Text Completion System Prompt.
+
+Verified custom source exists in the pinned UI:
+
+```text
+Chat Completion
+-> Custom (OpenAI-compatible)
+-> Custom Endpoint / Base URL
+```
+
+The Custom source is keyless-capable. Example local base: `http://127.0.0.1:5001/v1`.
+
+**Rule:** never assume Text Completion and Chat Completion settings are interchangeable. Record which path generated the evidence.
+
+---
+
+## Advanced Formatting — detailed high-ROI map
 
 ### Context Template
 
-Controls how chat history, character/persona/scenario and examples are assembled into the prompt.
+Controls how chat history, character/persona/scenario and examples are assembled for **Text Completion**.
 
 High-ROI controls:
 - Context Template preset.
@@ -60,31 +90,31 @@ High-ROI controls:
 - System Message Prefix/Suffix; `System same as User`.
 - Misc Sequences: First/Last Assistant Prefix, First/Last User Prefix, System Instruction Prefix, **Stop Sequence**, User Filler Message.
 
-**Rule:** if the model-specific template cannot be verified, do not guess a merely similar template.
+**Rule:** if the model-specific template cannot be faithfully represented, do not guess a merely similar template; prefer a backend-Jinja Chat Completion path when supported.
 
 ### System Prompt
 
-Controls the system-level instruction inserted into the prompt.
+For Text Completion, controls the system-level instruction inserted into the serialized prompt.
 
 High-ROI controls:
 - System Prompt preset.
 - Prompt Content.
 - Post-History Instructions.
 
-Keep system-prompt testing separate from template testing so failures remain attributable.
+For Chat Completion, use that API mode's Prompt Manager/Main Prompt instead unless current-version evidence shows otherwise.
 
 ### Stops / tokenizer / reasoning / misc
 
 - **Custom Stopping Strings:** explicit JSON-array stop sequences; wrong values can truncate responses. `Replace Macro in Stop Strings` controls macro expansion.
-- **Template Stop Sequence:** separate from Custom Stopping Strings and may be derived by the selected Instruct template. In the observed Defiant/ChatML baseline it is `<|im_end|>`.
+- **Template Stop Sequence:** separate from Custom Stopping Strings and may be derived by the selected Instruct template.
 - **Tokenizer:** normally `Best match (recommended)` unless a model-specific reason requires otherwise.
 - **Token Padding:** prompt-budget safety margin; observed baseline `64`.
-- **Reasoning:** Auto-Parse, Auto-Expand, Show Hidden, Add to Prompts, Max and Reasoning Formatting. Treat as model-specific; all were left OFF in the neutral baseline.
+- **Reasoning:** Auto-Parse, Auto-Expand, Show Hidden, Add to Prompts, Max and Reasoning Formatting. Treat as model-specific. Do not use Auto-Parse merely to hide a template/runtime failure.
 - **Miscellaneous:** Bind Model to Templates; Non-markdown strings; Start Reply With; Show reply prefix in chat.
 
-### Observed Defiant/ChatML baseline
+### Observed Defiant Text Completion attempt
 
-After metadata derivation against the connected DefiantFable GGUF:
+Metadata derivation produced:
 
 ```text
 Context Template:   ChatML
@@ -104,22 +134,43 @@ Bind Model:          OFF during validation
 Start Reply With:    empty
 ```
 
-This is observed configuration evidence, not a universal ChatML prescription for other models.
+Behavioral validation then showed visible empty `<think>...</think>` blocks on every assistant response. Therefore this is recorded as a **failed/incomplete Qwen3.5 non-thinking template path**, not as the final Defiant configuration.
 
 ---
 
-## API Connections — KoboldCpp baseline
+## Chat Completion Prompt Manager — high ROI
 
-For this workspace's local text path:
+Used by Chat Completion APIs to construct the role-structured prompt/message stack.
+
+Important concepts:
+- **Main Prompt** — primary system instruction; project baseline belongs here on the corrected Defiant Chat Completion path.
+- Prompt order/enable state — determines which prompt fragments are actually sent.
+- Additional/jailbreak/NSFW/auxiliary prompts — can materially alter behavior; disable/empty during clean validation where possible.
+- Character/persona/world-info blocks can also enter the prompt stack; keep controlled when attributing model behavior.
+
+When moving from Text Completion to Chat Completion, explicitly re-home and re-verify the system prompt instead of assuming it migrated.
+
+---
+
+## API Connections — current project paths
+
+Guide-1 transport baseline:
 
 ```text
 API:       Text Completion
 API Type:  KoboldCpp
 API URL:   http://127.0.0.1:5001
-API key:   not required for the local baseline
 ```
 
-`Derive context size from backend` is independent of template derivation. Use it deliberately; backend context and prompt-template correctness are separate concerns.
+Guide-2 corrected Defiant/Qwen3.5 non-thinking path:
+
+```text
+API:                    Chat Completion
+Chat Completion Source: Custom (OpenAI-compatible)
+Custom Endpoint/Base:   http://127.0.0.1:5001/v1
+```
+
+`Derive context size from backend` is independent of template correctness.
 
 ---
 
@@ -127,13 +178,13 @@ API key:   not required for the local baseline
 
 For reproducible evaluation, prioritize:
 
-1. preset identity,
+1. API mode/provider preset identity,
 2. response length/output budget,
 3. context size,
 4. Streaming,
 5. temperature,
 6. Top-P / Top-K / Min-P,
-7. repetition controls,
+7. penalties/repetition controls,
 8. only then advanced/dynamic samplers.
 
 Never change several sampler dimensions at once while diagnosing a failure.
@@ -150,7 +201,7 @@ Observed major groups:
 - **Miscellaneous** — Smooth Streaming, sound, relaxed API URLs, lorebook import dialog, input restoration, Moving UI.
 - **Auto-Swipe / Auto-Continue / AutoComplete Settings** — automation/convenience; keep conservative during controlled evaluation.
 
-`Streaming` itself is a generation setting under AI Response Configuration; `Streaming FPS` / `Smooth Streaming` affect presentation behavior.
+`Streaming` itself is a generation setting; `Streaming FPS` / `Smooth Streaming` affect presentation behavior.
 
 ---
 
@@ -182,7 +233,7 @@ Not a settings tab, but commonly used during testing:
 - Impersonate
 - Continue
 
-For clean evals, **Start new chat** is preferable to reusing history when testing a new template/system-prompt configuration.
+For clean evals, **Start new chat** is preferable to reusing history after a template/API/system-prompt change.
 
 ---
 
@@ -196,13 +247,11 @@ Extensions may add settings, prompt transforms or external services. Examples vi
 
 ## Project-specific navigation shorthand
 
-When an instruction says:
+- **Open API Connections** -> plug icon.
+- **Open Advanced Formatting** -> `A` icon.
+- **Open AI Response Configuration** -> sliders icon.
+- **Open User Settings** -> user/gear icon.
+- **Open Persona Management** -> smiley/persona icon.
+- **Open Character Management** -> ID-card/list icon.
 
-- **"Open API Connections"** → plug icon.
-- **"Open Advanced Formatting"** → `A` icon.
-- **"Open AI Response Configuration"** → sliders icon.
-- **"Open User Settings"** → user/gear icon.
-- **"Open Persona Management"** → smiley/persona icon.
-- **"Open Character Management"** → ID-card/list icon.
-
-Current Guide-2 work resumes at **Advanced Formatting**.
+Current Guide-2 gate: corrected Defiant backend Jinja/non-thinking Chat Completion path, then Prompt Manager/Main Prompt validation.
