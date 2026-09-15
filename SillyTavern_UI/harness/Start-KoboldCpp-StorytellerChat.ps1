@@ -23,7 +23,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $runtimeScript = Join-Path $PSScriptRoot 'Start-KoboldCpp-StorytellerRuntime.ps1'
-$result = & $runtimeScript -RuntimeProfile TextCompletionBaseline @PSBoundParameters
+$result = & $runtimeScript -RuntimeProfile ChatCompletionNonThinking @PSBoundParameters
 
 if ($Background) {
     return $result
