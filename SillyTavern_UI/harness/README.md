@@ -54,6 +54,16 @@ Files in this `harness/` directory are implementation helpers behind those entry
 
 Guide 1 does **not** treat an architecture-driven Context Shift disable as a model failure. Record the effective runtime behavior and keep failure causes separate.
 
+For the active DefiantFable/Qwen3.5 model, ordinary Context Shift is disabled because the architecture uses mRoPE. Its practical reuse path is FastForward plus hybrid SmartCache checkpoints; neither mechanism restores history already truncated by SillyTavern.
+
+## Storyteller Chat Completion acceptance probe
+
+`Test-KoboldCpp-StorytellerChatProfile.ps1` is the first bounded regression guard for the separate non-thinking candidate profile. It requires an already running KoboldCpp `1.120` instance started for Chat Completion with backend Jinja and `--jinjathink false`.
+
+The probe verifies backend/version/context, sends one non-streaming `/v1/chat/completions` request, requires exact visible content, rejects template/reasoning markers and independently rejects non-empty `message.reasoning_content`. It also records elapsed time and `/api/extra/perf` when available.
+
+Do not treat this small structural probe as proof of final story quality, long-output behavior, streaming, cache rollover or context stability. Those belong to the bounded A/B gate in the active Storyteller roadmap.
+
 ## Controlled GPU preflight
 
 Do not run ComfyUI inference or another heavy CUDA workload during Guide-1 AutoFit/performance verification. Competing VRAM use changes AutoFit layer selection and contaminates tok/s/VRAM evidence. The launcher stops before model load if at least 50% of the target GPU VRAM is already occupied.

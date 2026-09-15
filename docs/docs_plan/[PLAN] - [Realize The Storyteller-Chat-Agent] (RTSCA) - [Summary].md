@@ -18,7 +18,7 @@ Den försvarbara huvudstacken är:
 
 **SillyTavern → KoboldCpp → lokal GGUF-modell**
 
-**KoboldCpp** väljs som inferens/backend främst för lång flerturnschatt, GPU-kontroll och framför allt **Context Shift**, så att hela gamla konversationen inte behöver processas om vid varje ny tur.
+**KoboldCpp** väljs som inferens/backend för lång flerturnschatt, GPU-kontroll, OpenAI-kompatibel Chat Completion och praktisk promptåteranvändning. För den valda Qwen3.5/mRoPE-modellen stänger KoboldCpp av vanlig **Context Shift**. Den verkliga optimeringsytan är **FastForward + hybrid SmartCache**: stabila promptprefix och återanvändbara checkpoints kan minska ombearbetning, men de förlänger inte kontextfönstret och bevarar inte historik som SillyTavern har trunkerat bort.
 
 **SillyTavern** är chattgränssnittet eftersom det är väl anpassat för personlig chatbot/storytelling och har **Data Bank** för dokumentinmatning/RAG.
 
@@ -26,39 +26,15 @@ LM Studio kan fortfarande fungera som enklare reservlösning, men **Bionic är �
 
 ### Modellstrategin
 
-Första kandidaten behöver inte laddas ned alls:
+Den aktiva kandidaten är den redan verifierade **DefiantFable Qwen3.5-9B Q4_K_S**-GGUF:en. SillyTavern `1.19.0` → KoboldCpp `1.120` → modellen fungerar redan end-to-end med streaming och flerturnskontinuitet. Den bevisade Text Completion-konfigurationen bevaras som regressionsbaslinje; den ersätts inte innan en separat modellnative Chat Completion-profil visar ett nettopositivt resultat.
 
-**Huihui-Qwen3.5-9B-abliterated**, som redan finns installerad, används först för att verifiera hela runtimekedjan.
-
-Det första testet ska alltså avgöra om:
-
-- KoboldCpp fungerar korrekt,
-- full eller nästan full GPU-offload fungerar,
-- hastigheten är acceptabel,
-- längre konversationer fungerar,
-- SillyTavern-integrationen fungerar,
-- dokument kan tillföras genom Data Bank.
-
-Därefter är den primära alternativa kandidaten:
-
-**Qwen3.5-9B “Defiant Fable” Heretic/Uncensored**, eftersom den bygger på ungefär samma kapacitetsklass men är mer explicit tränad för **fiction/prosa/roleplay** snarare än vanlig instruct-chat.
-
-Den lämpliga kvantiseringen för 8 GB VRAM är ungefär **Q4_K_S** snarare än en tyngre quant, för att lämna utrymme åt kontext/KV-cache.
-
-Det betyder att modellen inte ska bytas innan själva plattformen är verifierad. Huihui fungerar som **runtime-baslinje**, därefter kan Defiant Fable jämföras på faktisk story-/chatkvalitet.
+Modellbyte eller tyngre quant är inte nästa steg. Först optimeras och bevisas den exakta befintliga modellen under kontrollerade profiler.
 
 ### Kontext och VRAM
 
-Startpunkten är ungefär:
+Den bevisade startpunkten är **8192 tokens**, Flash Attention, F16 KV och AutoFit. Q8 KV och högre context ska prövas som separata kandidater, först 16k och därefter 32k endast om systemmarginal, stabilitet och praktisk responstid motiverar det. Maximal annonserad modellcontext är inte i sig ett lämpligt lokalt driftmål.
 
-- **12 288–16 384 tokens context**
-- **Flash Attention**
-- **Q8 KV-cache / `quantkv 1`**
-- så mycket **GPU-offload** som 8 GB VRAM tillåter.
-
-KoboldCpp Context Shift ska sedan hantera att äldre konversation gradvis faller ur när kontexten fylls. Det betraktas här som ett avsiktligt beteende, inte som ett problem som måste lösas med permanent memory.
-
-Om VRAM inte räcker ska man först optimera context/KV/offload snarare än att automatiskt bygga en komplicerad CPU-offload-arkitektur. En lägre modellquant är också ett möjligt senare steg.
+Om VRAM inte räcker optimeras context, KV-typ och GPU-offload i den ordningen som ger bäst verifierad helhetsnytta. Inget profilvärde markeras som rekommenderat enbart för att det teoretiskt får plats.
 
 ### Dokumentläsning
 
@@ -79,26 +55,19 @@ Det finns inget krav på kodfiler eller avancerad filsystemagent. Agenten behöv
 
 ### Multimodalitet
 
-Multimodalitet är **relevant men uttryckligen fas 2**.
-
-Först ska textchatten bevisas fungera bra.
-
-Därefter kan en lämplig **`mmproj`** kopplas in för bildförståelse. Det är därför rimligt att ha mmproj-filen nedladdad redan från början, men inte ladda den under den initiala textutvärderingen eftersom den inte behövs för vanlig dokumenttext.
+Multimodalitet är redan funktionellt bevisad men är uttryckligen lågprioriterad. Image Captioning, egna extensions och ComfyUI ska inte konkurrera med Storyteller-konfiguration, stabilitet, prestanda eller sparade profiler.
 
 ### Konkret implementationsordning
 
-Den frysta planen är alltså:
+Den aktiva ordningen är:
 
-1. **Installera senaste CUDA-KoboldCpp på Windows.**
-2. **Starta med redan installerade Huihui-Qwen3.5-9B-abliterated.**
-3. Konfigurera **CuBLAS/CUDA, maximal GPU-offload, Flash Attention, cirka 12–16k context och Q8 KV-cache**.
-4. Testa modellen först direkt genom KoboldCpp/Kobold Lite och verifiera faktisk GPU/VRAM-användning och responsivitet.
-5. **Installera SillyTavern** och anslut det till KoboldCpp på localhost.
-6. Skapa endast den minimala persona/systemkonfiguration som behövs för en personlig storyteller-chatbot.
-7. Testa längre flerturnschatt.
-8. Testa **Data Bank** med verkliga `.md`, `.txt` och `.pdf`.
-9. När runtimekedjan fungerar: jämför Huihui med **Defiant Fable**.
-10. Först när textagenten är godkänd: börja experimentera med **mmproj/multimodalitet**.
+1. Bevara den fungerande Text Completion-baslinjen oförändrad.
+2. Skapa en separat Chat Completion-profil med backend-Jinja och `--jinjathink false`.
+3. Bygg en verifierare som granskar både synligt svar och separat reasoningfält.
+4. Genomför en bounded A/B för template, flerturnskontinuitet, 1000–2000 ord och cache-/latensbeteende.
+5. Optimera context/KV/offload stegvis med faktisk VRAM-, stabilitets- och tidsmätning.
+6. Spara endast profiler som klarar regressionsmatrisen; dokumentera SillyTavern Prompt Manager och samplers per profil.
+7. Ta dokument/RAG senare och caption/extensions/ComfyUI sist.
 
 ### Kärnan i beslutet
 

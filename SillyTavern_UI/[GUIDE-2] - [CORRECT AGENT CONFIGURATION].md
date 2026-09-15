@@ -1,6 +1,6 @@
 # GUIDE 2 — CORRECT AGENT CONFIGURATION
 
-**Current-sprint status:** CLOSED on the last proven stable baseline. Advanced model-specific template/non-thinking hardening is explicitly deferred to later Codex work.
+**Guide status:** CLOSED on the last proven stable baseline. Advanced model-specific hardening is now active as a separate regression-safe workstream; Guide 2 itself remains closed and is not retroactively reopened.
 
 **Active model:** `Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-Q4_K_S.gguf`
 
@@ -29,7 +29,7 @@ Custom Stops:      empty
 Start Reply With:  empty
 ```
 
-Do not enable metadata-derived templates, manual ChatML/Jinja/non-thinking overrides, or the experimental Chat Completion path during this sprint.
+Do not alter this baseline in place. The new Chat Completion/Jinja/non-thinking path must remain a separate profile until it passes the Storyteller acceptance matrix.
 
 Recurring backend entrypoint:
 
@@ -51,9 +51,9 @@ After enabling derived ChatML/Instruct formatting, visible empty `<think>...</th
 
 The experimental non-thinking launch/test scripts have therefore been removed from the normal repo surface.
 
-## Deferred hardening backlog
+## Active hardening workstream
 
-Codex/later work may revisit exact Qwen3.5 thinking/non-thinking template behavior, final role/system-prompt placement, final Validation/Story sampler profiles, the 1000–2000 word output requirement, context optimization beyond 8192, and any model-specific Chat Completion/Jinja path.
+The separate Storyteller runtime-hardening roadmap owns exact Qwen3.5 thinking/non-thinking behavior, Prompt Manager system placement, Validation/Story sampler profiles, 1000–2000-word behavior, saved profiles and context/performance optimization beyond 8192. For KoboldCpp `1.120`, the fixed non-thinking candidate uses `--jinjathink false`; its verifier must inspect both `content` and `reasoning_content`.
 
 ## Current gate
 

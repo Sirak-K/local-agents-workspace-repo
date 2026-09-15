@@ -65,7 +65,31 @@ Entry points:
 
 ## Highest-ROI Codex backlog
 
-### P0 — custom production caption delivery
+### P0 — Storyteller runtime hardening and saved profiles
+
+Preserve the stable Text Completion baseline while establishing a separate, controlled Chat Completion profile for the exact DefiantFable GGUF and KoboldCpp `1.120`:
+
+1. use backend-owned model Jinja through Chat Completion,
+2. select non-thinking with `--jinjathink false`, not shell-embedded JSON,
+3. inspect both `content` and `reasoning_content`,
+4. prove multi-turn continuity and 1000–2000-word behavior,
+5. measure time-to-first-token, total generation time and effective cache behavior,
+6. test context growth and rollover without claiming that mRoPE Context Shift is active,
+7. save only profiles that pass a regression matrix against the stable baseline.
+
+For this Qwen3.5/mRoPE runtime, describe prompt reuse as **FastForward + hybrid SmartCache**. KoboldCpp disables ordinary Context Shift for the model; SmartCache does not extend SillyTavern's context window or preserve history that the frontend has truncated.
+
+The active execution plan is owned by:
+
+```text
+docs/docs_plan/[PLAN] - [7] - [SILLYTAVERN STORYTELLER RUNTIME HARDENING] - [ROADMAP].md
+```
+
+### Deferred — custom production caption delivery
+
+Team Master has explicitly deprioritized further Image Captioning work. The existing caption handoff is `DEFERRED — DO NOT EXECUTE`; JoyCaption/Gradio already exist locally as an optional future alternative.
+
+Historical desired repo surface:
 
 Desired repo surface:
 
@@ -81,7 +105,7 @@ Observed current behavior:
 - caption text is rendered before/above the associated image,
 - weak progress visibility caused repeated clicks and multiple duplicate caption requests in one run.
 
-Build/profile a caption path that:
+If explicitly reactivated later, build/profile a caption path that:
 
 1. shows an unmistakable in-flight state immediately,
 2. prevents accidental duplicate requests for the same image,
@@ -92,7 +116,7 @@ Build/profile a caption path that:
 
 SillyTavern Image Captioning already exposes `Use secondary URL`; evaluate this rather than coupling captioning permanently to the Storyteller endpoint.
 
-### P1 — dedicated low-latency vision/caption model
+### Deferred — dedicated low-latency vision/caption model
 
 DefiantFable 9B is accepted functionally but is not selected as the final production caption model. Benchmark a smaller local vision model against the actual Team Master workload with emphasis on:
 
@@ -104,25 +128,6 @@ DefiantFable 9B is accepted functionally but is not selected as the final produc
 
 Keep model, projector/runtime and UI/integration failures separate.
 
-### P1 — Storyteller hardening
-
-Resolve without breaking the stable Text Completion baseline:
-
-- exact Qwen3.5 thinking/non-thinking template behavior,
-- visible `<think>` prevention at the correct layer,
-- final system-prompt placement,
-- final sampler profiles,
-- stable 1000–2000 word responses,
-- context/runtime optimization beyond the current 8192 baseline.
-
-Prior experiment facts:
-
-- derived ChatML/Instruct formatting introduced visible empty `<think>...</think>` blocks,
-- a later Jinja/non-thinking experiment was invalid because KoboldCpp reported it could not parse the supplied `jinja_kwargs`,
-- its verifier produced a false-positive marker PASS while visible `Thinking Process:` text still appeared.
-
-Do not call these model defects without independent isolation.
-
 ### P2 — document hardening
 
 Guide 3 direct attachments are already PASS. Later work:
@@ -133,7 +138,7 @@ Guide 3 direct attachments are already PASS. Later work:
 - chunk/retrieval tuning,
 - larger real project documents.
 
-### P2 — broader multimodality
+### Deferred — broader multimodality and ComfyUI
 
 Later integration:
 
@@ -146,16 +151,7 @@ Do not run heavy ComfyUI inference during controlled KoboldCpp GPU profiling unl
 
 ## Repo / local-worktree caution
 
-Team Master currently has intentional local modifications to:
-
-```text
-.gitignore
-MY ACC$.MD
-```
-
-They were preserved across a manual recovery sync and must not be overwritten casually. A temporary stash backup was also intentionally retained after `stash apply`.
-
-Normal repo sync remains AutoPull/AutoSync; manual Git intervention should only be used when there is concrete evidence sync is blocked.
+Normal repo sync remains AutoPull/AutoSync. The watcher may fetch and report `origin/main` while tracked local files are dirty, but it must not stage, commit, stash, reset, clean, rebase or overwrite the working tree automatically.
 
 ## Evaluation principle
 

@@ -107,7 +107,8 @@ Write-Host "  Context:    $ContextSize"
 Write-Host "  GPU ID:     $GpuId"
 Write-Host "  URL:        http://127.0.0.1:$Port"
 Write-Host '  CUDA; GPU layers AutoFit (-1); MMQ off; High Priority on'
-Write-Host '  Flash Attention allowed/default; F16 KV; Context Shift architecture-dependent; SWA prevented'
+Write-Host '  Flash Attention allowed/default; F16 KV; FastForward/cache architecture-dependent; SWA prevented'
+Write-Host '  Note: KoboldCpp disables ordinary Context Shift for mRoPE models such as Qwen3.5'
 Write-Host ''
 
 if ($Background) {

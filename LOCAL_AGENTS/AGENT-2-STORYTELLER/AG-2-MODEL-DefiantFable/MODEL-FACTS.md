@@ -24,6 +24,8 @@ The exact non-MTP `Q4_K_S` file is approximately 6.55 GB in that repository.
 - mRoPE present
 - Hybrid/recurrent characteristics present
 - KoboldCpp effective runtime: Context Shift automatically disabled for this model/runtime because mRoPE is used
+- FastForward remains the prefix-reuse mechanism
+- The hybrid/recurrent path can use KoboldCpp SmartCache checkpoints; this is not equivalent to Context Shift and does not extend the context window
 - SWA is not used by this model in the observed runtime
 - F16 KV baseline
 - Flash Attention effective runtime reported enabled
@@ -76,29 +78,20 @@ Sources:
 - `https://huggingface.co/Qwen/Qwen3.5-9B`
 - `https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/chat_template.jinja`
 
-## Corrected Guide-2 runtime path
+## Corrected Storyteller runtime path
 
 KoboldCpp supports Jinja Chat Completions and chat-template kwargs. The controlled Defiant path is therefore:
 
-1. KoboldCpp started with `--jinja`.
-2. Backend started with `--chat-template-kwargs '{"enable_thinking":false}'`.
+1. KoboldCpp `1.120` started with `--jinjathink false`; this version auto-enables Jinja and selects `enable_thinking=false` without shell-embedded JSON.
+2. Do not use Qwen3 `/think` or `/nothink` switches; Qwen3.5 does not support them.
 3. SillyTavern uses `Chat Completion -> Custom (OpenAI-compatible)`.
 4. Endpoint base URL: `http://127.0.0.1:5001/v1`.
 5. SillyTavern Text Completion Instruct Mode is not the active template layer on this path.
 6. Chat Completion Prompt Manager is the system-prompt layer to validate; do not assume the Advanced Formatting Text Completion system prompt is sent unchanged.
 
 KoboldCpp sources/reference:
-- v1.120 supports `--jinja` and Jinja thinking handling.
-- KoboldCpp release history documents `--jinja-kwargs` / `--chat-template-kwargs` with the example `{"enable_thinking":false}`.
-
-Repo entrypoints:
-
-```powershell
-.\scripts\Start-DefiantFable-NonThinking.cmd
-.\scripts\Test-DefiantFable-NonThinking.cmd
-```
-
-The test calls `/v1/chat/completions` and fails if the assistant content contains `<think>`, `</think>`, `<|im_start|>` or `<|im_end|>`.
+- v1.120 release notes state that `--jinjathink` automatically enables Jinja.
+- Per-request `chat_template_kwargs: {"enable_thinking":false}` remains supported, but the fixed server flag is the lower-risk Windows launcher contract until the active SillyTavern UI is proven to transmit that field.
 
 ## Validation sampler baseline after corrected template PASS
 
@@ -123,4 +116,4 @@ Filename terms such as `Uncnr`, `Heretic`, or `NEO-MAX` are not themselves evide
 
 ## Next gate
 
-Restart only KoboldCpp with the Defiant non-thinking entrypoint, pass the automated `/v1/chat/completions` marker-leak test, switch SillyTavern to the Custom OpenAI-compatible Chat Completion path, put the Guide-2 baseline in Chat Completion Prompt Manager, then rerun the clean 5-turn behavioral smoke.
+Preserve the proven Text Completion baseline. Build and statically verify a separate Chat Completion/non-thinking profile and acceptance probe, then run one bounded local A/B only after explicit approval for model load/generation. The probe must inspect both `message.content` and `message.reasoning_content`; marker-only checks are insufficient.

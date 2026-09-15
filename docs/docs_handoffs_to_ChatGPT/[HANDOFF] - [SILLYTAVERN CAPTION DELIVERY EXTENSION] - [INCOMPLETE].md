@@ -1,8 +1,10 @@
 # Handoff: SillyTavern Caption Delivery Extension
 
-**Status:** `INCOMPLETE`
+**Status:** `DEFERRED — DO NOT EXECUTE`
 
-**Team Master decision:** implement the bounded GitHub-visible extension slice below. ChatGPT owns only the repo implementation and its offline verification. Codex retains architecture review, installation into the local SillyTavern runtime, live KoboldCpp/UI verification, GPU/process work and final integration approval.
+**Team Master priority override — 2026-09-15:** Image Captioning fungerar redan tillräckligt bra och ska inte få mer projekttid nu. Extensions, caption-hardening och ComfyUI är lägst prioriterade i det aktuella SillyTavern/KoboldCpp-arbetet. Storyteller-agentens modell-/runtimekonfiguration, långsiktiga stabilitet, realistisk prestandaoptimering och sparade profiler är P0.
+
+Denna fil bevaras endast som spårbar tidigare specifikation. ChatGPT ska inte välja, implementera, committa eller byta suffix på den utan en ny uttrycklig aktivering från Team Master. `INCOMPLETE`-suffixet betyder här endast att den tidigare beställningen aldrig utfördes; det är inte en aktiv arbetskö.
 
 ## Goal and practical value
 
