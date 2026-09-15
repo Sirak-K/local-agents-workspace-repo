@@ -1,20 +1,30 @@
-"""Shared, bounded persistence primitives for project-owned LM Studio evidence."""
+"""LM Studio compatibility adapter over the shared runtime logging primitives."""
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-import hashlib
+from datetime import datetime
 import json
-import math
-import os
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 import re
-import time
+import sys
 from typing import Any
 from uuid import uuid4
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from runtime_logging.atomic_json_store import serialize_pretty_json, write_pretty_json_atomic
+from runtime_logging.operation_document import (
+    CaptureLimitError,
+    local_timestamp,
+    timestamp_fields,
+    timestamp_fields_from_epoch_ms,
+    utc_timestamp,
+    validate_budget,
+)
+from runtime_logging.sensitive_data_sanitizer import sanitize_for_log as _shared_sanitize_for_log
+
 LOG_ROOT = PROJECT_ROOT / "LM-Studio_logs"
 SCHEMA_VERSION = "1.0"
 MAX_INLINE_TEXT_CHARACTERS = 240
@@ -23,126 +33,17 @@ MAX_CAPTURE_BYTES = 8_388_608
 FINALIZATION_RESERVE_BYTES = 4096
 
 
-class CaptureLimitError(ValueError):
-    """A capture reached its enforced serialized-byte ceiling."""
-
-
-def validate_budget(duration: float, interval: float = 1, samples: int = 1) -> None:
-    if not math.isfinite(duration) or not 0 <= duration <= 300:
-        raise ValueError("duration must be finite and between 0 and 300 seconds")
-    if not math.isfinite(interval) or not 0.5 <= interval <= 300:
-        raise ValueError("interval must be finite and between 0.5 and 300 seconds")
-    if not 1 <= samples <= 1000:
-        raise ValueError("sample/event limit must be between 1 and 1000")
-
-_SECRET_KEYS = {
-    "authorization",
-    "api_key",
-    "apikey",
-    "access_token",
-    "auth_token",
-    "refresh_token",
-    "bearer_token",
-    "cookie",
-    "lm_api_token",
-    "password",
-    "secret",
-    "token",
-}
-_PATH_KEY_PARTS = ("path", "directory", "working_dir", "cwd", "file")
-_BEARER_PATTERN = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
-_LM_STUDIO_TOKEN_PATTERN = re.compile(r"\bsk-lm-[a-zA-Z0-9]{8}:[a-zA-Z0-9]{20}\b")
-_WINDOWS_PATH_PATTERN = re.compile(r"(?i)(?<![a-z0-9])(?:[a-z]:[\\/]|\\\\)[^\r\n\"'<>]*")
-_INLINE_SECRET_PATTERN = re.compile(
-    r"(?i)((?:api[_-]?key|access[_-]?token|password|secret)\s*[:=]\s*)[^\s,;]+"
-)
-
-
-def local_timestamp(value: datetime | None = None) -> str:
-    moment = (value or datetime.now().astimezone()).astimezone()
-    offset = moment.strftime("%z")
-    return moment.strftime("%Y-%m-%d | %H:%M:%S.%f")[:-3] + f" {offset[:3]}:{offset[3:]}"
-
-
-def utc_timestamp(value: datetime | None = None) -> str:
-    moment = value or datetime.now(timezone.utc)
-    return moment.astimezone(timezone.utc).strftime("%Y-%m-%d | %H:%M:%S.%f")[:-3] + " UTC"
-
-
-def timestamp_fields(value: datetime | None = None) -> dict[str, Any]:
-    moment = value or datetime.now().astimezone()
-    return {
-        "local": local_timestamp(moment),
-        "utc": utc_timestamp(moment),
-        "epoch_ms": int(moment.timestamp() * 1000),
-    }
-
-
-def timestamp_fields_from_epoch_ms(epoch_ms: int | float) -> dict[str, Any]:
-    moment = datetime.fromtimestamp(float(epoch_ms) / 1000, tz=timezone.utc)
-    return timestamp_fields(moment)
-
-
-def _portable_path(value: str) -> str:
-    project_text = str(PROJECT_ROOT)
-    normalized = value.replace(project_text, "<PROJECT_ROOT>")
-    normalized = normalized.replace(project_text.replace("\\", "/"), "<PROJECT_ROOT>")
-    if normalized != value:
-        return normalized.replace("\\", "/")
-
-    candidate = PureWindowsPath(value)
-    if candidate.is_absolute():
-        name = candidate.name or "path"
-        return f"<ABSOLUTE_PATH_REDACTED>/{name}"
-    return value
-
-
-def _bounded_text(value: str) -> str | dict[str, Any]:
-    redacted = _LM_STUDIO_TOKEN_PATTERN.sub("[REDACTED]", value)
-    redacted = _BEARER_PATTERN.sub("Bearer [REDACTED]", redacted)
-    current_token = os.environ.get("LM_API_TOKEN", "")
-    if current_token:
-        redacted = redacted.replace(current_token, "[REDACTED]")
-    redacted = _INLINE_SECRET_PATTERN.sub(r"\1[REDACTED]", redacted)
-    redacted = _WINDOWS_PATH_PATTERN.sub("<ABSOLUTE_PATH_REDACTED>", redacted)
-    if len(redacted) <= MAX_INLINE_TEXT_CHARACTERS:
-        return redacted
-    return {
-        "encoding": "utf-8",
-        "character_count": len(redacted),
-        "sha256": hashlib.sha256(redacted.encode("utf-8")).hexdigest(),
-        "text_chunks": [
-            redacted[index : index + TEXT_CHUNK_CHARACTERS]
-            for index in range(0, len(redacted), TEXT_CHUNK_CHARACTERS)
-        ],
-    }
-
-
 def sanitize_for_log(value: Any, *, field_name: str = "") -> Any:
-    """Redact secrets/avoidable absolute paths and bound long JSON lines."""
+    """Preserve the established LM Studio sanitization contract via the shared core."""
 
-    lowered = field_name.casefold()
-    normalized_key = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", field_name).lower().replace("-", "_").replace(" ", "_")
-    if (
-        normalized_key in _SECRET_KEYS
-        or normalized_key.endswith("_api_key")
-        or normalized_key.endswith("_access_token")
-        or normalized_key.endswith("_auth_token")
-        or normalized_key.endswith("_password")
-        or normalized_key.endswith("_secret")
-    ):
-        return "[REDACTED]"
-    if isinstance(value, dict):
-        return {
-            str(key): sanitize_for_log(item, field_name=str(key))
-            for key, item in value.items()
-        }
-    if isinstance(value, (list, tuple)):
-        return [sanitize_for_log(item, field_name=field_name) for item in value]
-    if isinstance(value, str):
-        text = _portable_path(value) if any(part in lowered for part in _PATH_KEY_PARTS) else value
-        return _bounded_text(text)
-    return value
+    return _shared_sanitize_for_log(
+        value,
+        field_name=field_name,
+        project_root=PROJECT_ROOT,
+        allow_sensitive_content=True,
+        max_inline_text_characters=MAX_INLINE_TEXT_CHARACTERS,
+        text_chunk_characters=TEXT_CHUNK_CHARACTERS,
+    )
 
 
 def new_capture_document(
@@ -238,33 +139,19 @@ def finalize_capture(document: dict[str, Any], *, status: str, stop_reason: str)
 
 
 def _serialize(document: dict[str, Any]) -> bytes:
-    return (json.dumps(document, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode("utf-8")
+    return serialize_pretty_json(document)
 
 
 def write_capture(path: Path, document: dict[str, Any]) -> None:
     """Atomically replace one UTF-8/no-BOM pretty JSON capture document."""
 
-    serialized = _serialize(document)
-    if len(serialized) > MAX_CAPTURE_BYTES:
-        raise CaptureLimitError("serialized capture exceeded the absolute byte limit")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    with temporary.open("wb") as handle:
-        handle.write(serialized)
-        handle.flush()
-        os.fsync(handle.fileno())
-    try:
-        for attempt in range(6):
-            try:
-                os.replace(temporary, path)
-                break
-            except PermissionError:
-                if attempt == 5:
-                    raise
-                time.sleep(0.05 * (attempt + 1))
-    finally:
-        if temporary.exists():
-            temporary.unlink()
+    write_pretty_json_atomic(
+        path,
+        document,
+        max_bytes=MAX_CAPTURE_BYTES,
+        replace_attempts=6,
+        base_delay_seconds=0.05,
+    )
 
 
 def project_relative(path: Path) -> str:

@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local-agents.invalid/runtime_logging/operation_document.schema.json",
+  "title": "Local runtime operation document",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "owner",
+    "stream",
+    "operation",
+    "events",
+    "artifacts",
+    "evidence_gaps"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "stream": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$"
+    },
+    "operation": {
+      "type": "object",
+      "required": [
+        "operation_id",
+        "correlation_id",
+        "status",
+        "started_at",
+        "ended_at",
+        "duration_seconds",
+        "stop_reason",
+        "producer",
+        "profile",
+        "model",
+        "limits",
+        "counts",
+        "data_policy",
+        "detail"
+      ],
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "status": {
+          "type": "string"
+        },
+        "started_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "ended_at": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "stop_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "producer": {
+          "type": "object",
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "process": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "profile": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limits": {
+          "type": "object",
+          "required": [
+            "max_capture_bytes",
+            "max_events",
+            "max_capture_seconds"
+          ],
+          "properties": {
+            "max_capture_bytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_events": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_capture_seconds": {
+              "type": [
+                "integer",
+                "number"
+              ],
+              "exclusiveMinimum": 0
+            }
+          },
+          "additionalProperties": true
+        },
+        "counts": {
+          "type": "object",
+          "required": [
+            "events",
+            "artifacts"
+          ],
+          "properties": {
+            "events": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "artifacts": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": true
+        },
+        "data_policy": {
+          "type": "object"
+        },
+        "detail": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "timestamp": {
+      "type": "object",
+      "required": [
+        "local",
+        "utc",
+        "epoch_ms"
+      ],
+      "properties": {
+        "local": {
+          "type": "string"
+        },
+        "utc": {
+          "type": "string"
+        },
+        "epoch_ms": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "event": {
+      "type": "object",
+      "required": [
+        "sequence",
+        "event_id",
+        "observed_at",
+        "source_time",
+        "event_type",
+        "severity",
+        "outcome",
+        "duration_seconds",
+        "details"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "source_time": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_type": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_.-]{0,95}$"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "duration_seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "reference",
+        "bytes",
+        "sha256",
+        "media_type",
+        "metadata"
+      ],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metadata": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

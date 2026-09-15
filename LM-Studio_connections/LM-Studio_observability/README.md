@@ -2,6 +2,8 @@
 
 Denna modul fångar generell LM Studio- och hostevidens utan att bedöma en modell och utan att ladda en modell. Varje invocation är tids-/storleksbegränsad och skapar exakt en unik, atomiskt uppdaterad pretty-JSON-fil. Samma `--correlation-id` kan ges till flera samtidiga strömmar så att en senare eval-run kan referera till dem utan att kopiera rådata.
 
+Gemensamma algoritmiska primitives för tid, sanitization och atomisk pretty-JSON-persistens ägs nu av `runtime_logging/`. `observability_common.py` är den tunna permanenta LM Studio-adaptern som bevarar detta moduls etablerade captureformat, limits, loggrot och CLI-kontrakt; nya `logs/`-producenter ska inte kopiera LM-implementationen.
+
 ## Strömmar
 
 | Script | Loggägare | Primär källa | Viktig gräns |

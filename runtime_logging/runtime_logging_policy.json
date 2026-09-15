@@ -1,0 +1,94 @@
+{
+  "policy_version": "1.0",
+  "schema_version": "1.0",
+  "identifier_patterns": {
+    "operation_id": "^[0-9a-f]{32}$",
+    "correlation_id": "^[0-9a-f]{32}$",
+    "event_id": "^[0-9a-f]{32}$"
+  },
+  "owners": [
+    "sillytavern",
+    "koboldcpp",
+    "dia2",
+    "diffusers",
+    "host",
+    "github_autopull",
+    "profile_orchestration"
+  ],
+  "statuses": [
+    "running",
+    "completed",
+    "failed",
+    "interrupted"
+  ],
+  "severities": [
+    "debug",
+    "info",
+    "warning",
+    "error",
+    "critical"
+  ],
+  "outcomes": [
+    "observed",
+    "success",
+    "failure",
+    "partial",
+    "skipped",
+    "cancelled",
+    "unknown"
+  ],
+  "hard_limits": {
+    "max_capture_bytes": 8388608,
+    "max_events": 1000,
+    "max_capture_seconds": 1800,
+    "atomic_replace_attempts": 6,
+    "atomic_replace_base_delay_seconds": 0.05
+  },
+  "retention": {
+    "provisional_until_local_measurement": true,
+    "owners": {
+      "sillytavern": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "koboldcpp": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "dia2": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "diffusers": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "host": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "github_autopull": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      },
+      "profile_orchestration": {
+        "max_finalized_count": 200,
+        "max_age_days": 14,
+        "max_total_bytes": 268435456,
+        "protect_latest_failure": true
+      }
+    }
+  }
+}
