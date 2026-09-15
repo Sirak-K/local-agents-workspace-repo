@@ -33,7 +33,10 @@ function Test-StorytellerChatResponseContract {
     )
 
     $choicesValue = Get-OptionalPropertyValue -InputObject $Response -Name 'choices'
-    $choices = if ($null -eq $choicesValue) { @() } else { @($choicesValue) }
+    $choices = @()
+    if ($null -ne $choicesValue) {
+        $choices = @($choicesValue)
+    }
     if ($choices.Count -ne 1) {
         throw ('Response contract violation: expected exactly one choice; got {0}.' -f $choices.Count)
     }
