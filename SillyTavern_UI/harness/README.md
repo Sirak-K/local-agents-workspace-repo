@@ -2,22 +2,26 @@
 
 **Scope:** model-neutral AGENT-2 text harness only.
 
-Tracked here: bootstrap/start/test scripts and runtime contract.  
+Tracked here: internal bootstrap/start/test implementation and runtime contract.  
 Not tracked: installed third-party apps under `SillyTavern_UI/_local_runtime/`.
 
 **Verified 2026-09-15:** KoboldCpp `v1.120`; SillyTavern `release` commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127` (SillyTavern `1.19.0`, Node `>=20`).
 
-## One-command local start
+## Team Master entrypoints
 
-From repo root after AutoPull:
+Regular/repeated execution belongs in repo-root `scripts/`, not here:
 
 ```powershell
-.\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
+.\scripts\Start-Local-Agent-Harness.cmd
+.\scripts\Start-SillyTavern.cmd
+.\scripts\Test-Local-Agent-Harness.cmd
 ```
 
-`Start-Guide1-Stack.cmd` selects `pwsh.exe` when available and falls back to `powershell.exe`. It also checks common absolute install paths so Guide 1 does not depend on a perfect PATH setup.
+Files in this `harness/` directory are implementation helpers behind those entrypoints and normally should not be invoked directly by Team Master.
 
-The launcher/script chain:
+## Launcher chain
+
+`Start-Local-Agent-Harness.cmd` routes to the Guide-1 implementation, which:
 
 1. bootstraps missing Guide-1 runtime components,
 2. checks the NVIDIA driver,
@@ -52,13 +56,13 @@ Guide 1 does **not** treat an architecture-driven Context Shift disable as a mod
 
 ## Controlled GPU preflight
 
-Do not run ComfyUI inference or another heavy CUDA workload during Guide-1 AutoFit/performance verification. Competing VRAM use changes AutoFit layer selection and contaminates tok/s/VRAM evidence. The launcher now stops before model load if at least 50% of the target GPU VRAM is already occupied.
+Do not run ComfyUI inference or another heavy CUDA workload during Guide-1 AutoFit/performance verification. Competing VRAM use changes AutoFit layer selection and contaminates tok/s/VRAM evidence. The launcher stops before model load if at least 50% of the target GPU VRAM is already occupied.
 
 ## Runtime placement
 
 ```text
 SillyTavern_UI/
-├── harness/                 # tracked
+├── harness/                 # tracked internal implementation
 └── _local_runtime/          # gitignored
     ├── KoboldCpp/
     └── SillyTavern/
