@@ -17,26 +17,28 @@ Verifierad 2026-09-15:
 - KoboldCpp: `v1.120`, Windows `koboldcpp.exe`.
 - SillyTavern: `release` commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127` (`1.19.0`, Node `>=20`).
 - API: `Text Completion -> KoboldCpp -> http://127.0.0.1:5001`.
-- Context: `8192`.
+- Begärd context: `8192`.
 - CUDA GPU ID: `0` default.
 - GPU layers: `-1` / AutoFit.
 - MMQ: OFF (`--nommq`).
 - High Priority: ON.
-- Flash Attention: ON via v1.120 default.
+- Flash Attention: tillåten/default; effektivt runtime-läge verifieras i loggen.
 - KV: F16.
-- Context Shift: ON via v1.120 default.
-- SWA: prevented with `--noswa` so Context Shift remains available.
+- Context Shift: tillåten genom att `--noshift` inte används, men effektivt läge är arkitekturberoende. KoboldCpp kan stänga av Context Shift automatiskt för modeller där shifting inte stöds, exempelvis vissa mRoPE/hybrid-arkitekturer.
+- SWA: förhindras med `--noswa` för att inte bli en separat confounder; vissa arkitekturer använder inte SWA alls.
 - Low VRAM/mmproj/RAG/remote tunnel: absent.
+
+Ett arkitekturdrivet avslag av Context Shift är **inte** i sig ett modellfel eller Guide-1-FAIL. Det ska dokumenteras som effektivt runtime-beteende och hållas åtskilt från harness-, VRAM- och modellfel.
 
 ## A2. Implementerat repoägt harness
 
 Tracked under `SillyTavern_UI/harness/`:
 
 - `Bootstrap-Guide1.ps1` — checks NVIDIA; installs missing Git/Node LTS via `winget` when possible; downloads and SHA-256 verifies KoboldCpp; clones/pins SillyTavern; prepares npm dependencies.
-- `Start-KoboldCpp-TextBaseline.ps1` — applies the locked KoboldCpp baseline.
+- `Start-KoboldCpp-TextBaseline.ps1` — applies the locked KoboldCpp baseline and rejects a contaminated run when another workload already occupies >=50% of target-GPU VRAM.
 - `Start-SillyTavern.ps1` — starts the repo-local SillyTavern runtime.
 - `Start-Guide1-Stack.ps1` — orchestrates bootstrap, model selection, backend verification and UI start.
-- `Start-Guide1-Stack.cmd` — preferred launcher; selects `pwsh.exe` first and falls back to `powershell.exe`.
+- `Start-Guide1-Stack.cmd` — preferred launcher; selects `pwsh.exe` first and falls back to `powershell.exe`, including common absolute install paths.
 - `Test-KoboldCpp-TextBaseline.ps1` — checks KoboldCpp API/model/context and NVIDIA VRAM.
 - `Test-Guide1.cmd` — preferred verification launcher with the same PowerShell fallback logic.
 - `README.md` — concise runtime contract.
@@ -51,7 +53,7 @@ SillyTavern_UI/_local_runtime/
 
 `_local_runtime/` is Git-ignored. Ingen parallell `AGENT-2-STORYTELLER`-yta skapas.
 
-**ChatGPT-del: PASS.** Lokal runtime är ännu inte verifierad förrän Del B körts på Team Masters dator.
+**ChatGPT-del: PASS.** Lokal runtime är ännu inte fullständigt verifierad förrän Del B:s SillyTavern-anslutning och chat-smoke-test har körts.
 
 ---
 
@@ -70,13 +72,17 @@ Krav: `working tree clean` och `Already up to date` eller en ren fast-forward.
 
 ## B2. Kör hela Guide-1-bootstrap/starten
 
+Innan start: stoppa ComfyUI-inferens eller annan tung CUDA-belastning så AutoFit och prestandaevidens inte kontamineras.
+
 Från repo-roten:
 
 ```powershell
 .\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
 ```
 
-`.cmd`-launchern väljer `pwsh.exe` om det finns och använder `powershell.exe` endast som fallback. Scriptkedjan gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
+`.cmd`-launchern väljer `pwsh.exe` om det finns och använder `powershell.exe` som fallback, inklusive vanliga absoluta installationssökvägar. Scriptkedjan gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
+
+Harnesset stoppar före modelladdning om minst 50% av mål-GPU:ns VRAM redan används av ett annat workload, eftersom det annars förändrar AutoFit-resultatet.
 
 **STOP och skicka terminalfelet till ChatGPT om scriptet misslyckas. Ändra inte konfigurationen manuellt först.**
 
@@ -109,6 +115,8 @@ Verifiera endast:
 
 Bedöm inte slutlig Storyteller-kvalitet i Guide 1.
 
+Om KoboldCpp-loggen visar att Context Shift automatiskt stängs av på grund av modellarkitekturen, rapportera detta men behandla det inte som Guide-1-FAIL så länge kedjan i övrigt är stabil.
+
 ## B5. Skicka evidensen till ChatGPT
 
 Med KoboldCpp fortfarande igång:
@@ -123,6 +131,7 @@ Skicka JSON-outputen plus:
 SillyTavern connection: PASS/FAIL
 3-part chat smoke test: PASS/FAIL
 Approx. generation tok/s shown by KoboldCpp:
+Effective Context Shift state if shown in log:
 Any warnings/errors:
 ```
 
