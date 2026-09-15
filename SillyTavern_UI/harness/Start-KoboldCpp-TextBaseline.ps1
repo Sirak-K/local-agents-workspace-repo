@@ -13,7 +13,8 @@ param(
     [ValidateRange(1, 65535)]
     [int]$Port = 5001,
 
-    [switch]$LaunchBrowser
+    [switch]$LaunchBrowser,
+    [switch]$Background
 )
 
 Set-StrictMode -Version Latest
@@ -82,6 +83,19 @@ Write-Host "  URL:        http://127.0.0.1:$Port"
 Write-Host '  CUDA; GPU layers AutoFit (-1); MMQ off; High Priority on'
 Write-Host '  Flash Attention on (v1.120 default); F16 KV; Context Shift on; SWA prevented'
 Write-Host ''
+
+if ($Background) {
+    function Quote-ProcessArg([string]$Value) {
+        if ($Value -match '[\s"]') {
+            return '"' + ($Value -replace '"', '\"') + '"'
+        }
+        return $Value
+    }
+
+    $argumentLine = ($KoboldArgs | ForEach-Object { Quote-ProcessArg ([string]$_) }) -join ' '
+    $process = Start-Process -FilePath $exe -ArgumentList $argumentLine -PassThru
+    return $process
+}
 
 & $exe @KoboldArgs
 exit $LASTEXITCODE
