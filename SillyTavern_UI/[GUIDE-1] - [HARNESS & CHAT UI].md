@@ -1,163 +1,131 @@
 # GUIDE 1 — HARNESS & CHAT UI
 
-**Mål:** Implementera den lokala textkedjan `SillyTavern -> KoboldCpp -> GGUF -> RTX 3070 Ti 8 GB` på Windows.
+**Mål:** verifiera den lokala textkedjan `SillyTavern -> KoboldCpp -> GGUF -> RTX 3070 Ti 8 GB` på Windows.
 
-**Källor:** [KoboldCpp releases](https://github.com/LostRuins/koboldcpp/releases) · [KoboldCpp wiki](https://github.com/LostRuins/koboldcpp/wiki) · [SillyTavern Windows](https://docs.sillytavern.app/installation/windows/) · [SillyTavern + KoboldCpp](https://docs.sillytavern.app/usage/api-connections/koboldcpp/)
+**Scope:** endast harness/chat-UI. Ingen agentprompt, modell-A/B, filläsning eller multimodalitet startas här.
+
+**Primärkällor:** [KoboldCpp releases](https://github.com/LostRuins/koboldcpp/releases) · [KoboldCpp v1.120 source](https://github.com/LostRuins/koboldcpp/blob/v1.120/koboldcpp.py) · [SillyTavern Windows](https://docs.sillytavern.app/installation/windows/) · [SillyTavern + KoboldCpp](https://docs.sillytavern.app/usage/api-connections/koboldcpp/)
 
 ---
 
-# A. ChatGPT-ägd steg-för-steg guide
+# A. ChatGPT-ägd steg-för-steg guide — KLAR
 
-## A1. Lås baslinjen
+## A1. Verifierad och låst baseline
 
-ChatGPT äger följande startkonfiguration tills lokal evidens motiverar ändring:
+Verifierad 2026-09-15:
 
-| Del | Baslinje |
-|---|---|
-| Backend | senaste stabila `koboldcpp.exe` |
-| UI | SillyTavern `release` branch |
-| API | Text Completion -> KoboldCpp |
-| URL | `http://localhost:5001` |
-| Modellformat | GGUF |
-| Context | `8192` |
-| GPU | CuBLAS/CUDA, RTX 3070 Ti |
-| GPU Layers | KoboldCpp AutoFit/autodetect först |
-| Low VRAM | OFF |
-| QuantMatMul/MMQ | OFF på RTX 3070 Ti |
-| High Priority | ON |
-| Flash Attention | ON |
-| Context Shift | ON/default |
-| SWA | OFF |
-| Quantized KV | OFF initialt |
-| mmproj | OFF |
+- KoboldCpp: `v1.120`, Windows `koboldcpp.exe`.
+- SillyTavern: `release` commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127` (`1.19.0`, Node `>=20`).
+- API: `Text Completion -> KoboldCpp -> http://127.0.0.1:5001`.
+- Context: `8192`.
+- CUDA GPU ID: `0` default.
+- GPU layers: `-1` / AutoFit.
+- MMQ: OFF (`--nommq`).
+- High Priority: ON.
+- Flash Attention: ON via v1.120 default.
+- KV: F16.
+- Context Shift: ON via v1.120 default.
+- SWA: prevented with `--noswa` so Context Shift remains available.
+- Low VRAM/mmproj/RAG/remote tunnel: absent.
 
-Context Shift lämnas aktivt för lång flerturnschatt. `--quantkv` och SWA införs inte samtidigt i baslinjen eftersom de ändrar KV/context-beteendet; de testas endast vid konkret VRAM-behov.
+## A2. Implementerat repoägt harness
 
-## A2. Definiera verifieringsdata
+Tracked under `SillyTavern_UI/harness/`:
 
-Efter Team Masters lokala steg ska följande returneras till ChatGPT:
+- `Bootstrap-Guide1.ps1` — checks NVIDIA; installs missing Git/Node LTS via `winget` when possible; downloads and SHA-256 verifies KoboldCpp; clones/pins SillyTavern; prepares npm dependencies.
+- `Start-KoboldCpp-TextBaseline.ps1` — applies the locked KoboldCpp baseline.
+- `Start-SillyTavern.ps1` — starts the repo-local SillyTavern runtime.
+- `Start-Guide1-Stack.ps1` — one-command bootstrap/start path; opens a file picker for an existing GGUF.
+- `Test-KoboldCpp-TextBaseline.ps1` — checks KoboldCpp API/model/context and NVIDIA VRAM.
+- `README.md` — concise runtime contract.
+
+Third-party installs live only under:
 
 ```text
-KoboldCpp version:
-SillyTavern version/branch:
-Exact GGUF filename:
-Context size:
-GPU layers offloaded:
-VRAM after load:
-Prompt processing speed:
-Generation tok/s:
-Kobold Lite 10-turn test: PASS/FAIL
-SillyTavern connection: PASS/FAIL
-Errors/warnings:
+SillyTavern_UI/_local_runtime/
+├── KoboldCpp/
+└── SillyTavern/
 ```
 
-## A3. Nästa ChatGPT-åtgärd
+`_local_runtime/` is Git-ignored. Ingen parallell `AGENT-2-STORYTELLER`-yta skapas.
 
-När datan finns ska ChatGPT:
-
-1. skilja backend-, VRAM-, template- och modellproblem åt,
-2. justera högst en resursparameter åt gången,
-3. dokumentera den fungerande runtimeprofilen,
-4. först därefter öppna Guide 2.
-
-**Gate:** Guide 1 är inte PASS förrän SillyTavern kan genomföra stabil flerturnschatt via KoboldCpp.
+**ChatGPT-del: PASS.** Lokal runtime är ännu inte verifierad förrän Del B körts på Team Masters dator.
 
 ---
 
 # B. Team Master-ägd steg-för-steg guide
 
-## B1. GPU-preflight
+## B1. Låt AutoPull hämta senaste `main`
 
-Kör:
-
-```powershell
-nvidia-smi
-```
-
-RTX 3070 Ti ska synas. Stäng onödiga GPU-tunga program.
-
-Vid drivrutinsproblem: [NVIDIA Drivers](https://www.nvidia.com/en-us/drivers/).
-
-## B2. Installera KoboldCpp
-
-1. Hämta senaste stabila `koboldcpp.exe`: [Releases](https://github.com/LostRuins/koboldcpp/releases).
-2. Lägg den t.ex. i `C:\AI\AGENT-2-STORYTELLER\koboldcpp\`.
-3. Starta `.exe`-filen.
-
-Windows NVIDIA-binären har CUDA-stödet paketerat; installera inte CUDA Toolkit enbart för denna standardinstallation.
-
-## B3. Ladda smoke-testmodellen
-
-Välj en fungerande GGUF som redan finns lokalt. Detta är ännu inte slutligt modellval.
-
-I KoboldCpp:
-
-1. välj modellen,
-2. `Context Size = 8192`,
-3. `Use CuBLAS/CUDA = ON`,
-4. verifiera rätt GPU ID,
-5. lämna automatiskt GPU Layers-värde,
-6. `Low VRAM = OFF`,
-7. `QuantMatMul/MMQ = OFF`,
-8. `High Priority = ON`,
-9. `Flash Attention = ON`,
-10. Context Shift lämnas på/default,
-11. SWA och Quantized KV lämnas av,
-12. spara KoboldCpp-konfigurationen och Launch.
-
-**PASS:** loggen visar `Load Model OK: True` och server på port `5001`.
-
-## B4. Verifiera KoboldCpp ensamt
-
-Öppna `http://localhost:5001` och kör 10 sammanhängande turns i Kobold Lite.
-
-Kontrollera samtidigt `nvidia-smi` och notera VRAM samt tok/s.
-
-**STOP vid:** OOM, crash, trasig output eller extrem CPU/RAM-spill. Ändra inte flera inställningar samtidigt; rapportera utfallet till ChatGPT.
-
-## B5. Installera SillyTavern
-
-Installera först:
-
-- [Node.js senaste LTS](https://nodejs.org/en/download)
-- [Git for Windows](https://git-scm.com/downloads/win)
-
-Verifiera:
+Rör inte andra lokala tracked-filer före sync. Bekräfta sedan:
 
 ```powershell
-node -v
-npm -v
-git --version
+git status
+git pull --ff-only origin main
 ```
 
-Installera sedan SillyTavern utanför Windows-kontrollerade mappar:
+Krav: `working tree clean` och `Already up to date` eller en ren fast-forward.
+
+## B2. Kör hela Guide-1-bootstrap/starten
+
+Från repo-roten:
 
 ```powershell
-cd C:\AI\AGENT-2-STORYTELLER
-git clone https://github.com/SillyTavern/SillyTavern -b release
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Start-Guide1-Stack.ps1
 ```
 
-Starta `SillyTavern\Start.bat` normalt, **inte som Administrator**.
+Scriptet gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
 
-## B6. Koppla SillyTavern till KoboldCpp
+**STOP och skicka terminalfelet till ChatGPT om scriptet misslyckas. Ändra inte konfigurationen manuellt först.**
+
+## B3. Koppla SillyTavern till den redan startade KoboldCpp-instansen
 
 I SillyTavern:
 
-1. `API Connections`,
-2. API = `Text Completion`,
-3. API Type = `KoboldCpp`,
-4. URL = `http://localhost:5001`,
+1. `API Connections`.
+2. API = `Text Completion`.
+3. API Type = `KoboldCpp`.
+4. URL = `http://127.0.0.1:5001`.
 5. `Connect`.
 
-## B7. Smoke-test hela kedjan
+Detta GUI-val kan inte göras försvarbart från GitHub-sidan eftersom det är lokal per-user UI-state.
 
-Kör minst:
+## B4. Kör endast harness-smoke-testet
 
-1. fem korta dialogturns,
+Kör i en ny ren chat:
+
+1. fem korta user/assistant-turns,
 2. ett längre svar,
-3. en fråga som kräver föregående tur,
-4. kontroll att inga specialtokens/template-markörer läcker ut.
+3. en följdfråga som kräver föregående turn.
 
-Returnera A2-checklistan till ChatGPT.
+Verifiera endast:
 
-**PASS:** `SillyTavern -> KoboldCpp -> GPU-modell` fungerar stabilt. Fortsätt därefter till Guide 2.
+- svar genereras stabilt,
+- ingen OOM/crash,
+- inga uppenbara specialtoken/template-markörer läcker ut,
+- senare turns är fortsatt responsiva.
+
+Bedöm inte slutlig Storyteller-kvalitet i Guide 1.
+
+## B5. Skicka evidensen till ChatGPT
+
+Med KoboldCpp fortfarande igång:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Test-KoboldCpp-TextBaseline.ps1
+```
+
+Skicka JSON-outputen plus:
+
+```text
+SillyTavern connection: PASS/FAIL
+3-part chat smoke test: PASS/FAIL
+Approx. generation tok/s shown by KoboldCpp:
+Any warnings/errors:
+```
+
+# GUIDE-1 PASS
+
+Guide 1 är klar först när `SillyTavern -> KoboldCpp -> lokal GGUF` fungerar stabilt på den lokala datorn.
+
+**Starta inte Guide 2, 3 eller 4 utan Team Masters separata explicita startkommando.**
