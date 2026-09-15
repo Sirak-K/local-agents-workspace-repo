@@ -25,13 +25,13 @@ $context = Get-JsonEndpoint '/api/extra/true_max_context_length'
 $models = Get-JsonEndpoint '/v1/models'
 
 if ($version.result -ne 'KoboldCpp') {
-    throw "Unexpected backend identity from $base: $($version.result)"
+    throw ('Unexpected backend identity from {0}: {1}' -f $base, $version.result)
 }
 if ([string]$version.version -ne $ExpectedVersion) {
-    throw "KoboldCpp version mismatch. Expected $ExpectedVersion, got $($version.version)."
+    throw ('KoboldCpp version mismatch. Expected {0}, got {1}.' -f $ExpectedVersion, $version.version)
 }
 if ([int]$context.value -ne $ExpectedContext) {
-    throw "Context mismatch. Expected $ExpectedContext, got $($context.value)."
+    throw ('Context mismatch. Expected {0}, got {1}.' -f $ExpectedContext, $context.value)
 }
 
 $gpu = $null
