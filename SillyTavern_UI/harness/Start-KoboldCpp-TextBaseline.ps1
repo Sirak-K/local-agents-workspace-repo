@@ -53,10 +53,28 @@ if ($listener) {
     throw "TCP port $Port is already in use. Stop the existing listener or choose another port."
 }
 
+# Guide 1 is a controlled harness test. AutoFit and performance evidence are
+# contaminated when a separate GPU workload already occupies most VRAM.
+$gpuRows = @(& nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits 2>$null)
+if ($GpuId -ge $gpuRows.Count) {
+    throw "GPU ID $GpuId was requested, but nvidia-smi returned only $($gpuRows.Count) GPU(s)."
+}
+$gpuParts = $gpuRows[$GpuId].Split(',') | ForEach-Object { $_.Trim() }
+if ($gpuParts.Count -ge 2) {
+    $preUsedMiB = [int]$gpuParts[0]
+    $totalMiB = [int]$gpuParts[1]
+    $preUsedPct = if ($totalMiB -gt 0) { [math]::Round(($preUsedMiB / $totalMiB) * 100, 1) } else { 0 }
+    Write-Host "Pre-existing GPU VRAM use: $preUsedMiB / $totalMiB MiB ($preUsedPct%)"
+    if ($preUsedPct -ge 50) {
+        throw "Guide 1 requires an uncontended GPU baseline. GPU $GpuId already has $preUsedPct% VRAM in use. Stop other GPU inference/workloads (for example ComfyUI) and rerun."
+    }
+}
+
 # KoboldCpp v1.120 text-only baseline for Guide 1.
-# Flash Attention and Context Shift are enabled by default in v1.120, so no
-# obsolete positive flags are passed. --noswa prevents SWA so Context Shift
-# remains available on architectures where SWA would otherwise auto-enable.
+# Flash Attention is enabled unless --noflashattention is passed. Context Shift
+# is allowed by leaving --noshift absent, but KoboldCpp may disable it for model
+# architectures where shifting is unsupported (for example some mRoPE/hybrid
+# models). --noswa prevents SWA from becoming an additional confounder.
 $KoboldArgs = @(
     '--model', $model,
     '--host', '127.0.0.1',
@@ -81,7 +99,7 @@ Write-Host "  Context:    $ContextSize"
 Write-Host "  GPU ID:     $GpuId"
 Write-Host "  URL:        http://127.0.0.1:$Port"
 Write-Host '  CUDA; GPU layers AutoFit (-1); MMQ off; High Priority on'
-Write-Host '  Flash Attention on (v1.120 default); F16 KV; Context Shift on; SWA prevented'
+Write-Host '  Flash Attention allowed/default; F16 KV; Context Shift allowed but architecture-dependent; SWA prevented'
 Write-Host ''
 
 if ($Background) {
