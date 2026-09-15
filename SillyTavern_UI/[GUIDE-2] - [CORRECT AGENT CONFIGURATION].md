@@ -1,192 +1,61 @@
 # GUIDE 2 — CORRECT AGENT CONFIGURATION
 
-**Mål:** konfigurera och verifiera AGENT-2-STORYTELLER korrekt ovanpå Guide 1 med **DefiantFable som enda aktiva modellkandidat**.
+**Current-sprint status:** CLOSED on the last proven stable baseline. Advanced model-specific template/non-thinking hardening is explicitly deferred to later Codex work.
 
-**Aktivt modellspecifikt scope:**
-- `LOCAL_AGENTS/AGENT-2-STORYTELLER/AG-2-MODEL-DefiantFable/`
+**Active model:** `Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-Q4_K_S.gguf`
 
-Huihui och andra kandidater är inte del av aktiv Guide 2 och får inte testas eller konfigureras utan Team Masters separata beslut.
+## Proven stable baseline
 
-Gemensam SillyTavern/KoboldCpp-konfiguration hör till `SillyTavern_UI/`.
-
-**Förutsättning:** Guide 1 = PASS.
-
----
-
-# A. ChatGPT-ägd guide
-
-## A1. Lås verifierad DefiantFable-identitet
-
-Aktuell verifierad runtimekandidat:
-
-`Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-Q4_K_S.gguf`
-
-Verifierat från faktisk KoboldCpp-runtime:
-
-- arkitektur/familj: `qwen35`, 9B-klass,
-- parametrar: cirka 8.95B,
-- quant: `Q4_K_S`,
-- training context rapporterad i modellmetadata: `262144`,
-- aktuell Guide-2 baseline context: `8192`,
-- mRoPE/hybrid/recurrent-egenskaper finns,
-- KoboldCpp stänger Context Shift automatiskt i observerad runtime,
-- modellen laddar och genererar stabilt genom KoboldCpp 1.120,
-- streaming genom SillyTavern fungerar.
-
-Exakt publicerad GGUF-källa är verifierad som DavidAU:s DefiantFable GGUF-repository. Filnamn/marknadsföring är inte i sig evidens för kvalitet eller beteende.
-
-## A2. Template-gate — korrigerad efter faktisk FAIL-evidens
-
-Första metadata-derived försöket via `Text Completion -> KoboldCpp` auto-valde `ChatML`. Grundläggande rolltaggar såg korrekta ut, men den rena smoke-chatten producerade ett synligt tomt `<think>...</think>`-block före **varje** assistant-svar.
-
-Detta klassas som **template/configuration FAIL, inte modellfel**.
-
-Qwen3.5 tänker som default. Officiell non-thinking-path använder chat-template-parametern:
-
-```json
-{"enable_thinking": false}
-```
-
-Qwen3.5:s Jinja lägger då in ett tomt `<think>\n\n</think>\n\n`-block i den kompilerade generation-prompten efter `<|im_start|>assistant`. Om den prefilling-delen saknas kan modellen själv generera think-taggarna som synlig output, vilket är exakt vad vår första smoke visade.
-
-Aktiv Guide-2-väg är därför:
-
-1. starta KoboldCpp med `--jinja`,
-2. starta med `--chat-template-kwargs '{"enable_thinking":false}'`,
-3. använd KoboldCpp OpenAI-compatible Chat Completions,
-4. anslut SillyTavern via `Chat Completion -> Custom (OpenAI-compatible)` mot `http://127.0.0.1:5001/v1`,
-5. låt backend-Jinja sköta Qwen3.5-formattering,
-6. använd inte SillyTavern Text Completion Instruct Mode som aktiv template-path i denna konfiguration.
-
-Repo-entrypoint:
-
-```powershell
-.\scripts\Start-DefiantFable-NonThinking.cmd
-```
-
-Automatisk backend-gate efter start:
-
-```powershell
-.\scripts\Test-DefiantFable-NonThinking.cmd
-```
-
-Testet anropar `/v1/chat/completions` och FAIL:ar om assistant-output innehåller `<think>`, `</think>`, `<|im_start|>` eller `<|im_end|>`.
-
-**Viktigt:** SillyTavern Reasoning `Auto-Parse` ska inte användas som kosmetisk lösning för denna baseline. Vi vill stoppa felaktig generering, inte bara dölja den i UI:t.
-
-## A3. Systemprompt v1 — rätt promptlager för Chat Completion
-
-Baseline:
+Use the same path that passed Guide 1 before Advanced Formatting was modified:
 
 ```text
-You are the user's private English-speaking conversational and storytelling partner.
-Be natural, imaginative, specific, and responsive to the user's intent. Maintain continuity within the current chat and follow the requested tone, characters, setting, perspective, and level of detail. Treat fictional scenarios as fiction and avoid unsolicited moralizing or generic assistant boilerplate. Never claim access to files, images, tools, or memories you were not actually given. Do not claim persistent memory across separate chats.
+SillyTavern API: Text Completion
+API Type:        KoboldCpp
+Endpoint:        http://127.0.0.1:5001
+KoboldCpp:       1.120
+Context:         8192
+Streaming:       ON
 ```
 
-På den korrigerade Chat Completion-pathen ska prompten läggas i **Chat Completion Prompt Manager / Main Prompt**. Advanced Formatting `System Prompt` är Text Completion-yta och får inte antas vara den aktiva systemprompten efter API-bytet.
+For the current sprint:
 
-Ingen Story Creator-, MCP-, WORKER-, kod- eller filskrivningslogik ska läggas till i Guide 2.
+- leave **Advanced Formatting / Instruct Mode OFF**,
+- do not enable metadata-derived Context/Instruct templates,
+- do not add manual ChatML/Jinja/non-thinking overrides,
+- do not use the experimental Chat Completion path introduced during troubleshooting,
+- keep the normal KoboldCpp text launcher as the reference runtime.
 
-## A4. Validation-sampler efter corrected template-PASS
-
-Officiell Qwen3.5 non-thinking API-baseline ger:
-
-- Temperature `0.7`
-- Top-P `0.80`
-- Top-K `20`
-- Presence penalty `1.5`
-
-Håll repetition penalty neutral på `1.0` tills exakt DefiantFable-evidens motiverar annat. Samplerprofilen låses först efter att corrected non-thinking template smoke har PASS.
-
-Ändra aldrig flera samplerparametrar samtidigt vid felsökning.
-
-## A5. DefiantFable-funktionstest
-
-Efter corrected template-PASS och systemprompt:
-
-1. minst 10 turns vanlig engelsk dialog,
-2. två längre story-prompts,
-3. ett kontinuitetstest som kräver tidigare fakta,
-4. samma context/outputbudget genom testet,
-5. logga observerad tok/s, VRAM, repetition, stopp/truncering och eventuella template-/reasoning-markörer.
-
-1000–2000 ord per agentsvar är ett slutkrav men optimeras inte ännu; tidigare observerad truncering är inte bevisat modellfel och hålls separat från template/runtime-verifieringen.
-
-## A6. Context-/VRAM-optimering senare
-
-Efter kvalitets-PASS:
-
-`8192 -> 12288 -> 16384`
-
-En variabel åt gången. För denna mRoPE/hybrid-runtime ska Context Shift inte antas vara tillgängligt; effektivt runtimebeteende gäller.
-
----
-
-# B. Team Master-ägd guide
-
-## B1. Byt backend till corrected Defiant non-thinking profile
-
-1. Stoppa **endast den nuvarande KoboldCpp-processen**.
-2. SillyTavern får vara igång.
-3. Kör från repo-roten:
+Recurring backend entrypoint:
 
 ```powershell
-.\scripts\Start-DefiantFable-NonThinking.cmd
+.\scripts\Start-KoboldCpp-Text.cmd
 ```
 
-4. Välj samma exakta DefiantFable GGUF när filväljaren öppnas.
-5. Vänta tills KoboldCpp rapporterar att API:n kör på `127.0.0.1:5001`.
-
-ComfyUI får vara öppet men kör inte tung GPU-inferens under kontrollerade Guide-2-tester.
-
-## B2. Verifiera non-thinking backend före SillyTavern
-
-I en separat terminal, med nya KoboldCpp-processen igång:
+SillyTavern entrypoint:
 
 ```powershell
-.\scripts\Test-DefiantFable-NonThinking.cmd
+.\scripts\Start-SillyTavern.cmd
 ```
 
-**PASS:** JSON visar `endpoint_check = PASS` och `marker_leak_check = PASS`.
+## Evidence and failure classification
 
-Vid FAIL: ändra inga SillyTavern-inställningar ännu; skicka testoutput + relevant KoboldCpp-output.
+Before Advanced Formatting changes, DefiantFable generated stable multi-turn chat through SillyTavern, preserved the Northstar/Mara facts, streamed normally, and showed no visible `<think>` or role/template markers.
 
-## B3. Byt SillyTavern API-path
+After enabling derived ChatML/Instruct formatting, visible empty `<think>...</think>` blocks appeared. A later Jinja/non-thinking experiment was not valid because KoboldCpp reported `Warning: couldn't parse jinja_kwargs field`; its verifier also produced a false-positive marker PASS while the model emitted a visible `Thinking Process:`. These are configuration/test-harness failures, **not proven model defects**.
 
-I API Connections:
+The experimental non-thinking launch/test scripts have therefore been removed from the normal repo surface.
 
-```text
-API:                    Chat Completion
-Chat Completion Source: Custom (OpenAI-compatible)
-Custom Endpoint/Base:   http://127.0.0.1:5001/v1
-```
+## Deferred hardening backlog
 
-Den pinnade SillyTavern-versionens Custom Chat Completion-källa är keyless-capable, så lokal baseline behöver ingen API-nyckel. Refresh/select exakt modell-ID från backend om modellfält visas, sedan Connect/Test Message.
+Codex/later work may revisit:
 
-**Advanced Formatting Instruct Mode är inte den aktiva template-pathen här.**
+- exact Qwen3.5 thinking/non-thinking template contract,
+- final role/system-prompt placement,
+- final Validation/Story sampler profiles,
+- 1000–2000 word output requirement,
+- context optimization beyond 8192,
+- exact model-specific Chat Completion/Jinja path if still useful.
 
-## B4. Flytta baseline-systemprompten till Chat Completion Prompt Manager
+## Current gate
 
-Öppna Chat Completion Prompt Manager och sätt **Main Prompt** till exakt A3-texten. Håll extra jailbreak/NSFW/auxiliary prompts av eller tomma under validation om UI-presettet tillåter det; målet är en attribution-ren baseline.
-
-Starta sedan en helt ny chat.
-
-## B5. Rerun clean 5-turn smoke
-
-Kör samma fem turns:
-
-1. `Introduce yourself naturally in two sentences.`
-2. `Remember this fact for this chat: the old manor is called Blackthorn House.`
-3. `Who am I talking to, and what is the manor called?`
-4. `Write one short atmospheric paragraph about arriving at Blackthorn House at midnight.`
-5. `Continue naturally from the previous scene, but do not repeat the setup.`
-
-**PASS:** inga synliga `<think>`, `</think>`, `<|im_start|>`, `<|im_end|>`; korrekta roller; `Blackthorn House` minns; normal streaming/stopp; naturlig continuation.
-
-Vid FAIL: ändra inget mer; skicka screenshot + relevant ST/KoboldCpp-output.
-
-## B6. Fortsättning efter PASS
-
-ChatGPT låser därefter Validation-samplers och leder DefiantFable-funktionstestet.
-
-**Guide 3 eller 4 får inte startas utan Team Masters separata explicita startkommando.**
+Guide 2 is closed for this fast-track sprint because the stable text baseline is proven operational and the failed advanced-formatting experiment is isolated and deferred rather than being silently attributed to the model.
