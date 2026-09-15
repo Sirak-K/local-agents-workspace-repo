@@ -35,8 +35,10 @@ Tracked under `SillyTavern_UI/harness/`:
 - `Bootstrap-Guide1.ps1` — checks NVIDIA; installs missing Git/Node LTS via `winget` when possible; downloads and SHA-256 verifies KoboldCpp; clones/pins SillyTavern; prepares npm dependencies.
 - `Start-KoboldCpp-TextBaseline.ps1` — applies the locked KoboldCpp baseline.
 - `Start-SillyTavern.ps1` — starts the repo-local SillyTavern runtime.
-- `Start-Guide1-Stack.ps1` — one-command bootstrap/start path; opens a file picker for an existing GGUF.
+- `Start-Guide1-Stack.ps1` — orchestrates bootstrap, model selection, backend verification and UI start.
+- `Start-Guide1-Stack.cmd` — preferred launcher; selects `pwsh.exe` first and falls back to `powershell.exe`.
 - `Test-KoboldCpp-TextBaseline.ps1` — checks KoboldCpp API/model/context and NVIDIA VRAM.
+- `Test-Guide1.cmd` — preferred verification launcher with the same PowerShell fallback logic.
 - `README.md` — concise runtime contract.
 
 Third-party installs live only under:
@@ -71,10 +73,10 @@ Krav: `working tree clean` och `Already up to date` eller en ren fast-forward.
 Från repo-roten:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Start-Guide1-Stack.ps1
+.\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
 ```
 
-Scriptet gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
+`.cmd`-launchern väljer `pwsh.exe` om det finns och använder `powershell.exe` endast som fallback. Scriptkedjan gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
 
 **STOP och skicka terminalfelet till ChatGPT om scriptet misslyckas. Ändra inte konfigurationen manuellt först.**
 
@@ -112,7 +114,7 @@ Bedöm inte slutlig Storyteller-kvalitet i Guide 1.
 Med KoboldCpp fortfarande igång:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Test-KoboldCpp-TextBaseline.ps1
+.\SillyTavern_UI\harness\Test-Guide1.cmd
 ```
 
 Skicka JSON-outputen plus:
