@@ -52,6 +52,9 @@ build/
 dist/
 *.egg-info/
 
+# Local third-party SillyTavern/KoboldCpp installation; never repository state.
+SillyTavern_UI/_local_runtime/
+
 # Evaluation-independent LM Studio runtime captures
 # Keep LM-Studio_logs/README.md and the stream structure publishable.
 LM-Studio_logs/server_events/*
