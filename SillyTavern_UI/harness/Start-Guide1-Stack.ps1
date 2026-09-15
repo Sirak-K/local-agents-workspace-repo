@@ -64,7 +64,7 @@ if (-not $ready) {
 }
 
 Write-Host 'KoboldCpp endpoint is ready.'
-& $testKobold -Port $KoboldPort
+& $testKobold -Port $KoboldPort -ExpectedContext $ContextSize
 
 Write-Host ''
 Write-Host 'Launching SillyTavern...'
