@@ -96,7 +96,7 @@ Varje capture är en självständig, indenterad JSON-fil med tidsgränser, metad
 Detta är agentdomänens ägaryta.
 
 - `ROLE-NEUTRAL-CONTEXT/` äger kontext som kan återanvändas mellan flera framtida agentroller.
-- `AGENT-0-WORKER/` äger all modellneutral men WORKER-specifik struktur: rollkontext, toolkontrakt, evalkataloger och graders.
+- `AGPR-0-CODER/` äger all modellneutral men WORKER-specifik struktur: rollkontext, toolkontrakt, evalkataloger och graders.
 - En modellundermapp under rollen äger endast kandidatens fakta, effektiva konfiguration, chat template och uttryckligt motiverade avvikelser.
 
 Gemensamma WORKER-kontrakt får inte kopieras in i varje modellmapp. Kandidatmappar är utbytbara implementationer under samma roll, inte nya roller.
@@ -219,7 +219,7 @@ En extern agent som behöver gå från översikt till källsanning bör läsa:
 4. [LM Studio Connection Contract](LM-Studio_connections/LM-Studio_for_codex/README.md)
 5. [LM Studio Observability Contract](LM-Studio_connections/LM-Studio_observability/README.md)
 6. [LM Studio Log Ownership](LM-Studio_logs/README.md)
-7. [0-WORKER Evaluation Surface](LOCAL_AGENTS/AGENT-0-WORKER/agent-0-eval/README.md)
+7. [0-WORKER Evaluation Surface](LOCAL_AGENTS/AGPR-0-CODER/agent-0-eval/README.md)
 8. [ChatGPT Handoff Rules](docs/docs_handoffs_to_ChatGPT/handoff_instructions_and_rules.md)
 
 Denna fil är en orienteringskarta. Vid konflikt gäller nyare frysta beslut och verifierad runtime-evidens framför sammanfattningar, äldre roadmaptext eller modellens/evaluatorns egna obevisade påståenden.

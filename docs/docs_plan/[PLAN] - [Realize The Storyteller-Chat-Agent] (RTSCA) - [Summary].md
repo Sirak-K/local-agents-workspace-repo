@@ -2,7 +2,7 @@ Planen avser **AGPR-2-STORYTELLER**, en separat agent-/modellprofil. Maximalt en
 
 ### Målet
 
-AGENT-2 ska främst:
+AGPR-2 ska främst:
 
 - föra naturliga, längre engelska konversationer om fiktion, berättelser och roleplay,
 - ha **maximal content-freedom** och så lite onödiga refusals/begränsningar som möjligt,
@@ -73,7 +73,7 @@ Den aktiva ordningen är:
 
 Det här ska alltså **inte** utvecklas till ännu en avancerad tool-agent.
 
-AGENT-2:s designfilosofi är nästan motsatsen:
+AGPR-2:s designfilosofi är nästan motsatsen:
 
 > **En liten, snabb, lokal, innehållsfriare och storykompetent personlig chatbot, med bra dokumentläsning och lång flerturnschatt — och så lite runtimekomplexitet som möjligt.**
 

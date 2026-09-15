@@ -6,6 +6,7 @@ This folder contains the repo-level executable entrypoints Team Master is expect
 
 - `Start-Local-Agent-Harness.cmd` — bootstrap/start the local SillyTavern + KoboldCpp harness.
 - `Start-KoboldCpp-Text.cmd` — start only the stable KoboldCpp TEXT backend and choose a GGUF.
+- `Start-AGPR-2-Storyteller-Chat.cmd` — start the separate AGPR-2 Storyteller Chat Completion/non-thinking candidate through the shared Storyteller runtime.
 - `Start-SillyTavern.cmd` — start only SillyTavern when the backend is already running.
 - `Test-Local-Agent-Harness.cmd` — verify the running KoboldCpp backend/API state.
 - `Set-SillyTavern-Port.cmd` — set SillyTavern to a verified-free local TCP port; prefers `8001` and scans upward through `8099` if needed.
@@ -15,7 +16,7 @@ This folder contains the repo-level executable entrypoints Team Master is expect
 - `Download-DefiantFable-mmproj-F16.cmd` — select the active DefiantFable GGUF, download `mmproj-F16.gguf` beside it, and verify SHA256 `f70dc3509053962b0d0d3ee8a7eacebf5d60aa560cad78254ae8698516ae029f`.
 - `Start-DefiantFable-Vision.cmd` — start a separate VISION profile using the same GGUF plus the verified `mmproj-F16.gguf`; default fast-track context is `4096` to leave more VRAM headroom on the RTX 3070 Ti 8 GB.
 
-Failed/experimental Defiant non-thinking launch/test entrypoints were removed from this recurring surface. Advanced template/non-thinking hardening is deferred rather than presented as a normal operator workflow.
+The AGPR-2 Chat Completion structure/offline gate is PASS. It remains a candidate: live model A/B still waits for local execution and Team Master approval, so the preserved Text Completion baseline is not superseded by this documentation change.
 
 Implementation helpers may live next to their subsystem, but recurring Team Master entrypoints should be surfaced here.
 

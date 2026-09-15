@@ -62,4 +62,4 @@ En oanvänd, agentgenererad experimentell `.venv/` med Python-SDK ligger kvar Gi
 npm ci --prefix LM-Studio_connections/LM-Studio_for_codex --ignore-scripts --no-audit --no-fund
 ```
 
-Start-/insyns-/stoppkommandon och verifieringsgränser: [WORKER-evalens README](../../LOCAL_AGENTS/AGENT-0-WORKER/agent-0-eval/README.md).
+Start-/insyns-/stoppkommandon och verifieringsgränser: [WORKER-evalens README](../../LOCAL_AGENTS/AGPR-0-CODER/agent-0-eval/README.md).

@@ -1,6 +1,6 @@
 # Guide 1 harness — SillyTavern + KoboldCpp
 
-**Scope:** model-neutral AGENT-2 text harness only.
+**Scope:** model-neutral AGPR-2 Storyteller text harness only.
 
 Tracked here: internal bootstrap/start/test implementation and runtime contract.  
 Not tracked: installed third-party apps under `SillyTavern_UI/_local_runtime/`.
@@ -18,6 +18,16 @@ Regular/repeated execution belongs in repo-root `scripts/`, not here:
 ```
 
 Files in this `harness/` directory are implementation helpers behind those entrypoints and normally should not be invoked directly by Team Master.
+
+### AGPR-2 Storyteller launcher split
+
+The Storyteller backend now has one shared runtime implementation and two narrow wrappers:
+
+- `Start-KoboldCpp-StorytellerRuntime.ps1` owns the shared KoboldCpp startup path and selects behavior through its explicit runtime profile.
+- `Start-KoboldCpp-TextBaseline.ps1` selects the preserved Text Completion baseline; that verified baseline remains the regression reference.
+- `Start-KoboldCpp-StorytellerChat.ps1` selects the separate Chat Completion/non-thinking candidate path. The repo-level candidate entrypoint is `scripts/Start-AGPR-2-Storyteller-Chat.cmd`.
+
+This split does not by itself promote the Chat Completion candidate: live model A/B and runtime evidence remain separate local gates.
 
 ## Launcher chain
 
@@ -86,7 +96,7 @@ SillyTavern_UI/
     └── SillyTavern/
 ```
 
-No second `AGENT-2-STORYTELLER` directory is created.
+No second `AGPR-2-STORYTELLER` directory is created.
 
 ## Primary sources
 
