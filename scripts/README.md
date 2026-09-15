@@ -11,7 +11,8 @@ This folder contains the repo-level executable entrypoints Team Master is expect
 
 ## Guide 2 / DefiantFable
 
-- `Start-DefiantFable-NonThinking.cmd` — start KoboldCpp for the active DefiantFable/Qwen3.5 path with Chat Completions Jinja enabled and `enable_thinking=false`. It keeps the Guide-1 CUDA/AutoFit/F16-KV baseline unless explicit parameters override it. Use SillyTavern `Chat Completion -> Custom (OpenAI-compatible)` against `http://127.0.0.1:5001/v1` with this launcher.
+- `Start-DefiantFable-NonThinking.cmd` — start KoboldCpp for the active DefiantFable/Qwen3.5 path with Chat Completions Jinja enabled and `enable_thinking=false`. It keeps the controlled CUDA/AutoFit/F16-KV baseline unless explicit parameters override it. SillyTavern must use `Chat Completion -> Custom (OpenAI-compatible)` against `http://127.0.0.1:5001/v1` on this path.
+- `Test-DefiantFable-NonThinking.cmd` — call the running `/v1/chat/completions` endpoint and fail if the assistant content is empty or leaks `<think>`, `</think>`, `<|im_start|>` or `<|im_end|>` markers. Run this before SillyTavern behavioral validation.
 
 Implementation helpers may live next to their subsystem (for example `SillyTavern_UI/harness/`), but recurring Team Master entrypoints should be surfaced here.
 
