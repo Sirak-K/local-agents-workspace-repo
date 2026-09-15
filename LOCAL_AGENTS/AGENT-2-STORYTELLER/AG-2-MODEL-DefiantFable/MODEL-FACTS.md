@@ -20,7 +20,7 @@ The exact non-MTP `Q4_K_S` file is approximately 6.55 GB in that repository.
 - Parameter count: approximately `8.95 B`
 - Quant: `Q4_K_S`
 - Training context reported by model metadata: `262144`
-- Current controlled harness context: `8192`
+- Current controlled baseline context: `8192`
 - mRoPE present
 - Hybrid/recurrent characteristics present
 - KoboldCpp effective runtime: Context Shift automatically disabled for this model/runtime because mRoPE is used
@@ -40,36 +40,80 @@ The exact non-MTP `Q4_K_S` file is approximately 6.55 GB in that repository.
 - `/v1/models`: model status `loaded`
 - RTX 3070 Ti 8 GB observed around 6.4 GB VRAM during final backend verification
 
-## Guide-2 template evidence
+## Guide-2 template evidence: first attempt and failure attribution
 
 With SillyTavern `1.19.0` connected through `Text Completion -> KoboldCpp`, metadata-derived Context and Instruct templates enabled, and Instruct Mode enabled:
 
-- SillyTavern notification: `Instruct Template: "ChatML" auto-selected`
-- SillyTavern notification: `Context Template: "ChatML" auto-selected`
-- Context Template shown: `ChatML`
-- Instruct Template shown: `ChatML`
-- Derived role sequences shown:
+- SillyTavern auto-selected `ChatML` for Context and Instruct.
+- Role sequences shown were structurally ChatML:
   - system prefix `<|im_start|>system`, suffix `<|im_end|>`
   - user prefix `<|im_start|>user`, suffix `<|im_end|>`
   - assistant prefix `<|im_start|>assistant`, suffix `<|im_end|>`
-- Derived template Stop Sequence shown: `<|im_end|>`
-- Custom Stopping Strings field observed empty
-- Tokenizer observed: `Best match (recommended)`
-- Token Padding observed: `64`
-- Reasoning controls observed OFF
-- `Bind Model to Templates` observed OFF during validation
-- `Start Reply With` observed empty
+- Stop Sequence shown: `<|im_end|>`
+- Custom Stopping Strings empty
+- Tokenizer: `Best match (recommended)`
+- Token Padding: `64`
+- Reasoning controls OFF
+- `Bind Model to Templates` OFF
+- `Start Reply With` empty
 
-This is accepted as the current text-only Guide-2 template baseline because it was derived from the connected model/backend metadata rather than manually guessed. Template correctness still remains subject to behavioral smoke-test evidence; do not silently replace it with another preset.
+Behavioral smoke then showed a visible empty `<think>...</think>` block before every assistant answer. Memory/continuity and prose behavior otherwise worked.
 
-## Model-card/runtime notes to validate later
+**Attribution:** this is a template-path/configuration failure, not evidence of a model defect. Generic ChatML role framing is insufficient for Qwen3.5 non-thinking generation.
 
-Public model/conversion material identifies the family as Qwen3.5-based and describes thinking/reasoning and creative-writing use. Related conversion notes recommend temperature `<= 1.0` and repetition penalty `1.0` (off), but sampler values must be tested against this exact local GGUF before becoming project defaults.
+## Verified Qwen3.5 thinking/non-thinking contract
+
+Official Qwen3.5 material states that thinking is enabled by default and that Qwen3.5 does **not** use Qwen3's `/think` / `/nothink` soft switch. Non-thinking is selected through chat-template parameters, specifically `chat_template_kwargs: {"enable_thinking": false}`.
+
+The official Qwen3.5 Jinja generation prompt renders:
+
+- `<|im_start|>assistant` followed by `<think>` when thinking is enabled/default;
+- `<|im_start|>assistant` followed by an empty `<think>\n\n</think>\n\n` prefill when `enable_thinking=false`.
+
+That empty block belongs in the **compiled prompt**, not as newly generated visible assistant output.
+
+Sources:
+- `https://huggingface.co/Qwen/Qwen3.5-9B`
+- `https://huggingface.co/Qwen/Qwen3.5-9B/blob/main/chat_template.jinja`
+
+## Corrected Guide-2 runtime path
+
+KoboldCpp supports Jinja Chat Completions and chat-template kwargs. The controlled Defiant path is therefore:
+
+1. KoboldCpp started with `--jinja`.
+2. Backend started with `--chat-template-kwargs '{"enable_thinking":false}'`.
+3. SillyTavern uses `Chat Completion -> Custom (OpenAI-compatible)`.
+4. Endpoint base URL: `http://127.0.0.1:5001/v1`.
+5. SillyTavern Text Completion Instruct Mode is not the active template layer on this path.
+6. Chat Completion Prompt Manager is the system-prompt layer to validate; do not assume the Advanced Formatting Text Completion system prompt is sent unchanged.
+
+KoboldCpp sources/reference:
+- v1.120 supports `--jinja` and Jinja thinking handling.
+- KoboldCpp release history documents `--jinja-kwargs` / `--chat-template-kwargs` with the example `{"enable_thinking":false}`.
+
+Repo entrypoints:
+
+```powershell
+.\scripts\Start-DefiantFable-NonThinking.cmd
+.\scripts\Test-DefiantFable-NonThinking.cmd
+```
+
+The test calls `/v1/chat/completions` and fails if the assistant content contains `<think>`, `</think>`, `<|im_start|>` or `<|im_end|>`.
+
+## Validation sampler baseline after corrected template PASS
+
+Official Qwen3.5 non-thinking API example uses:
+
+- Temperature `0.7`
+- Top-P `0.8`
+- Top-K `20`
+- Presence penalty `1.5`
+
+Keep repetition penalty neutral (`1.0`) unless exact DefiantFable evidence justifies a change. Samplers are not considered locked until the corrected non-thinking template path passes behavioral validation.
 
 ## Still open / deliberately deferred
 
 - Full merge/finetune lineage proof beyond the verified Qwen3.5 runtime architecture and exact published GGUF source
-- Exact thinking/non-thinking operating contract for this SillyTavern text-completion path
 - Final Validation and Story sampler profiles
 - Long-output requirement around 1000–2000 words per response
 - Higher-context optimization beyond 8192
@@ -79,4 +123,4 @@ Filename terms such as `Uncnr`, `Heretic`, or `NEO-MAX` are not themselves evide
 
 ## Next gate
 
-Keep derived `ChatML` Context + Instruct templates. Add the Guide-2 baseline system prompt, then run a fresh-chat template/system-prompt validation before sampler optimization.
+Restart only KoboldCpp with the Defiant non-thinking entrypoint, pass the automated `/v1/chat/completions` marker-leak test, switch SillyTavern to the Custom OpenAI-compatible Chat Completion path, put the Guide-2 baseline in Chat Completion Prompt Manager, then rerun the clean 5-turn behavioral smoke.
