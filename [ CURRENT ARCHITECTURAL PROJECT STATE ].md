@@ -48,6 +48,8 @@ Flödet är medvetet evaluatorstyrt. Kandidaten får instruktionen och tillgäng
 | `docs/`                  | Styrande beslut, plattformsdokumentation, roadmappar, handoffregler och referensmaterial                             | Runtimekod, evalresultat eller genererade loggar                   |
 | `LM-Studio_connections/` | Transport, auth-anpassning, avbrytbar inferens, modellinventering och LM Studio-observability                        | Kandidatspecifik bedömning eller rollsemantik                      |
 | `LM-Studio_logs/`        | Evaluation-oberoende rå evidens från LM Studio, modellivscykel och värdsystem                                        | PASS/FAIL, evalrubrics eller duplicerade evalartefakter            |
+| `runtime_logging/`       | Gemensamma primitives för bounded operationsdokument, sanering, atomisk persistens och retention                    | Plattformshändelser, profilorkestrering eller en central collector |
+| `logs/`                  | Komponentägda, evaluation-oberoende runtimecaptures för icke-LM-producenter                                          | Evalresultat, genererade mediafiler eller generell fellogg         |
 | `LOCAL_AGENTS/`          | Modellneutrala roller, gemensam kontext, WORKER-tools, rollspecifika evalresurser och kandidatspecifik konfiguration | Generella LM Studio-loggar eller Frontierns slutbedömning          |
 | `model_evaluations/`     | Gemensam evalarkitektur samt ett separat artefakthem per faktisk evalkörning                                         | Generell serverlogging eller produktionskonfiguration för modellen |
 | `tests/`                 | Automatiska kontrakts-, regressions- och kontrolltester för harness, tools och evalkomponenter                       | Manuella resultat eller kosmetiska tester utan beteendesignal      |
@@ -90,6 +92,12 @@ Loggroten är modulär: en separat ström per verkligt ansvar.
 - `host_resource_snapshots/` — bounded CPU-, RAM-, process- och GPU-relaterade ögonblicksbilder.
 
 Varje capture är en självständig, indenterad JSON-fil med tidsgränser, metadata, eventuella fel och kända evidensluckor. Tokens ska aldrig loggas. Onödiga absoluta sökvägar och duplicerade manifest undviks.
+
+### `runtime_logging/` och `logs/`
+
+Plan 9 har låst den framtida gemensamma kärnan och ägargränsen, men implementationen är ännu inte färdig. `runtime_logging/` ska centralisera generiska primitives som redan är bevisade i LM Studio-observability; LM Studio behåller sitt plattformsformat genom en tunn adapter i stället för en duplicerad algoritmisk implementation.
+
+`logs/` är en rot, inte en generell loggägare. Rå captures delas efter faktisk producent, exempelvis SillyTavern, KoboldCpp, Dia2, Diffusers, host, AutoPull och framtida profilorkestrering. Varje fel stannar i ägarströmmen och tvärkomponentoperationer länkas med korrelation och referenser. Evalresultat, Story Creator-runloggar, `LM-Studio_logs/` och media-/storyartefakter ligger kvar hos sina befintliga ägare.
 
 ### `LOCAL_AGENTS/`
 
@@ -173,7 +181,8 @@ Den aktiva SDK-transporten har en tidsbegränsad auth-anpassning för LM Studios
 | Dispatchade LM Studio/SDK:n ett strukturerat tool call?              | LM Studio-/anslutningsevidens          |
 | Kördes verktyget och vilken effekt fick det?                         | Tool-/process- och verifieringsevidens |
 | Klarades uppgiften och är resultatet användbart för WORKER-rollen?   | Evalresultat och rapport               |
-| Vad gjorde servern, modellen eller värdsystemet oberoende av evalen? | Separat ström i `LM-Studio_logs/`      |
+| Vad gjorde LM Studio eller dess observerade värdsystem oberoende av evalen? | Separat ström i `LM-Studio_logs/`      |
+| Vad gjorde en icke-LM runtimekomponent oberoende av evalen?         | Komponentens ägarström under `logs/`   |
 
 Samma korrelations-ID kan länka lager. Rå data ska länkas, inte kopieras mellan ägare. Om evidensen inte visar orsaken ska orsaken förbli uttryckligen obevisad.
 
@@ -191,7 +200,7 @@ PASS/FAIL anger först om uppgiften klarades och är inte automatiskt en modells
 
 ## 11. Nuvarande mognadsgräns
 
-Den centrala arkitekturen för LM Studio-anslutning, modulär observability, evalartefakter, avbrytbar generering, kontrollerad filinspektion och separat felägarskap finns etablerad.
+Den centrala arkitekturen för LM Studio-anslutning, modulär LM-observability, evalartefakter, avbrytbar generering, kontrollerad filinspektion och separat felägarskap finns etablerad. Designen för projektets gemensamma icke-LM runtimeobservability är låst i plan 9 men dess kärna, producentintegrationer och lokala promotionsgates är ännu inte implementerade.
 
 Följande ska inte antas vara generell färdig kapacitet:
 
@@ -221,5 +230,7 @@ En extern agent som behöver gå från översikt till källsanning bör läsa:
 6. [LM Studio Log Ownership](LM-Studio_logs/README.md)
 7. [0-WORKER Evaluation Surface](LOCAL_AGENTS/AGPR-0-CODER/agent-0-eval/README.md)
 8. [ChatGPT Handoff Rules](docs/docs_handoffs_to_ChatGPT/handoff_instructions_and_rules.md)
+9. [Local Runtime Observability Decisions](<docs/docs_plan/[PLAN] - [9] - [LOCAL RUNTIME OBSERVABILITY] - [FRYSTA BESLUT].md>)
+10. [Local Runtime Observability Roadmap](<docs/docs_plan/[PLAN] - [9] - [LOCAL RUNTIME OBSERVABILITY] - [ROADMAP].md>)
 
 Denna fil är en orienteringskarta. Vid konflikt gäller nyare frysta beslut och verifierad runtime-evidens framför sammanfattningar, äldre roadmaptext eller modellens/evaluatorns egna obevisade påståenden.

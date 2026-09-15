@@ -19,7 +19,7 @@
 
 - AGPR-3 Image Master och AGPR-4 Voice Master är nu aktiva implementationsprioriteter före återstående live/E2E- och prestandahärdning av AGPR-2. Storytellers fungerande baseline och återställningsväg ska bevaras medan dess avancerade promotion är pausad.
 - Gemensam profilarkitektur ska härledas från AGPR-2:s bevisade vertikala implementation; Storyteller-specifika harnessfiler får inte bli permanent ägare för alla AGPR-profiler.
-- Exakt persistent profilformat, loggschema och mediamotorgräns är ännu inte låsta runtimekontrakt.
+- Exakt persistent profilformat och mediamotorgräns är ännu inte låsta runtimekontrakt. Projektets gemensamma runtime-loggansvar och minsta loggingkontrakt ägs separat av plan 9 för Local Runtime Observability.
 - AGPR-3:s captioning och bildgenerering får separeras i olika modell-/motorprofiler om faktisk evidens visar att det ger högre nytta. En captionspecifik extension skapas endast om faktisk AGPR-3-användning visar ett kvarstående UI-/leveransgap.
 - AGPR-3:s första walking-skeleton ska kvalificera SANA-Sprint 0.6B direkt: en instruktion producerar en beständig bildfil och en uppföljande justering producerar en ny fil utan modellomladdning från disk. En director införs endast om direktvägen visar ett konkret gap och A/B bevisar nettopositiv nytta inom 8 GB-budgeten.
 - AGPR-3:s snabba chatbildkvalitet behöver vara tillräcklig för iterativ användning. Maximal produktionskvalitet i separata ComfyUI-workflows är ett annat senare arbetsflöde. Inline-visning är inte ett baselinekrav.
