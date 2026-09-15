@@ -1,4 +1,4 @@
-"""Persist one owner-specific FF-only AutoPull attempt without performing Git actions."""
+"""Persist one owner-specific FF-only AutoPull state change without performing Git actions."""
 
 from __future__ import annotations
 
@@ -16,22 +16,14 @@ from runtime_logging import append_event, finalize_operation, new_operation_docu
 from runtime_logging.operation_document import RuntimeLoggingError, monotonic_seconds_since
 
 _SHA_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
-_OUTCOMES = {
-    "updated": ("completed", "success"),
-    "up_to_date": ("completed", "success"),
-    "skipped_dirty": ("completed", "skipped"),
-    "skipped_non_fast_forward": ("completed", "skipped"),
-    "fetch_error": ("failed", "failure"),
-    "error": ("failed", "failure"),
-}
+_DECISION_RE = re.compile(r"^[a-z0-9][a-z0-9_.-]{0,95}$")
+_EVENT_OUTCOMES = {"observed", "success", "failure", "partial", "skipped"}
 _FETCH_RESULTS = {"success", "error", "not_attempted"}
-_ANCESTRY = {"fast_forward", "non_fast_forward", "unknown", "not_checked"}
+_ANCESTRY = {"fast_forward", "non_fast_forward", "remote_ancestor", "diverged", "unknown", "not_checked"}
 
 
-def _sha(value: str | None, *, label: str, required: bool = False) -> str | None:
-    if value is None:
-        if required:
-            raise RuntimeLoggingError(f"{label} is required")
+def _sha(value: str | None, *, label: str) -> str | None:
+    if value is None or not value.strip():
         return None
     normalized = value.strip().lower()
     if _SHA_RE.fullmatch(normalized) is None:
@@ -41,72 +33,92 @@ def _sha(value: str | None, *, label: str, required: bool = False) -> str | None
 
 def create_autopull_capture(
     *,
-    local_head: str,
-    remote_head: str | None,
-    tracked_clean: bool,
-    fetch_result: str,
-    ancestry: str,
-    outcome: str,
+    decision: str,
+    event_outcome: str,
     reason: str,
+    local_head: str | None = None,
+    remote_head: str | None = None,
+    tracked_clean: bool | None = None,
+    fetch_result: str = "not_attempted",
+    ancestry: str = "not_checked",
     correlation_id: str | None = None,
     output_root: Path | None = None,
     error_class: str | None = None,
 ) -> tuple[Path, dict]:
-    """Create one capture for a real sync attempt/state-change; never for an idle poll."""
+    """Create one capture for a real watcher attempt/state-change; never for an idle poll."""
 
-    if outcome not in _OUTCOMES:
-        raise RuntimeLoggingError(f"unsupported AutoPull outcome: {outcome}")
+    if _DECISION_RE.fullmatch(decision) is None:
+        raise RuntimeLoggingError("decision must be a lowercase owner-local token")
+    if event_outcome not in _EVENT_OUTCOMES:
+        raise RuntimeLoggingError(f"unsupported event_outcome: {event_outcome}")
     if fetch_result not in _FETCH_RESULTS:
         raise RuntimeLoggingError(f"unsupported fetch_result: {fetch_result}")
     if ancestry not in _ANCESTRY:
         raise RuntimeLoggingError(f"unsupported ancestry result: {ancestry}")
-    local = _sha(local_head, label="local_head", required=True)
+    local = _sha(local_head, label="local_head")
     remote = _sha(remote_head, label="remote_head")
-    if outcome == "updated" and (not tracked_clean or ancestry != "fast_forward" or fetch_result != "success" or remote is None):
-        raise RuntimeLoggingError("updated requires clean tracked state, successful fetch, fast-forward ancestry and remote_head")
-    if outcome == "skipped_dirty" and tracked_clean:
+
+    if decision == "updated" and (
+        local is None
+        or remote is None
+        or tracked_clean is not True
+        or ancestry != "fast_forward"
+        or fetch_result != "success"
+    ):
+        raise RuntimeLoggingError("updated requires local/remote heads, clean tracked state, successful fetch and fast-forward ancestry")
+    if decision == "up_to_date" and (local is None or remote is None or local != remote or fetch_result != "success"):
+        raise RuntimeLoggingError("up_to_date requires equal local/remote heads after successful fetch")
+    if decision == "skipped_dirty" and tracked_clean is not False:
         raise RuntimeLoggingError("skipped_dirty requires tracked_clean=false")
-    if outcome == "skipped_non_fast_forward" and ancestry != "non_fast_forward":
+    if decision == "skipped_non_fast_forward" and ancestry != "non_fast_forward":
         raise RuntimeLoggingError("skipped_non_fast_forward requires non_fast_forward ancestry")
-    if outcome == "fetch_error" and fetch_result != "error":
+    if decision == "fetch_error" and fetch_result != "error":
         raise RuntimeLoggingError("fetch_error requires fetch_result=error")
+    if event_outcome == "failure" and not error_class:
+        error_class = "autopull_failure"
 
     started_ns = time.monotonic_ns()
-    final_status, event_outcome = _OUTCOMES[outcome]
+    final_status = "failed" if event_outcome == "failure" else "completed"
     document = new_operation_document(
         owner="github_autopull",
         stream="sync_attempt",
         producer="github-autopull-watcher-adapter",
-        producer_version="1.0",
+        producer_version="1.1",
         correlation_id=correlation_id,
         detail={"integration_contract": "invoke only for a real attempt or state change; never each idle poll"},
-        evidence_gaps=["The local watcher owns Git execution; this adapter records caller-supplied decisions and does not independently prove command execution."],
+        evidence_gaps=[
+            "The PowerShell watcher owns Git execution; this capture records watcher-observed decisions and does not independently replay Git commands."
+        ],
     )
     path = operation_capture_path(document, output_root=output_root)
     write_operation_document(path, document)
-    details = {
-        "local_head": local,
-        "remote_head": remote,
-        "tracked_clean": tracked_clean,
-        "fetch_result": fetch_result,
-        "ancestry": ancestry,
-        "decision": outcome,
-        "reason": reason,
-        "error_class": error_class,
-    }
     append_event(
         document,
-        "autopull.sync_attempt",
-        details,
-        severity="error" if final_status == "failed" else "info",
+        "autopull.state_change",
+        {
+            "local_head": local,
+            "remote_head": remote,
+            "tracked_clean": tracked_clean,
+            "fetch_result": fetch_result,
+            "ancestry": ancestry,
+            "decision": decision,
+            "reason": reason,
+            "error_class": error_class,
+        },
+        severity="error" if event_outcome == "failure" else "info",
         outcome=event_outcome,
     )
-    finalize_operation(document, status=final_status, stop_reason=outcome, duration_seconds=monotonic_seconds_since(started_ns))
+    finalize_operation(
+        document,
+        status=final_status,
+        stop_reason=decision,
+        duration_seconds=monotonic_seconds_since(started_ns),
+    )
     write_operation_document(path, document)
     return path, document
 
 
-def _bool(text: str) -> bool:
+def _optional_bool(text: str) -> bool:
     normalized = text.strip().lower()
     if normalized in {"true", "1", "yes"}:
         return True
@@ -117,26 +129,28 @@ def _bool(text: str) -> bool:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--local-head", required=True)
-    parser.add_argument("--remote-head")
-    parser.add_argument("--tracked-clean", required=True, type=_bool)
-    parser.add_argument("--fetch-result", required=True, choices=sorted(_FETCH_RESULTS))
-    parser.add_argument("--ancestry", required=True, choices=sorted(_ANCESTRY))
-    parser.add_argument("--outcome", required=True, choices=sorted(_OUTCOMES))
+    parser.add_argument("--decision", required=True)
+    parser.add_argument("--event-outcome", required=True, choices=sorted(_EVENT_OUTCOMES))
     parser.add_argument("--reason", required=True)
+    parser.add_argument("--local-head")
+    parser.add_argument("--remote-head")
+    parser.add_argument("--tracked-clean", type=_optional_bool)
+    parser.add_argument("--fetch-result", default="not_attempted", choices=sorted(_FETCH_RESULTS))
+    parser.add_argument("--ancestry", default="not_checked", choices=sorted(_ANCESTRY))
     parser.add_argument("--error-class")
     parser.add_argument("--correlation-id")
     parser.add_argument("--output-root")
     args = parser.parse_args(argv)
     try:
         path, document = create_autopull_capture(
+            decision=args.decision,
+            event_outcome=args.event_outcome,
+            reason=args.reason,
             local_head=args.local_head,
             remote_head=args.remote_head,
             tracked_clean=args.tracked_clean,
             fetch_result=args.fetch_result,
             ancestry=args.ancestry,
-            outcome=args.outcome,
-            reason=args.reason,
             error_class=args.error_class,
             correlation_id=args.correlation_id,
             output_root=Path(args.output_root) if args.output_root else None,
