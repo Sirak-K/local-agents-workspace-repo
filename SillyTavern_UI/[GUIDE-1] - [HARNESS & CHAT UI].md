@@ -30,18 +30,22 @@ Verifierad 2026-09-15:
 
 Ett arkitekturdrivet avslag av Context Shift är **inte** i sig ett modellfel eller Guide-1-FAIL. Det ska dokumenteras som effektivt runtime-beteende och hållas åtskilt från harness-, VRAM- och modellfel.
 
-## A2. Implementerat repoägt harness
+## A2. Repoägt harness och entrypoints
 
-Tracked under `SillyTavern_UI/harness/`:
+Intern implementation ligger under `SillyTavern_UI/harness/`:
 
-- `Bootstrap-Guide1.ps1` — checks NVIDIA; installs missing Git/Node LTS via `winget` when possible; downloads and SHA-256 verifies KoboldCpp; clones/pins SillyTavern; prepares npm dependencies.
-- `Start-KoboldCpp-TextBaseline.ps1` — applies the locked KoboldCpp baseline and rejects a contaminated run when another workload already occupies >=50% of target-GPU VRAM.
-- `Start-SillyTavern.ps1` — starts the repo-local SillyTavern runtime.
-- `Start-Guide1-Stack.ps1` — orchestrates bootstrap, model selection, backend verification and UI start.
-- `Start-Guide1-Stack.cmd` — preferred launcher; selects `pwsh.exe` first and falls back to `powershell.exe`, including common absolute install paths.
-- `Test-KoboldCpp-TextBaseline.ps1` — checks KoboldCpp API/model/context and NVIDIA VRAM.
-- `Test-Guide1.cmd` — preferred verification launcher with the same PowerShell fallback logic.
-- `README.md` — concise runtime contract.
+- `Bootstrap-Guide1.ps1` — kontrollerar NVIDIA; installerar saknad Git/Node LTS via `winget` när möjligt; laddar ner och SHA-256-verifierar KoboldCpp; klonar/pinnar SillyTavern; förbereder npm-dependencies.
+- `Start-KoboldCpp-TextBaseline.ps1` — applicerar den låsta KoboldCpp-baslinjen och stoppar en kontaminerad körning om annat workload redan använder >=50% av mål-GPU:ns VRAM.
+- `Start-SillyTavern.ps1` — startar den repo-lokala SillyTavern-runtimen.
+- övriga `.ps1/.cmd` i harness-mappen är interna implementation-/diagnostikhjälpare.
+
+**Regel för Team Master:** exekverbara entrypoints som förväntas användas regelbundet/återkommande finns i repo-roten `scripts/`:
+
+- `scripts/Start-Local-Agent-Harness.cmd` — normal start av Guide-1-harnesskedjan.
+- `scripts/Start-SillyTavern.cmd` — startar endast SillyTavern när backend redan kör.
+- `scripts/Test-Local-Agent-Harness.cmd` — kör Guide-1 backendverifieringen.
+
+Team Master ska normalt inte behöva köra interna filer direkt ur `SillyTavern_UI/harness/`.
 
 Third-party installs live only under:
 
@@ -51,7 +55,7 @@ SillyTavern_UI/_local_runtime/
 └── SillyTavern/
 ```
 
-`_local_runtime/` is Git-ignored. Ingen parallell `AGENT-2-STORYTELLER`-yta skapas.
+`_local_runtime/` är Git-ignorerad. Ingen parallell `AGENT-2-STORYTELLER`-yta skapas.
 
 **ChatGPT-del: PASS.** Lokal runtime är ännu inte fullständigt verifierad förrän Del B:s SillyTavern-anslutning och chat-smoke-test har körts.
 
@@ -59,32 +63,31 @@ SillyTavern_UI/_local_runtime/
 
 # B. Team Master-ägd steg-för-steg guide
 
-## B1. Låt AutoPull hämta senaste `main`
+## B1. Sync
 
-Rör inte andra lokala tracked-filer före sync. Bekräfta sedan:
+AutoPull/AutoSync är normalvägen för ChatGPT:s repoändringar. Team Master ska **inte** köra manuella Git pull-kommandon i normal drift. Manuell Git-felsökning används endast om det finns konkret evidens på att AutoPull har misslyckats eller fastnat.
 
-```powershell
-git status
-git pull --ff-only origin main
-```
-
-Krav: `working tree clean` och `Already up to date` eller en ren fast-forward.
-
-## B2. Kör hela Guide-1-bootstrap/starten
+## B2. Starta harnesset
 
 Innan start: stoppa ComfyUI-inferens eller annan tung CUDA-belastning så AutoFit och prestandaevidens inte kontamineras.
 
 Från repo-roten:
 
 ```powershell
-.\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
+.\scripts\Start-Local-Agent-Harness.cmd
 ```
 
-`.cmd`-launchern väljer `pwsh.exe` om det finns och använder `powershell.exe` som fallback, inklusive vanliga absoluta installationssökvägar. Scriptkedjan gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
+Scriptkedjan gör installation/bootstrap själv. När filväljaren öppnas väljer du **en befintlig `.gguf`** endast för harness-smoke-testet.
 
 Harnesset stoppar före modelladdning om minst 50% av mål-GPU:ns VRAM redan används av ett annat workload, eftersom det annars förändrar AutoFit-resultatet.
 
 **STOP och skicka terminalfelet till ChatGPT om scriptet misslyckas. Ändra inte konfigurationen manuellt först.**
+
+Om KoboldCpp redan kör och endast SillyTavern behöver startas:
+
+```powershell
+.\scripts\Start-SillyTavern.cmd
+```
 
 ## B3. Koppla SillyTavern till den redan startade KoboldCpp-instansen
 
@@ -122,7 +125,7 @@ Om KoboldCpp-loggen visar att Context Shift automatiskt stängs av på grund av 
 Med KoboldCpp fortfarande igång:
 
 ```powershell
-.\SillyTavern_UI\harness\Test-Guide1.cmd
+.\scripts\Test-Local-Agent-Harness.cmd
 ```
 
 Skicka JSON-outputen plus:
