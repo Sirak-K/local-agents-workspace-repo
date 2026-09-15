@@ -18,7 +18,7 @@
 | **World Info** | Lore/world-state injection into prompts. | World/lore entries; keys/triggers; activation; placement/order; scan/recursion/budget controls. Keep disabled/out of validation runs unless the test explicitly evaluates lore/RAG behavior. |
 | **User Settings** | UI behavior and general per-user interaction preferences. | UI Theme; Theme Colors; Character Handling; Chat/Message Handling; **Streaming FPS**; Smooth Streaming; Auto-scroll Chat; message timestamps; markdown/display behavior; Auto-Swipe; Auto-Continue; autocomplete. |
 | **Backgrounds** | Visual chat background management. | Select/upload/manage backgrounds and chat-specific background state. Cosmetic unless a visual workflow explicitly depends on it. |
-| **Extensions** | Built-in/system and installed extension controls. | Extension-specific configuration. High-ROI examples in this workspace: attachments, connection manager, memory, regex, token counter, vectors, image captioning/image generation/ComfyUI, translate, TTS. Do not confuse an extension feature with core model capability. |
+| **Extensions** | Built-in/system and installed extension controls. | Extension-specific configuration. High-ROI examples in this workspace: attachments, connection manager, memory, regex, token counter, vectors, image captioning/image generation/ComfyUI, translate, TTS. Image generation/ComfyUI is intentionally deferred to later multimodality work. |
 | **Persona Management** | Configure the human/user identity inserted into chat context. | Persona name/avatar; **Persona Description**; Position; Connections (`Default`, `Character`, `Chat`); persona switching/locking behavior. |
 | **Character Management** | Create/import/select/edit assistant character cards. | Character selection; favorites/tags/filter/sort; create/import; character card fields/instructions; per-character connections/settings. Default `Assistant` is sufficient for neutral harness tests. |
 
@@ -37,7 +37,7 @@ High-ROI controls:
 - Story String.
 - Position.
 - Example Separator / Chat Start.
-- Context Formatting: character names, newline collapsing, trimming, incomplete-sentence handling, separators/names as stop strings.
+- Context Formatting: Always add character name, Generate only one line per request, Collapse Consecutive Newlines, Trim spaces, Trim Incomplete Sentences, Separators as Stop Strings, Names as Stop Strings.
 - **Derived template state** when supported by model metadata.
 
 ### Instruct Template
@@ -52,8 +52,13 @@ High-ROI controls:
 - Wrap Sequences with Newline.
 - Replace Macro in Sequences.
 - Sequences as Stop Strings.
+- Skip Example Dialogues Formatting.
 - Include Names.
-- User Message / Assistant Message / System Message sequences.
+- Story String Prefix/Suffix.
+- User Message Prefix/Suffix.
+- Assistant Message Prefix/Suffix.
+- System Message Prefix/Suffix; `System same as User`.
+- Misc Sequences: First/Last Assistant Prefix, First/Last User Prefix, System Instruction Prefix, **Stop Sequence**, User Filler Message.
 
 **Rule:** if the model-specific template cannot be verified, do not guess a merely similar template.
 
@@ -68,13 +73,38 @@ High-ROI controls:
 
 Keep system-prompt testing separate from template testing so failures remain attributable.
 
-### Stops / tokenizer / reasoning
+### Stops / tokenizer / reasoning / misc
 
-- **Custom Stopping Strings:** explicit stop sequences; wrong values can truncate responses.
+- **Custom Stopping Strings:** explicit JSON-array stop sequences; wrong values can truncate responses. `Replace Macro in Stop Strings` controls macro expansion.
+- **Template Stop Sequence:** separate from Custom Stopping Strings and may be derived by the selected Instruct template. In the observed Defiant/ChatML baseline it is `<|im_end|>`.
 - **Tokenizer:** normally `Best match (recommended)` unless a model-specific reason requires otherwise.
-- Token Padding: prompt-budget safety margin.
-- **Reasoning:** Auto-Parse, Auto-Expand, Show Hidden, Add to Prompts, Max and Reasoning Formatting. Treat as model-specific; do not enable during a neutral baseline without evidence.
+- **Token Padding:** prompt-budget safety margin; observed baseline `64`.
+- **Reasoning:** Auto-Parse, Auto-Expand, Show Hidden, Add to Prompts, Max and Reasoning Formatting. Treat as model-specific; all were left OFF in the neutral baseline.
 - **Miscellaneous:** Bind Model to Templates; Non-markdown strings; Start Reply With; Show reply prefix in chat.
+
+### Observed Defiant/ChatML baseline
+
+After metadata derivation against the connected DefiantFable GGUF:
+
+```text
+Context Template:   ChatML
+Instruct Template:  ChatML
+System prefix:       <|im_start|>system
+System suffix:       <|im_end|>
+User prefix:         <|im_start|>user
+User suffix:         <|im_end|>
+Assistant prefix:    <|im_start|>assistant
+Assistant suffix:    <|im_end|>
+Stop Sequence:       <|im_end|>
+Custom Stops:        empty
+Tokenizer:           Best match (recommended)
+Token Padding:       64
+Reasoning controls:  OFF
+Bind Model:          OFF during validation
+Start Reply With:    empty
+```
+
+This is observed configuration evidence, not a universal ChatML prescription for other models.
 
 ---
 
