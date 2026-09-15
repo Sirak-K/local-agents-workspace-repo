@@ -20,11 +20,16 @@ param(
     [int]$Port = 5001,
 
     [switch]$LaunchBrowser,
-    [switch]$Background
+    [switch]$Background,
+    [string]$CorrelationId
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+$observabilityModulePath = Join-Path $PSScriptRoot 'RuntimeObservability.psm1'
+Import-Module -Name $observabilityModulePath -Force -ErrorAction Stop
+if ([string]::IsNullOrWhiteSpace($CorrelationId)) { $CorrelationId = New-RuntimeCorrelationId }
 
 $SillyRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 if (-not $KoboldCppExe) {
@@ -137,8 +142,27 @@ if ($Background) {
 
     $argumentLine = ($KoboldArgs | ForEach-Object { Quote-ProcessArg ([string]$_) }) -join ' '
     $process = Start-Process -FilePath $exe -ArgumentList $argumentLine -PassThru -WindowStyle Hidden
+    $capture = Start-RuntimeOperationCapture -Owner 'koboldcpp' -Stream 'process_lifecycle' -Producer 'Start-KoboldCpp-StorytellerRuntime.ps1' -ProducerVersion '1.0' -CorrelationId $CorrelationId -Profile $RuntimeProfile -Model ([IO.Path]::GetFileName($model)) -ProcessId $process.Id -Detail @{ port = $Port; context_size = $ContextSize; gpu_id = $GpuId; background = $true; mmproj = $(if ($mmproj) { [IO.Path]::GetFileName($mmproj) } else { $null }) } -EvidenceGap @('Background launch records process creation only; server readiness and model-load completion require a request/probe boundary.')
+    if ($null -ne $capture) {
+        Add-RuntimeOperationEvent -File $capture.file -EventType 'koboldcpp.process_started' -Details @{ pid = $process.Id; port = $Port; profile = $RuntimeProfile } -Outcome 'success'
+        Complete-RuntimeOperationCapture -File $capture.file -Status 'completed' -StopReason 'process_started' -DurationSeconds 0
+    }
     return $process
 }
 
+$foregroundCapture = Start-RuntimeOperationCapture -Owner 'koboldcpp' -Stream 'process_lifecycle' -Producer 'Start-KoboldCpp-StorytellerRuntime.ps1' -ProducerVersion '1.0' -CorrelationId $CorrelationId -Profile $RuntimeProfile -Model ([IO.Path]::GetFileName($model)) -Detail @{ port = $Port; context_size = $ContextSize; gpu_id = $GpuId; background = $false; mmproj = $(if ($mmproj) { [IO.Path]::GetFileName($mmproj) } else { $null }) } -EvidenceGap @('Foreground direct invocation does not expose the child PID through this PowerShell boundary.')
+$runtimeStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+if ($null -ne $foregroundCapture) {
+    Add-RuntimeOperationEvent -File $foregroundCapture.file -EventType 'koboldcpp.process_launch_requested' -Details @{ port = $Port; profile = $RuntimeProfile } -Outcome 'observed'
+}
 & $exe @KoboldArgs
-exit $LASTEXITCODE
+$exitCode = $LASTEXITCODE
+$runtimeStopwatch.Stop()
+if ($null -ne $foregroundCapture) {
+    $eventOutcome = if ($exitCode -eq 0) { 'success' } else { 'failure' }
+    $severity = if ($exitCode -eq 0) { 'info' } else { 'error' }
+    Add-RuntimeOperationEvent -File $foregroundCapture.file -EventType 'koboldcpp.process_exited' -Details @{ exit_code = $exitCode } -Outcome $eventOutcome -Severity $severity -DurationSeconds $runtimeStopwatch.Elapsed.TotalSeconds
+    $finalStatus = if ($exitCode -eq 0) { 'completed' } else { 'failed' }
+    Complete-RuntimeOperationCapture -File $foregroundCapture.file -Status $finalStatus -StopReason 'process_exited' -DurationSeconds $runtimeStopwatch.Elapsed.TotalSeconds
+}
+exit $exitCode
