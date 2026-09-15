@@ -1,2 +1,0 @@
-worker_ref=K7-42
-encoding=utf-8

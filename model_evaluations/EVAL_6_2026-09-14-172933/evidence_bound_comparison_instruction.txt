@@ -1,1 +1,0 @@
-Use only these facts: Service Cedar costs 12 credits per job. Service Maple costs 9 credits per job. No completion times are provided for either service. Which service finishes a job faster? Briefly explain what the facts do and do not establish, and ask for the missing information needed to answer the speed question. Do not assume that price predicts speed. Do not use tools.
