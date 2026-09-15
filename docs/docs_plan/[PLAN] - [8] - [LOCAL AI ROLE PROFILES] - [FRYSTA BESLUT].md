@@ -22,6 +22,10 @@
 - Exakt persistent profilformat, loggschema och mediamotorgräns är ännu inte låsta runtimekontrakt.
 - AGPR-3:s captioning och bildgenerering får separeras i olika modell-/motorprofiler om faktisk evidens visar att det ger högre nytta. En captionspecifik extension skapas endast om faktisk AGPR-3-användning visar ett kvarstående UI-/leveransgap.
 - AGPR-4:s första vertikala implementation ska kunna vara ren text-till-tal-/ljudfilsgenerering. Om chatt/personlighet senare läggs till får den och ljudsyntesen vara separata tekniska komponenter inom samma AGPR-profil; en gemensam narrativ identitet kräver inte att en enda modell utför båda funktionerna.
+- AGPR-4:s första baseline ska återge engelsk fiktion lokalt utan extern leverantörsmoderering eller projektpålagt innehållsfilter, men modellens faktiska unrestricted-beteende måste evalueras och får inte antas av lokal drift ensam.
+- AGPR-4 kräver trovärdigt skratt, högintensivt skrik, minst en reproducerbar kvinnlig röst och icke-monoton, flexibelt styrbar narration. Flera valbara kvinnliga röstidentiteter är önskad baseline när kvaliteten kan bevaras.
+- Team Master och AGPR-2 Storyteller äger texten samt placeringen av performance cues. AGPR-4 validerar/renderar mottagna cues och får inte själv ändra berättelsens händelser. Modellbunden taggvokabulär får inte hårdkodas i Storytellers permanenta basprompt innan Voice Masters adapter-/modellkontrakt är valt.
+- En beständig ljudfil är AGPR-4:s första leveranskontrakt. SillyTavern-spelare är inte ett baselinekrav. Broker/API, automatisk unload/load/restore och retry-semantik är separata ännu olåsta integrationsbeslut.
 - Image Captioning-hardening, generella extensions och ComfyUI förblir lågprioriterade tills Team Master ändrar ordningen.
 
 ## Kvalitetsmål
