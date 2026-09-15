@@ -52,6 +52,13 @@ With SillyTavern `1.19.0` connected through `Text Completion -> KoboldCpp`, meta
   - system prefix `<|im_start|>system`, suffix `<|im_end|>`
   - user prefix `<|im_start|>user`, suffix `<|im_end|>`
   - assistant prefix `<|im_start|>assistant`, suffix `<|im_end|>`
+- Derived template Stop Sequence shown: `<|im_end|>`
+- Custom Stopping Strings field observed empty
+- Tokenizer observed: `Best match (recommended)`
+- Token Padding observed: `64`
+- Reasoning controls observed OFF
+- `Bind Model to Templates` observed OFF during validation
+- `Start Reply With` observed empty
 
 This is accepted as the current text-only Guide-2 template baseline because it was derived from the connected model/backend metadata rather than manually guessed. Template correctness still remains subject to behavioral smoke-test evidence; do not silently replace it with another preset.
 
