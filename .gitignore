@@ -65,3 +65,4 @@ LM-Studio_logs/host_resource_snapshots/*
 !LM-Studio_logs/model_lifecycle_events/.gitkeep
 !LM-Studio_logs/model_io_events/.gitkeep
 !LM-Studio_logs/host_resource_snapshots/.gitkeep
+MY ACC$.MD
