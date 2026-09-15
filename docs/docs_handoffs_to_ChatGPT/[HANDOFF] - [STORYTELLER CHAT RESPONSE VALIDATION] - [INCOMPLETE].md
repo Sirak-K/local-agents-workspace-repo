@@ -107,3 +107,65 @@ Before finishing, add:
 - PIPSA: no process restart should be required for this offline-only change.
 
 Rename this file to the same base name ending in `[COMPLETED].md` only when every ChatGPT-owned implementation and offline verification requirement passed. That status does not imply that the live Storyteller profile passed Codex's local model/runtime gates.
+
+## ChatGPT implementation report — 2026-09-15
+
+**Status remains `INCOMPLETE`.** The bounded implementation is present, but this ChatGPT execution environment has no PowerShell executable, so the mandatory direct PowerShell test and PowerShell parser gate could not actually be run. The suffix therefore has not been changed.
+
+### Created / changed / deleted
+
+Created:
+
+- `SillyTavern_UI/harness/StorytellerChatResponseValidation.psm1`
+- `SillyTavern_UI/harness/tests/Test-StorytellerChatResponseValidation.ps1`
+
+Changed:
+
+- `SillyTavern_UI/harness/Test-KoboldCpp-StorytellerChatProfile.ps1`
+- `SillyTavern_UI/harness/README.md`
+- `docs/docs_handoffs_to_ChatGPT/[HANDOFF] - [STORYTELLER CHAT RESPONSE VALIDATION] - [INCOMPLETE].md`
+
+Deleted: none.
+
+### Behavior delivered
+
+- Response-contract interpretation is isolated in the pure `StorytellerChatResponseValidation.psm1` module.
+- The validator accepts already-parsed response data, requires exactly one choice with a message, rejects any non-empty `reasoning_content`, rejects `<think>`, `</think>`, both ChatML markers and `Thinking Process:` using ordinal case-insensitive marker matching, then requires ordinal exact visible content `STORYTELLER_PROFILE_OK`.
+- Successful validation returns only normalized `content` and `reasoning_content` values.
+- The HTTP probe imports and calls the validator; endpoint requests, timing, version/context checks, performance lookup and report assembly remain in the probe.
+- The dependency-free offline test contains 13 deterministic cases covering every required case, with separate tests for both ChatML markers and for wrong versus empty visible content. It emits a single compact PASS line only after all assertions succeed and uses terminating assertions so a failed case stops the script.
+- The README documents the pure-validator split and the direct offline test command.
+
+### Executed checks and exact results
+
+- Re-read GitHub `main` after Team Master's cleanup/plan commit and based implementation on commit `7ea740da19d07fe544ffb71eaed1216fba4671a9`: **PASS**.
+- Static scan of `StorytellerChatResponseValidation.psm1` and `tests/Test-StorytellerChatResponseValidation.ps1` for `Invoke-RestMethod`, `Invoke-WebRequest`, process commands, `Start-Sleep`, `System.Net`, `curl` and `wget`: **PASS — no matches**.
+- Static probe check for `Import-Module` plus `Test-StorytellerChatResponseContract`, and absence of the old in-probe forbidden-marker/reasoning validation block: **PASS**.
+- UTF-8 decode and UTF-8 BOM check over all five changed/created text files as authored: **PASS — all decode as UTF-8 and none starts with `EF BB BF`**.
+- Candidate Git tree diff against base commit `7ea740da19d07fe544ffb71eaed1216fba4671a9`: **PASS — only the five paths listed under Created / Changed are present; no out-of-scope path is changed**.
+
+### Unexecuted mandatory checks / exact blocker
+
+The following mandatory PowerShell checks were **not executed**:
+
+```powershell
+pwsh -NoProfile -File .\SillyTavern_UI\harness\tests\Test-StorytellerChatResponseValidation.ps1
+```
+
+```powershell
+pwsh -NoProfile -Command "$paths=@('.\SillyTavern_UI\harness\StorytellerChatResponseValidation.psm1','.\SillyTavern_UI\harness\Test-KoboldCpp-StorytellerChatProfile.ps1','.\SillyTavern_UI\harness\tests\Test-StorytellerChatResponseValidation.ps1'); foreach($path in $paths){$tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $path),[ref]$tokens,[ref]$errors)|Out-Null;if($errors.Count -ne 0){throw ($errors | ForEach-Object Message | Out-String)}}"
+```
+
+Exact blocker: the available execution container is Debian 13 (`x86_64`) and contains neither `pwsh` nor Windows PowerShell. `pwsh --version` therefore resolves to `command not found`. An attempt to fetch the official PowerShell `v7.6.6` Debian package into the isolated execution container also failed because that container has no outbound DNS/network access (`curl: (6) Could not resolve host: github.com`). No repo/runtime/profile setting was changed to work around this environment limitation.
+
+Because these two PowerShell-owned gates remain unexecuted, this handoff intentionally remains `[INCOMPLETE]` even though the implementation and non-PowerShell static checks are complete.
+
+### Remaining validation
+
+Remaining handoff gate in a PowerShell-capable environment: run the direct offline test and the parser command above. Only if both pass, together with the already-passed scope/static/encoding checks, may ChatGPT's handoff suffix be changed to `[COMPLETED]`.
+
+Codex still owns all local/live validation outside this repo-only slice: Storyteller launcher/profile/runtime settings, local KoboldCpp/SillyTavern processes, model/GPU runs, live A/B behavior, performance attribution and final AGPR promotion.
+
+### PIPSA
+
+No process restart should be required for this offline-only repository change. No launcher, profile, sampler, context/KV, runtime process or local application state was modified.

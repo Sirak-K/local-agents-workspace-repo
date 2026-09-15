@@ -60,7 +60,15 @@ For the active DefiantFable/Qwen3.5 model, ordinary Context Shift is disabled be
 
 `Test-KoboldCpp-StorytellerChatProfile.ps1` is the first bounded regression guard for the separate non-thinking candidate profile. It requires an already running KoboldCpp `1.120` instance started for Chat Completion with backend Jinja and `--jinjathink false`.
 
-The probe verifies backend/version/context, sends one non-streaming `/v1/chat/completions` request, requires exact visible content, rejects template/reasoning markers and independently rejects non-empty `message.reasoning_content`. It also records elapsed time and `/api/extra/perf` when available.
+The probe verifies backend/version/context, sends one non-streaming `/v1/chat/completions` request, then delegates the already-parsed response contract to `StorytellerChatResponseValidation.psm1`. The pure validator requires exactly one message, exact visible `STORYTELLER_PROFILE_OK`, rejects visible template/reasoning markers, and independently rejects any non-empty `message.reasoning_content`. The HTTP probe remains responsible for endpoint calls, timing and report assembly.
+
+The validator has a dependency-free offline regression script at `tests/Test-StorytellerChatResponseValidation.ps1`. It performs no localhost/network/model/process work and can be run directly by a developer with PowerShell:
+
+```powershell
+pwsh -NoProfile -File .\SillyTavern_UI\harness\tests\Test-StorytellerChatResponseValidation.ps1
+```
+
+A successful run prints one compact PASS line only after every deterministic response-contract case succeeds; the script terminates on the first failed assertion.
 
 Do not treat this small structural probe as proof of final story quality, long-output behavior, streaming, cache rollover or context stability. Those belong to the bounded A/B gate in the active Storyteller roadmap.
 

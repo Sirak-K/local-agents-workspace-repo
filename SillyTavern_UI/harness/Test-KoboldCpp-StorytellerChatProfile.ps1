@@ -18,32 +18,15 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$validatorModulePath = Join-Path $PSScriptRoot 'StorytellerChatResponseValidation.psm1'
+Import-Module -Name $validatorModulePath -Force -ErrorAction Stop
+
 $base = "http://127.0.0.1:$Port"
 $expectedContent = 'STORYTELLER_PROFILE_OK'
-$forbiddenMarkers = @(
-    '<think>',
-    '</think>',
-    '<|im_start|>',
-    '<|im_end|>',
-    'Thinking Process:'
-)
 
 function Get-JsonEndpoint {
     param([Parameter(Mandatory = $true)][string]$Path)
     Invoke-RestMethod -Method Get -Uri "$base$Path" -TimeoutSec 10
-}
-
-function Get-OptionalPropertyValue {
-    param(
-        [Parameter(Mandatory = $true)][object]$InputObject,
-        [Parameter(Mandatory = $true)][string]$Name
-    )
-
-    $property = $InputObject.PSObject.Properties[$Name]
-    if ($null -eq $property) {
-        return $null
-    }
-    return $property.Value
 }
 
 $version = Get-JsonEndpoint '/api/extra/version'
@@ -88,28 +71,11 @@ $response = Invoke-RestMethod `
     -TimeoutSec $TimeoutSec
 $stopwatch.Stop()
 
+$validation = Test-StorytellerChatResponseContract -Response $response -ExpectedContent $expectedContent
 $choices = @($response.choices)
-if ($choices.Count -ne 1 -or $null -eq $choices[0].message) {
-    throw 'Chat Completion response did not contain exactly one assistant message.'
-}
 
-$message = $choices[0].message
-$contentValue = Get-OptionalPropertyValue -InputObject $message -Name 'content'
-$reasoningValue = Get-OptionalPropertyValue -InputObject $message -Name 'reasoning_content'
-$content = if ($null -eq $contentValue) { '' } else { [string]$contentValue }
-$reasoning = if ($null -eq $reasoningValue) { '' } else { [string]$reasoningValue }
-
-if ($content.Trim() -ne $expectedContent) {
-    throw ('Unexpected visible content. Expected exactly {0}; got {1}' -f $expectedContent, $content)
-}
-if (-not [string]::IsNullOrWhiteSpace($reasoning)) {
-    throw ('Non-thinking profile returned reasoning_content: {0}' -f $reasoning)
-}
-foreach ($marker in $forbiddenMarkers) {
-    if ($content.IndexOf($marker, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
-        throw ('Visible content contains forbidden template/reasoning marker: {0}' -f $marker)
-    }
-}
+$usageProperty = $response.PSObject.Properties['usage']
+$usage = if ($null -eq $usageProperty) { $null } else { $usageProperty.Value }
 
 $performance = $null
 try {
@@ -132,10 +98,10 @@ $result = [ordered]@{
     true_max_context = $context.value
     model = $modelId
     elapsed_ms = $stopwatch.ElapsedMilliseconds
-    content = $content
-    reasoning_content = $reasoning
+    content = $validation.content
+    reasoning_content = $validation.reasoning_content
     finish_reason = $choices[0].finish_reason
-    usage = (Get-OptionalPropertyValue -InputObject $response -Name 'usage')
+    usage = $usage
     performance = $performance
 }
 
