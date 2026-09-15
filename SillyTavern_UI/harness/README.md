@@ -1,63 +1,65 @@
-# SillyTavern + KoboldCpp text harness
+# Guide 1 harness — SillyTavern + KoboldCpp
 
-**Scope:** model-neutral AGENT-2 text harness. Model-specific prompt/template/sampling facts belong outside this folder.
+**Scope:** model-neutral AGENT-2 text harness only.
 
-**Upstream verified:** 2026-09-15 against KoboldCpp `v1.120` and current SillyTavern documentation.
+Tracked here: bootstrap/start/test scripts and runtime contract.  
+Not tracked: installed third-party apps under `SillyTavern_UI/_local_runtime/`.
 
-## Repo-owned helpers
+**Verified 2026-09-15:** KoboldCpp `v1.120`; SillyTavern `release` commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127` (SillyTavern `1.19.0`, Node `>=20`).
 
-- `Install-SillyTavern-Release.ps1` — validates Node/npm/Git and clones only SillyTavern `release`; refuses overwrite/update.
-- `Start-KoboldCpp-TextBaseline.ps1` — starts a local-only text baseline.
-- `Test-KoboldCpp-TextBaseline.ps1` — verifies KoboldCpp version/model/context/API and reports NVIDIA VRAM state as JSON to stdout.
+## One-command local start
 
-## Locked first-run baseline
+From repo root after AutoPull:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Start-Guide1-Stack.ps1
+```
+
+The script:
+
+1. bootstraps missing Guide-1 runtime components,
+2. checks the NVIDIA driver,
+3. installs missing Git/Node LTS through `winget` when possible,
+4. downloads and SHA-256 verifies KoboldCpp v1.120,
+5. clones/pins SillyTavern inside `_local_runtime`,
+6. asks you to select an existing `.gguf`,
+7. starts KoboldCpp with the locked baseline,
+8. verifies its local API,
+9. starts SillyTavern.
+
+## Locked KoboldCpp baseline
 
 | Setting | Value |
 |---|---|
-| Bind | `127.0.0.1` only |
+| Bind | `127.0.0.1` |
 | Port | `5001` |
 | Context | `8192` |
-| Backend | CUDA |
-| GPU | ID `0` by default; override if needed |
-| QuantMatMul/MMQ | `nommq` |
-| GPU Layers | `-1` / AutoFit |
-| Flash Attention | ON explicitly |
-| KV cache | F16 (`--quantkv 0`) |
-| Context Shift | default/ON; no `--noshift` |
-| SWA | OFF; no `--useswa` |
+| CUDA GPU | ID `0` default |
+| GPU layers | `-1` / AutoFit |
+| MMQ | OFF (`--nommq`) |
+| High Priority | ON |
+| Flash Attention | ON (v1.120 default) |
+| KV | F16 |
+| Context Shift | ON (v1.120 default) |
+| SWA | prevented with `--noswa` so Context Shift remains available |
 | Low VRAM | OFF |
-| mmproj | absent |
-| Web/remote tunnel | absent |
+| mmproj / RAG / remote tunnel | absent |
 
-The loopback bind is intentional: Guide 1 requires only local SillyTavern ↔ KoboldCpp communication.
+## Runtime placement
 
-## Local invocation
-
-From the workspace root after AutoPull:
-
-```powershell
-.\SillyTavern_UI\harness\Install-SillyTavern-Release.ps1 -InstallRoot "C:\AI\AGENT-2-STORYTELLER"
+```text
+SillyTavern_UI/
+├── harness/                 # tracked
+└── _local_runtime/          # gitignored
+    ├── KoboldCpp/
+    └── SillyTavern/
 ```
 
-Start KoboldCpp with an existing GGUF:
-
-```powershell
-.\SillyTavern_UI\harness\Start-KoboldCpp-TextBaseline.ps1 `
-  -KoboldCppExe "C:\path\to\koboldcpp.exe" `
-  -ModelPath "C:\path\to\model.gguf"
-```
-
-In a second PowerShell window, verify the running backend:
-
-```powershell
-.\SillyTavern_UI\harness\Test-KoboldCpp-TextBaseline.ps1
-```
-
-Do not save generated runtime reports inside this repo during Guide 1; paste the JSON output back to ChatGPT instead so AutoPull remains unblocked.
+No second `AGENT-2-STORYTELLER` directory is created.
 
 ## Primary sources
 
 - https://github.com/LostRuins/koboldcpp/releases
-- https://github.com/LostRuins/koboldcpp/wiki
+- https://github.com/LostRuins/koboldcpp/blob/v1.120/koboldcpp.py
 - https://docs.sillytavern.app/installation/windows/
 - https://docs.sillytavern.app/usage/api-connections/koboldcpp/
