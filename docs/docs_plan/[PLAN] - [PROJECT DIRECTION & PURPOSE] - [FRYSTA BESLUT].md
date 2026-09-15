@@ -1,12 +1,14 @@
 # PROJECT DIRECTION & PURPOSE — FRYSTA BESLUT
 
-Status: Fastställda projektledande beslut  
+Status: Historisk WORKER-evalriktning; ersatt som projektövergripande riktning av `[PLAN] - [8] - [LOCAL AI ROLE PROFILES]`
 Datum: 2026-09-13
+
+Denna fil får endast styra den kvarvarande AGPR-0-WORKER-evalytan. Den får inte användas för att blockera eller omdefiniera aktuell SillyTavern/KoboldCpp- och AGPR-2-STORYTELLER-prioritet.
 
 ## 1. Slutmål
 
 - Projektets yttersta mål är att utveckla, pröva och förstå lokala modeller som kan bli Team Masters framtida lokala agenter.
-- LM Studio-baserat Frontier-as-Evaluator-arbete och den tekniska plattform som krävs för det är projektets absoluta prioritet och styrande arbetsriktning just nu.
+- LM Studio-baserat Frontier-as-Evaluator-arbete var denna plans styrande riktning och är nu ett separat AGPR-0-WORKER-evalspår, inte projektets aktuella övergripande prioritet.
 - Frontier-agenter utvärderar kandidaterna; kandidaten är systemet under test och får aldrig tillgodoräknas Frontier-agentens analys eller arbete.
 - Codex är evaluator med prioritet 1 och äger primär lokal orchestration, evidensgranskning och felklassificering.
 
@@ -21,10 +23,10 @@ Datum: 2026-09-13
 
 ## 3. Första agentroll och modell-audition
 
-- `0-WORKER` är den första och högst prioriterade agentrollen.
-- `0-WORKER` är den enda aktiva agentrollen tills Team Master uttryckligen låser upp en annan roll. `AGENT-1-GENERAL/` och `AGENT-2-STORYTELLER/` är utanför scope och ska inte läsas, ändras eller användas som planeringsgrund.
-- `LOCAL_AGENTS/AGENT-0-WORKER/` är modellneutral men agentrollspecifik. Gemensam rollkontext, rollskills, rolltools, uppgifter, fixtures och bedömningslogik ska återanvändas mellan modeller så att kandidater jämförs mot samma rollkrav.
-- Varje modell får en egen undermapp under `AGENT-0-WORKER/`. Granite-undermappen äger Granite-specifika fakta, konfiguration, template och motiverade modellavvikelser, men får inte bli en parallell ägare av 0-WORKER-rollens gemensamma evalkontrakt.
+- `AGPR-0-WORKER` är denna evalplans målprofil men inte den aktuella projektövergripande P0-profilen.
+- `AGPR-2-STORYTELLER` är den aktuella P0-implementationsprofilen enligt `[PLAN] - [8] - [LOCAL AI ROLE PROFILES]`. Endast en AGPR används aktivt åt gången.
+- `LOCAL_AGENTS/AGPR-0-WORKER/` är modellneutral men agentrollspecifik. Gemensam rollkontext, rollskills, rolltools, uppgifter, fixtures och bedömningslogik ska återanvändas mellan modeller så att kandidater jämförs mot samma rollkrav.
+- Varje modell får en egen undermapp under `AGPR-0-WORKER/`. Granite-undermappen äger Granite-specifika fakta, konfiguration, template och motiverade modellavvikelser, men får inte bli en parallell ägare av AGPR-0-WORKER-rollens gemensamma evalkontrakt.
 - Rollen ska kunna ta emot instruktioner och utföra konkret, verifierbart read/write-arbete med en uttryckligen exponerad tool-yta.
 - Rollens absolut viktigaste och primära slutmål är professionellt, precist, välstrukturerat och verifierbart arbete i `comfy_ui_workspace`: framför allt att förstå, skapa, redigera, felsöka och kvalitetssäkra ComfyUI workflow-JSON samt berörd projektlokal backend-/integrationskod. Teknologioberoende grund-, fil- och toolförmåga är nödvändiga kvalificeringsförutsättningar för huvudmålet; den senare evalhalvan ska mäta ComfyUI-domänförmåga och därefter verklighetsnära dagligt workflowarbete.
 - `model_evaluations/comfy_ui_eval-playground/workflows/` innehåller disponibla kopior och får endast användas som evalmaterial. Varje muterande ERST arbetar i en unik kopia där noder och länkar får ändras kreativt enligt låst scope. Den lokala kandidaten ska inte ladda Team Masters ComfyUI-modeller/checkpoints, köa workflowet eller starta generering; PASS grundas på det verifierade statiska workflow-/grafslutläget om inte Team Master senare uttryckligen utökar kontraktet.

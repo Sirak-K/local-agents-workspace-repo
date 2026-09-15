@@ -1,10 +1,10 @@
 # SILLYTAVERN STORYTELLER RUNTIME HARDENING — FRYSTA BESLUT
 
-Detta är TAR-1:s rollspecifika härdning under den överordnade mål- och profilgränsen i `[PLAN] - [8] - [LOCAL AI ROLE PROFILES]`. TAR-1 är den primära och normalt använda Storyteller-agent-/modellprofilen. I SillyTavern interagerar Team Master med maximalt en individuell modell/agent-karaktär åt gången; smala TAR-2/TAR-3-mediaprofiler får vara helt avlastade och behöver inte kunna chatta.
+Detta är AGPR-2:s rollspecifika härdning under den överordnade mål- och profilgränsen i `[PLAN] - [8] - [LOCAL AI ROLE PROFILES]`. AGPR-2 är den primära och normalt använda Storyteller-agent-/modellprofilen. I SillyTavern interagerar Team Master med maximalt en individuell modell/agent-karaktär åt gången; smala AGPR-3/AGPR-4-mediaprofiler får vara helt avlastade och behöver inte kunna chatta.
 
 ## Syfte och prioritet
 
-- P0 är en långsiktigt stabil, snabb och reproducerbar TAR-1 Storyteller-profil för SillyTavern + KoboldCpp + den exakta DefiantFable Qwen3.5-9B Q4_K_S-modellen.
+- P0 är en långsiktigt stabil, snabb och reproducerbar AGPR-2 Storyteller-profil för SillyTavern + KoboldCpp + den exakta DefiantFable Qwen3.5-9B Q4_K_S-modellen.
 - Profiler ska sparas först efter verifiering och ska äga tydliga runtime-, SillyTavern-, sampler- och acceptansvillkor.
 - Image Captioning fungerar tillräckligt bra. Caption-hardening, egna extensions och ComfyUI är uttryckligen lägst prioriterade i detta arbetsmoment.
 
@@ -32,9 +32,17 @@ Detta är TAR-1:s rollspecifika härdning under den överordnade mål- och profi
 
 - Native `.kcpps` är KoboldCpps maskinspecifika sparformat och `--config` ignorerar övriga CLI-argument. Därför får ett repoägt portabelt kontrakt inte låtsas vara en maskinoberoende `.kcpps` med lokala absoluta modellvägar.
 - Den första repoägda profilytan ska vara transparent och verifierbar. En lokal `.kcpps` får exporteras efter PASS för bekväm uppstart, men är inte ensam revisionskälla.
-- Profilytan ska vara TAR-1-specifik tills en fungerande vertikal implementation ger evidens för vilka delar som faktiskt bör generaliseras mellan TAR-profiler.
+- Profilytan ska vara AGPR-2-specifik tills en fungerande vertikal implementation ger evidens för vilka delar som faktiskt bör generaliseras mellan AGPR-profiler.
 - Ingen kandidat blir rekommenderad profil förrän den bevarar baslinjens styrkor och klarar template/non-thinking, flerturn, långoutput, prestanda och relevant kontextgate.
 - Tunga modell-/GPU-körningar startas först efter Team Masters uttryckliga godkännande. Offlinevalidering och read-only inventering får köras direkt.
+
+## Verifierade konfigurationsägare
+
+- En transparent repoägd KoboldCpp-launcher äger server-, template-, GPU-, KV-, context- och prestandaflaggor. Lokal exporterad `.kcpps` är en maskinspecifik bekvämlighetskopia efter PASS.
+- SillyTaverns native Connection Manager äger anslutningsprofilens API-läge, provider, URL, modell och settings-preset. Ingen egen generell profile manager ska byggas.
+- För Chat Completion äger `OpenAI Settings`-preseten Prompt Manager-ordning, systemmeddelande, samplers, context och outputbudget. Connection Manager-profilen lagrar inte Text Completion-specifika Instruct-/Context-/System Prompt-fält på denna väg.
+- `LOCAL_AGENTS/AGPR-2-STORYTELLER/agent-2_system_prompt.txt` är revisionskälla för AGPR-2:s systemsemantik. SillyTaverns installerade system-/Prompt Manager-preset är en verifierbar deploymentkopia och får inte utvecklas som en parallell sanningskälla.
+- Den befintliga Text Completion Connection Manager-profilen och dess UI-state bevaras som återställningsväg. Chat Completion-kandidaten skapas separat.
 
 ## Ansvarsfördelning
 

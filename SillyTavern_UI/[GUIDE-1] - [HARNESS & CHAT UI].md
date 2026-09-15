@@ -58,7 +58,7 @@ SillyTavern_UI/_local_runtime/
 └── SillyTavern/
 ```
 
-`_local_runtime/` är Git-ignorerad. Ingen parallell `AGENT-2-STORYTELLER`-yta skapas.
+`_local_runtime/` är Git-ignorerad. Ingen parallell `AGPR-2-STORYTELLER`-yta skapas.
 
 ## Verified completion evidence
 
