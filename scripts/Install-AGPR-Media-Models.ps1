@@ -16,8 +16,10 @@ $appsRoot = Join-Path $AiRoot 'apps'
 $modelsRoot = Join-Path $AiRoot 'models'
 $diaApp = Join-Path $appsRoot 'dia2'
 $diaModel = Join-Path $modelsRoot 'tts\Dia2-1B'
+$mimiModel = Join-Path $modelsRoot 'audio_encoders\mimi'
 $sanaModel = Join-Path $modelsRoot 'diffusers\Sana_Sprint_0.6B_1024px_diffusers'
 $diaWeights = Join-Path $diaModel 'model.safetensors'
+$mimiWeights = Join-Path $mimiModel 'model.safetensors'
 $sanaIndex = Join-Path $sanaModel 'model_index.json'
 $diaExpectedSha256 = 'c398c607b159f024dfb76c6102244afe53b01daf18676af8408a3a0bb97d1c76'
 
@@ -92,6 +94,9 @@ try {
     & $uvExe run hf download 'nari-labs/Dia2-1B' --local-dir $diaModel
     Assert-LastExitCode -Operation 'Dia2-1B snapshot download'
 
+    & $uvExe run hf download 'kyutai/mimi' --local-dir $mimiModel
+    Assert-LastExitCode -Operation 'Mimi codec snapshot download'
+
     & $uvExe run hf download 'Efficient-Large-Model/Sana_Sprint_0.6B_1024px_diffusers' --local-dir $sanaModel
     Assert-LastExitCode -Operation 'SANA-Sprint snapshot download'
 }
@@ -106,6 +111,10 @@ if (-not (Test-Path -LiteralPath $diaWeights -PathType Leaf)) {
 $diaActualSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $diaWeights).Hash.ToLowerInvariant()
 if ($diaActualSha256 -ne $diaExpectedSha256) {
     throw "Dia2 SHA-256 mismatch. Expected $diaExpectedSha256 but got $diaActualSha256."
+}
+
+if (-not (Test-Path -LiteralPath $mimiWeights -PathType Leaf)) {
+    throw "Mimi codec weights are missing: $mimiWeights"
 }
 
 if (-not (Test-Path -LiteralPath $sanaIndex -PathType Leaf)) {
@@ -127,5 +136,6 @@ if ($sanaWeights.Count -lt 3) {
 
 Write-Host 'PASS: Dia2 runtime dependencies are installed.'
 Write-Host 'PASS: Dia2-1B snapshot is complete and SHA-256 verified.'
+Write-Host 'PASS: Mimi codec snapshot is complete.'
 Write-Host "PASS: SANA-Sprint snapshot contains $($sanaWeights.Count) safetensors files and all required components."
 Write-Host 'No model or GPU inference process was started.'
