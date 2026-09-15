@@ -16,5 +16,11 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     throw 'Node.js is unavailable in PATH. Open a fresh PowerShell and rerun if Bootstrap installed Node.js just now.'
 }
 
+$cmdExe = $env:ComSpec
+if (-not $cmdExe -or -not (Test-Path -LiteralPath $cmdExe)) {
+    throw 'Windows cmd.exe could not be resolved from COMSPEC.'
+}
+
 Write-Host "Starting SillyTavern from: $SillyDir"
-Start-Process -FilePath $StartBat -WorkingDirectory $SillyDir | Out-Null
+$argumentLine = '/k "{0}"' -f $StartBat
+Start-Process -FilePath $cmdExe -ArgumentList $argumentLine -WorkingDirectory $SillyDir | Out-Null
