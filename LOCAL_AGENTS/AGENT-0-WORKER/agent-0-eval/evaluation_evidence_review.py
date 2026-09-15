@@ -13,6 +13,7 @@ from evaluation_source_snapshot import verify_source_snapshot, changed_current_s
 ROLE = Path(__file__).resolve().parents[1]
 ROOT = ROLE.parents[1]
 SOURCE_ROOTS = (ROLE / "agent-0-eval", ROLE / "agent-0-eval/schemas", ROLE / "agent-0-tools",
+                ROLE / "agent-0-context",
                 ROOT / "LM-Studio_connections/LM-Studio_for_codex",
                 ROLE / "AG-0-MODEL-Granite_4.1-3B")
 

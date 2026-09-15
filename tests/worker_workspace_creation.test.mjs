@@ -33,6 +33,10 @@ test("new UTF-8 file is atomically published and read back", async t => {
   assert.equal(f.access.state.activeWrites, 0);
   assert.deepEqual(f.events.filter(event => event.type === "tool_handler_receipt")
     .map(event => event.status), ["completed"]);
+  const returned = f.events.find(event => event.type === "tool_handler_returned");
+  assert.equal(returned.status, "completed");
+  assert.equal(returned.after_sha256, receipt.after_sha256);
+  assert.match(returned.result_sha256, /^[0-9a-f]{64}$/);
 });
 
 test("abort before creation commit leaves no file or temporary artifact", async t => {
@@ -64,6 +68,8 @@ test("existing, out-of-scope and invalid content targets are never overwritten",
   await writeFile(join(f.root, "control.txt"), "keep", "utf8");
   await assert.rejects(f.creator.execute({ path: "control.txt", content: "replace" }, f.context), /target_exists/);
   assert.match(await f.creator.execute({ path: "secret.txt", content: "bad" }, f.context), /invalid/);
+  assert.equal(f.events.find(event => event.type === "tool_handler_returned")?.feedback_code,
+    "invalid_request");
   assert.match(await f.creator.execute({ path: "result.txt", content: "\ufeffbad" }, f.context), /invalid/);
   assert.equal(await readFile(join(f.root, "control.txt"), "utf8"), "keep");
   assert.deepEqual((await readdir(f.root)).sort(), ["control.txt"]);

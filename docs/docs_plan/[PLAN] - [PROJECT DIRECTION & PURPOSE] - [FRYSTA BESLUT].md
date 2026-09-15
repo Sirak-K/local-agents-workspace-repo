@@ -55,7 +55,7 @@ Datum: 2026-09-13
 - Verkliga flerstegsprober får använda `store: true` och `previous_response_id`, men LM Studios lagrade chatstate är inte projektets revisionsbevis.
 - Stateful körningar ska projektlogga hela turordningen samt varje `response_id`/`previous_response_id` utan att duplicera evaluation-oberoende råloggar.
 - En kontrollerad eval-run ska kunna knyta ihop exakt instruktion, runtimeförutsättningar, modell-/instansidentitet, effektiv känd konfiguration, rått API-svar, extraherat svar, LM Studio-statistik, tool-evidens, verifieringsutfall, felklass och relevanta källfingerprints.
-- Varje fullständig evalkörning ska avslutas med exakt en `[EVAL] - [<eval-id>] - [REPORT SUMMARY].md` i `model_evaluations/<eval-id>/`. Rapporten syntetiserar och länkar evidence utan att ersätta eller skriva om råa run-filer och avslutas med de fyra obligatoriska ERQER-frågorna för extern förbättringsgranskning.
+- Varje fullständig evalkörning ska avslutas med exakt en `[EVAL] - [<eval-id>] - [REPORT SUMMARY].md` i `model_evaluations/<eval-id>/`. Rapporten syntetiserar och länkar evidence utan att ersätta eller skriva om råa run-filer. Den avslutas med rubriken `Report-summary: Frågor till Claude/Grok/ChatGPT att besvara`, de fyra obligatoriska ERQER-frågeområdena och de sex återkommande beslutsfrågorna i den gemensamma EVAL-designen. Extern review ska mynna ut i ett evidensbundet nästa beslut eller uttryckligt besked att ingen ny körning behövs, inte generera en önskelista utan beslutsvärde.
 
 ## 6. Frontier-evaluatorn In-The-Loop
 

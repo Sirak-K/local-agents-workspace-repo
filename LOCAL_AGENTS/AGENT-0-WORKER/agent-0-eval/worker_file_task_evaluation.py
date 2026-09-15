@@ -24,11 +24,14 @@ from interruptible_prediction import SdkPredictionProcess
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
 from tool_progress_control import ToolProgressControl
+from tool_dispatch_evidence import verify_mutation_readback
 from worker_workspace_validation_control import WorkspaceValidationControl
 from worker_skill_context import expose_skills
 from tool_transport_review import require_transport_review, matching_reviewed_instance
+from completion_claim_verification import observed_task_outcome, verify_completion_claim
 
 SDK_SCRIPT = Path(__file__).with_name("worker_file_task_prediction.mjs")
+BEHAVIOR_SYSTEM_PROMPT = Path(__file__).resolve().parents[1] / "agent-0-context/agent-0-system_prompt.txt"
 ALIAS = "workflow.json"
 EVIDENCE_LIMIT = 1_048_576
 MAX_EVENTS = 4096
@@ -116,7 +119,12 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
     target = prepared["path"]
     workspace = target.parent
     before = prepared["source_sha256"]
-    system_prompt = locked["context_text"] + skill_exposure["system_text"]
+    behavior_system_body = BEHAVIOR_SYSTEM_PROMPT.read_bytes()
+    if (len(behavior_system_body) > 8192 or behavior_system_body.startswith(b"\xef\xbb\xbf")):
+        raise ValueError("behavior system prompt exceeds its source contract")
+    behavior_system_text = behavior_system_body.decode("utf-8")
+    system_prompt = (behavior_system_text + "\n\n" + locked["context_text"]
+                     + skill_exposure["system_text"])
     instruction = prepared["instruction"] + " Initial file SHA-256 for the first conditional write: " + before + ". Use each write receipt's after_sha256 for any subsequent write."
     if diagnostic_contract:
         if diagnostic_contract["request"]["expected_sha256"] != before:
@@ -125,12 +133,14 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
         system_prompt = ""
     if not instruction.strip() or len(instruction.encode("utf-8")) > 4096:
         raise ValueError("instruction exceeds 4096 UTF-8 bytes")
-    source_paths = (Path(__file__), SDK_SCRIPT,
+    source_paths = (Path(__file__), Path(__file__).with_name("completion_claim_verification.py"),
+                BEHAVIOR_SYSTEM_PROMPT, SDK_SCRIPT,
                 Path(__file__).with_name("comfyui_workflow_grading.py"),
                 Path(__file__).with_name("comfyui_workflow_validation.py"),
                 Path(__file__).with_name("json_document_comparison.py"),
                 Path(__file__).with_name("worker_skill_context.py"),
                 Path(__file__).with_name("tool_progress_control.py"),
+                Path(__file__).with_name("tool_dispatch_evidence.py"),
                 Path(__file__).with_name("workflow_rename_fixture.json"),
                 Path(__file__).with_name("workspace_tool_control_contract.json"),
                 Path(__file__).with_name("schemas") / "workflow_ui_0_4.json",
@@ -156,7 +166,9 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
                      "duration_seconds": 60, "stop_budget_seconds": 5,
                      "observation_target_seconds": 0.5, "max_stream_events": MAX_EVENTS,
                      "max_evidence_bytes": EVIDENCE_LIMIT,
-                     "fresh_chat": True, "project_system_prompt_sha256": locked["context"]["sha256"],
+                     "fresh_chat": True,
+                     "behavior_system_prompt_sha256": hashlib.sha256(behavior_system_body).hexdigest(),
+                     "domain_context_sha256": locked["context"]["sha256"],
                      "effective_system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest(),
                      "granite_text_tool_bridge": granite_text_tool_bridge,
                      "diagnostic_mutation_delay_ms": diagnostic_mutation_delay_ms,
@@ -371,15 +383,37 @@ def run(eval_id: str, run_id: str, model: str, granite_text_tool_bridge: bool = 
     except (OSError, ValueError):
         source_stable = False
     evidence["source_verification"] = {"status": "verified" if source_stable else "invalid"}
+    natural_assessable = evidence["state"] == "response_received" and source_stable
+    read_state = tool_state.get("read")
+    write_state = tool_state.get("write")
+    tool_state_assessable = (isinstance(read_state, dict) and isinstance(write_state, dict)
+                             and all(type(read_state.get(key)) is int for key in ("active", "completed"))
+                             and all(type(write_state.get(key)) is int
+                                     for key in ("active", "completed", "committed")))
+    ordered_readback = verify_mutation_readback(evidence["events"], before, after)
+    tool_completed = (tool_state_assessable and read_state["active"] == 0
+                      and write_state["active"] == 0 and read_state["completed"] >= 2
+                      and write_state["completed"] >= 1 and write_state["committed"] >= 1
+                      and ordered_readback["status"] == "verified")
+    task_status = evidence["task_verification"].get("status")
+    observed_outcome = observed_task_outcome(
+        attempt_valid=bool(natural_assessable and tool_state_assessable
+                           and task_status in {"pass", "fail"}),
+        task_passed=bool(tool_completed and task_status == "pass"))
+    claim_verification = verify_completion_claim(
+        terminal.get("content") if terminal else "", observed_outcome, locked["completion_claim"])
+    evidence["task_verification"]["tool_read_write_readback_verified"] = tool_completed
+    evidence["task_verification"]["ordered_mutation_readback"] = ordered_readback
+    evidence["task_verification"]["self_report"] = claim_verification
     if diagnostic_contract:
         evidence["assessment"] = {"status": "transport_diagnostic_not_model_assessment"}
-    elif evidence["state"] == "response_received" and source_stable:
-        tool_completed = (tool_state["read"].get("completed", 0) >= 2
-                          and tool_state["write"].get("completed", 0) == 2)
+    elif observed_outcome != "invalid":
+        passed = observed_outcome == "success" and claim_verification["status"] == "consistent"
         evidence["assessment"] = {
-            "status": evidence["task_verification"]["status"] if tool_completed else "invalid",
+            "status": "pass" if passed else "fail",
             "scope": "static_workflow_title_edit_only",
             "tool_read_write_readback_verified": tool_completed,
+            "self_report_consistency": claim_verification["status"],
             "assisted_diagnostic": granite_text_tool_bridge}
     else:
         evidence["assessment"] = {"status": "invalid_for_unassisted_task_verdict",

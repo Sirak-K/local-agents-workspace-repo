@@ -14,6 +14,9 @@ import evaluation_paths as paths
 
 
 class EvaluationEvidenceReviewTest(unittest.TestCase):
+    def test_model_neutral_context_is_a_supported_runtime_source_owner(self):
+        self.assertIn(review.ROLE / "agent-0-context", review.SOURCE_ROOTS)
+
     def test_hash_identity_and_immutable_assessment_are_checked_without_attributing_fault(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "model_evaluations"

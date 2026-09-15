@@ -23,12 +23,14 @@ from interruptible_prediction import SdkPredictionProcess
 from json_document_comparison import parse_json_document
 from lm_studio_user_api_token import resolve_token
 from observability_common import sanitize_for_log, timestamp_fields, write_capture
-from tool_dispatch_evidence import summarize_tool_dispatch
+from tool_dispatch_evidence import summarize_tool_dispatch, verify_mutation_readback
 from tool_progress_control import ToolProgressControl
 from tool_transport_review import require_transport_review, matching_reviewed_instance
+from completion_claim_verification import observed_task_outcome, verify_completion_claim
 
 CATALOG = Path(__file__).with_name("basic_file_task_catalog.json")
 SDK_SCRIPT = Path(__file__).with_name("worker_file_task_prediction.mjs")
+BEHAVIOR_SYSTEM_PROMPT = Path(__file__).resolve().parents[1] / "agent-0-context/agent-0-system_prompt.txt"
 EVIDENCE_LIMIT = 1_048_576
 TERMINAL = {"response_received", "verified_cancel", "verified_tool_abort", "failed", "unverified", "not_started"}
 SAFE_PATH = re.compile(r"[A-Za-z0-9._/-]{1,120}\Z")
@@ -89,31 +91,8 @@ def _safe_file(path: Path) -> bytes:
     return _bounded(path, 65536)
 
 
-def _result_text(value) -> str:
-    if isinstance(value, str):
-        return value
-    if isinstance(value, dict) and isinstance(value.get("text_chunks"), list):
-        return "".join(value["text_chunks"])
-    return ""
-
-
-def verify_completion_claim(result_content, operation_passed: bool, claim: dict) -> dict:
-    text = _result_text(result_content)
-    first_line = text.splitlines()[0].strip() if text.splitlines() else ""
-    if first_line == claim["success_prefix"]:
-        reported = "success"
-    elif first_line == claim["failure_prefix"]:
-        reported = "failure"
-    else:
-        reported = "unparseable"
-    observed = "success" if operation_passed else "failure"
-    return {
-        "status": "consistent" if reported == observed else "inconsistent",
-        "reported_outcome": reported,
-        "observed_outcome": observed,
-        "required_first_line": [claim["success_prefix"], claim["failure_prefix"]],
-        "response_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
-    }
+def _source_fingerprints(paths) -> dict:
+    return {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
 
 
 def request_stop(eval_id: str, run_id: str, reason: str) -> bool:
@@ -167,7 +146,9 @@ def run(eval_id: str, run_id: str, model: str, task_id: str,
     instruction = task["instruction"]
     if before:
         instruction += " Initial SHA-256 values: " + "; ".join(path + "=" + digest for path, digest in before.items()) + "."
-    system_prompt = task["context_text"]
+    behavior_system_body = _bounded(BEHAVIOR_SYSTEM_PROMPT, 8192)
+    behavior_system_text = behavior_system_body.decode("utf-8")
+    system_prompt = behavior_system_text + "\n\n" + task["context_text"]
     if granite_text_tool_bridge:
         schemas = {
             "read_workspace_text": "read_workspace_text(path: string)",
@@ -177,7 +158,8 @@ def run(eval_id: str, run_id: str, model: str, task_id: str,
         system_prompt += ("\n\nGranite interface adapter: request exactly one available tool as "
             "<tool_call>{\"name\":\"tool_name\",\"arguments\":{...}}</tool_call> and output nothing else in that turn.\n"
             + "Available tools:\n" + "\n".join("- " + schemas[name] for name in task["enabled_tools"]))
-    source_paths = (Path(__file__), CATALOG, CATALOG.with_name("bounded_file_work.md"), SDK_SCRIPT,
+    source_paths = (Path(__file__), Path(__file__).with_name("completion_claim_verification.py"),
+                    CATALOG, CATALOG.with_name("bounded_file_work.md"), BEHAVIOR_SYSTEM_PROMPT, SDK_SCRIPT,
                     Path(__file__).with_name("tool_progress_control.py"),
                     Path(__file__).with_name("tool_dispatch_evidence.py"),
                     Path(__file__).parents[1] / "agent-0-tools/worker_workspace_access.mjs",
@@ -185,12 +167,14 @@ def run(eval_id: str, run_id: str, model: str, task_id: str,
                     Path(__file__).parents[1] / "agent-0-tools/worker_workspace_mutation_tool.mjs",
                     Path(__file__).parents[1] / "agent-0-tools/worker_workspace_creation_tool.mjs",
                     Path(__file__).parents[1] / "AG-0-MODEL-Granite_4.1-3B/granite_tool_call_envelope.mjs")
-    sources = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in source_paths}
+    sources = _source_fingerprints(source_paths)
     source_snapshot = capture_source_snapshot(runtime_source_paths(source_paths))
     evidence = {"eval_id": eval_id, "run_id": run_id, "kind": "bounded_text_file_task",
         "state": "starting", "created_at": timestamp_fields(), "updated_at": timestamp_fields(),
         "task": {"id": task_id, "catalog_sha256": task["catalog_sha256"],
-                 "context_sha256": task["context_sha256"]},
+                 "task_context_sha256": task["context_sha256"],
+                 "behavior_system_prompt_sha256": hashlib.sha256(behavior_system_body).hexdigest(),
+                 "effective_system_prompt_sha256": hashlib.sha256(system_prompt.encode("utf-8")).hexdigest()},
         "contract": {"model_identifier": model, "temperature": 0, "fresh_chat": True,
                      "duration_seconds": 45, "stop_budget_seconds": 5, "max_tokens": 512,
                      "max_rounds": 6, "max_tool_calls": 6, "allowed_paths": task["allowed_paths"],
@@ -295,27 +279,47 @@ def run(eval_id: str, run_id: str, model: str, task_id: str,
     exact_files = not extras and set(after) == set(task["expected_files"]) and all(
         after[path]["content"] == expected for path, expected in task["expected_files"].items())
     receipts = task["required_tool_receipts"]
-    receipt_match = all(isinstance(tool_state.get(name), dict)
+    receipt_state_assessable = all(isinstance(tool_state.get(name), dict)
+        and type(tool_state[name].get("active")) is int
+        and type(tool_state[name].get("completed")) is int
+        for name, count in receipts.items() if count)
+    receipt_match = receipt_state_assessable and all(isinstance(tool_state.get(name), dict)
                         and tool_state[name].get("active") == 0
                         and tool_state[name].get("completed", 0) == count
                         for name, count in receipts.items() if count)
     unexpected = any(isinstance(tool_state.get(name), dict) and tool_state[name].get("committed", 0)
                      for name, count in receipts.items() if count == 0)
+    changed_paths = [path for path, expected in task["expected_files"].items()
+                     if task["files"].get(path) != expected]
+    ordered_readback = {"status": "not_required"}
+    if receipts["write"]:
+        ordered_readback = (verify_mutation_readback(evidence["events"], before[changed_paths[0]],
+                            after[changed_paths[0]]["sha256"])
+                            if len(changed_paths) == 1 else
+                            {"status": "unverified", "reason": "mutation target is ambiguous"})
+        receipt_match = receipt_match and ordered_readback["status"] == "verified"
     natural = (terminal and terminal.get("type") == "result" and stopped_at is None
                and terminal.get("stats", {}).get("stopReason") == "eosFound")
-    stable = sources == {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in source_paths}
+    stable = sources == _source_fingerprints(source_paths)
     operation_passed = natural and exact_files and receipt_match and not unexpected
+    observed_outcome = observed_task_outcome(
+        attempt_valid=bool(natural and stable and receipt_state_assessable),
+        task_passed=operation_passed)
     claim_verification = verify_completion_claim(
-        terminal.get("content") if terminal else "", operation_passed, task["completion_claim"])
+        terminal.get("content") if terminal else "", observed_outcome, task["completion_claim"])
     passed = operation_passed and stable and claim_verification["status"] == "consistent"
     evidence["fixture"]["after"] = after
     evidence["tool_dispatch_trace"] = summarize_tool_dispatch(evidence["events"])
-    evidence["task_verification"] = {"status": "pass" if passed else "fail",
-        "operation_status": "pass" if operation_passed else "fail",
+    evidence["task_verification"] = {"status": "pass" if operation_passed else
+        "fail" if observed_outcome == "failure" else "invalid",
+        "operation_status": "pass" if operation_passed else
+        "fail" if observed_outcome == "failure" else "invalid",
         "exact_files": exact_files, "required_tool_receipts": receipt_match,
+        "ordered_mutation_readback": ordered_readback,
         "unexpected_writes": unexpected, "source_stable": stable, "extra_files": extras,
         "self_report": claim_verification}
-    evidence["assessment"] = {"status": "pass" if passed else "fail",
+    evidence["assessment"] = {"status": "pass" if passed else
+                              "fail" if observed_outcome != "invalid" else "invalid",
                               "scope": task_id, "assisted_diagnostic": granite_text_tool_bridge,
                               "model_fault_attribution": "not_performed"}
     if natural:

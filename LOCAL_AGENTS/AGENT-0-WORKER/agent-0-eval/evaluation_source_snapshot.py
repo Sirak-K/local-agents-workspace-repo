@@ -39,6 +39,7 @@ def installed_runtime_identity() -> dict:
 def runtime_source_paths(seeds: Iterable[Path]) -> list[Path]:
     """Resolve project-local Python/JS imports, excluding third-party installed code."""
     owners = (ROLE_ROOT / "agent-0-eval", ROLE_ROOT / "agent-0-tools",
+              ROLE_ROOT / "agent-0-context",
               ROLE_ROOT / "AG-0-MODEL-Granite_4.1-3B",
               PROJECT_ROOT / "LM-Studio_connections/LM-Studio_for_codex",
               PROJECT_ROOT / "LM-Studio_connections/LM-Studio_observability",

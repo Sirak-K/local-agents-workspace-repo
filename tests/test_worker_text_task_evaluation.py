@@ -1,5 +1,6 @@
 """Exercise exact disk grading and receipt gates for bounded text tasks."""
 from pathlib import Path
+import hashlib
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -51,8 +52,17 @@ class TextTaskEvaluationTest(unittest.TestCase):
                              "validator": {"active": 0, "completed": 0}}
                 else:
                     path = workspace / "settings.txt"
-                    path.write_text(path.read_text(encoding="utf-8").replace("retries=2", "retries=3"),
-                                    encoding="utf-8", newline="")
+                    if self.position == 3:
+                        return {"type": "tool_handler_receipt", "name": "read_workspace_text",
+                                "status": "completed", "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                    if self.position == 4:
+                        path.write_text(path.read_text(encoding="utf-8").replace("retries=2", "retries=3"),
+                                        encoding="utf-8", newline="")
+                        return {"type": "tool_handler_receipt", "name": "replace_workspace_text",
+                                "status": "completed", "after_sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                    if self.position == 5:
+                        return {"type": "tool_handler_receipt", "name": "read_workspace_text",
+                                "status": "completed", "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
                     state = {"create": None, "read": {"active": 0, "completed": 2},
                              "write": {"active": 0, "completed": 1, "committed": 1},
                              "validator": {"active": 0, "completed": 0}}
@@ -96,13 +106,65 @@ class TextTaskEvaluationTest(unittest.TestCase):
     def test_completion_claim_requires_exact_first_line_and_matches_observed_state(self):
         claim = {"success_prefix": "STATUS=SUCCESS", "failure_prefix": "STATUS=FAILED"}
         self.assertEqual("consistent",
-            runner.verify_completion_claim("STATUS=SUCCESS\nDone", True, claim)["status"])
+            runner.verify_completion_claim("STATUS=SUCCESS\nDone", "success", claim)["status"])
         self.assertEqual("consistent",
-            runner.verify_completion_claim("STATUS=FAILED\nNo write", False, claim)["status"])
+            runner.verify_completion_claim("STATUS=FAILED\nNo write", "failure", claim)["status"])
         self.assertEqual("inconsistent",
-            runner.verify_completion_claim("The task succeeded.", True, claim)["status"])
+            runner.verify_completion_claim("The task succeeded.", "success", claim)["status"])
         self.assertEqual("inconsistent",
-            runner.verify_completion_claim("STATUS=SUCCESS", False, claim)["status"])
+            runner.verify_completion_claim("STATUS=SUCCESS", "failure", claim)["status"])
+
+    def test_source_drift_invalidates_an_otherwise_successful_attempt(self):
+        class SdkFixture:
+            def __init__(self, token, command, worker_script):
+                self.command, self.position = command, 0
+
+            def next_event(self, *_):
+                self.position += 1
+                if self.position == 1:
+                    return {"type": "model_bound", "model_info": {"identifier": "fixture"}}
+                if self.position == 2:
+                    return {"type": "round_started", "index": 0}
+                (Path(self.command["workspace_root"]) / "result.txt").write_text(
+                    "worker_ref=K7-42\nencoding=utf-8\n", encoding="utf-8", newline="")
+                return {"type": "result", "content": "STATUS=SUCCESS\nVerified.",
+                        "stats": {"stopReason": "eosFound"},
+                        "tool_state": {"create": {"active": 0, "completed": 1, "committed": 1},
+                                       "read": {"active": 0, "completed": 0},
+                                       "write": {"active": 0, "completed": 0, "committed": 0}}}
+
+            def send(self, command):
+                pass
+
+            def cancel(self):
+                pass
+
+            def close(self):
+                pass
+
+        real_fingerprints = runner._source_fingerprints
+        calls = 0
+
+        def drifting(paths):
+            nonlocal calls
+            values = real_fingerprints(paths)
+            calls += 1
+            if calls > 1:
+                values[next(iter(values))] = "0" * 64
+            return values
+
+        with tempfile.TemporaryDirectory() as temporary:
+            eval_root = Path(temporary) / "model_evaluations"
+            eval_root.mkdir()
+            with patch.object(evaluation_paths, "MODEL_EVALUATIONS_ROOT", eval_root), \
+                    patch.object(runner, "resolve_token", return_value="fixture-token"), \
+                    patch.object(runner, "SdkPredictionProcess", SdkFixture), \
+                    patch.object(runner, "_source_fingerprints", side_effect=drifting):
+                evidence = runner.run("EVAL_fixture", "c" * 32, "fixture", "file_creation_readback")
+        self.assertEqual("pass", evidence["task_verification"]["status"])
+        self.assertFalse(evidence["task_verification"]["source_stable"])
+        self.assertEqual("unassessable", evidence["task_verification"]["self_report"]["status"])
+        self.assertEqual("invalid", evidence["assessment"]["status"])
 
     def test_dispatch_trace_keeps_native_and_adapter_stages_separate(self):
         events = [
@@ -117,6 +179,9 @@ class TextTaskEvaluationTest(unittest.TestCase):
             {"data": {"type": "tool_handler_receipt", "call_id": 1,
                       "dispatch_origin": "native_sdk", "name": "read_workspace_text",
                       "status": "completed"}},
+            {"data": {"type": "tool_handler_returned", "call_id": 1,
+                      "dispatch_origin": "native_sdk", "name": "read_workspace_text",
+                      "status": "completed", "result_sha256": "a" * 64}},
             {"data": {"type": "adapter_tool_request_parsed", "call_id": 1,
                       "name": "replace_workspace_text", "raw_content": "<tool_call>"}},
             {"data": {"type": "tool_handler_entered", "call_id": 1,
@@ -133,6 +198,8 @@ class TextTaskEvaluationTest(unittest.TestCase):
         self.assertEqual("native_sdk", traces[1]["dispatch_origin"])
         self.assertEqual("allowed", traces[1]["guard_decision"])
         self.assertEqual("completed", traces[1]["receipt_status"])
+        self.assertEqual("completed", traces[1]["handler_return_status"])
+        self.assertEqual("a" * 64, traces[1]["handler_result_sha256"])
 
 
 if __name__ == "__main__":

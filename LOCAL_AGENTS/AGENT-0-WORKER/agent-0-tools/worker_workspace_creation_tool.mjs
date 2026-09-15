@@ -1,11 +1,16 @@
 /** Create one new bounded UTF-8 workspace file and independently read it back. */
 import { link, open, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 export function workerWorkspaceCreationTool({ tool, z, access, controllerSignal, record }) {
   if (!access || !controllerSignal) throw new Error("invalid_workspace_creation_scope");
   const state = { active: 0, completed: 0, committed: 0, aborted: 0, denied: 0 };
+  const returned = (trace, status, content, details = {}) => {
+    record({ type: "tool_handler_returned", ...trace, status,
+      result_sha256: createHash("sha256").update(content, "utf8").digest("hex"), ...details });
+    return content;
+  };
   const execute = async ({ path, content }, context) => {
     const trace = { call_id: Number.isInteger(context?.callId) ? context.callId : null,
       dispatch_origin: context?.dispatchOrigin || "native_sdk", name: "create_workspace_text" };
@@ -20,7 +25,8 @@ export function workerWorkspaceCreationTool({ tool, z, access, controllerSignal,
       state.denied++;
       record({ type: "tool_creation_denied", path: String(path).slice(0, 120) });
       record({ type: "tool_handler_receipt", ...trace, status: "denied" });
-      return "Error: create request is unavailable or invalid.";
+      return returned(trace, "feedback", "Error: create request is unavailable or invalid.",
+        { feedback_code: "invalid_request" });
     }
     const bytes = Buffer.from(content, "utf8");
     let temporary = null;
@@ -60,7 +66,10 @@ export function workerWorkspaceCreationTool({ tool, z, access, controllerSignal,
         output_bytes: actual.bytes.length });
       record({ type: "tool_handler_receipt", ...trace, status: "completed",
         after_sha256: actual.sha256 });
-      return JSON.stringify({ path, after_sha256: actual.sha256, output_bytes: actual.bytes.length });
+      const result = JSON.stringify({ path, after_sha256: actual.sha256,
+        output_bytes: actual.bytes.length });
+      return returned(trace, "completed", result,
+        { after_sha256: actual.sha256, output_bytes: actual.bytes.length });
     } catch (error) {
       if (signal.aborted && !committed) {
         state.aborted++;

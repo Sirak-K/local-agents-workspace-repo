@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "purpose": "Technology-independent WORKER structured edit with explicit evaluation context",
   "tasks": [
     {
@@ -47,7 +47,7 @@
     },
     {
       "id": "evidence_selected_limit_task",
-      "instruction": "Resume the supplied project state by returning only a JSON array of four objects in execution order. Each object must contain exactly action and target. Include every required action once, use the exact action names update_expectation, run_focused_test, implement, run_focused_test, and do not include protected or already completed work.",
+      "instruction": "Resume the supplied project state by returning only a JSON array of four objects in execution order. Each object must contain exactly action and target. Include every required action once, use the exact action names update_expectation, run_focused_test, implement, run_focused_test, and do not include protected or already completed work. For update_expectation and implement, target the function being changed; for run_focused_test, target the focused test function being run.",
       "context": {
         "file": "roadmap_resume_fixture.md",
         "role": "system",
@@ -63,7 +63,7 @@
         {"action": "update_expectation", "target": "test_validate_record"},
         {"action": "run_focused_test", "target": "test_validate_record"},
         {"action": "implement", "target": "write_summary"},
-        {"action": "run_focused_test", "target": "write_summary"}
+        {"action": "run_focused_test", "target": "test_write_summary"}
       ]
     }
   ]

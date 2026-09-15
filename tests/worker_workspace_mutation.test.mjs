@@ -37,12 +37,22 @@ test("one hash-conditional replacement commits and independently reads back", as
   assert.equal(f.writer.state.completed, 1);
   assert.equal(f.writer.state.committed, 1);
   assert.equal(f.access.state.activeWrites, 0);
+  const returned = f.events.find(event => event.type === "tool_handler_returned");
+  assert.equal(returned.status, "completed");
+  assert.equal(returned.after_sha256, receipt.after_sha256);
+  assert.match(returned.result_sha256, /^[0-9a-f]{64}$/);
   assert.deepEqual((await readdir(f.root)).sort(), [alias]);
 });
 
 test("wrong hash, ambiguous match, denied path and exhausted budget never mutate", async t => {
   const f = await fixture(t, { maxReadCalls: 8, maxTotalReadBytes: 524288 });
+  assert.match(await f.writer.execute({ ...replacement, expected_sha256: "0".repeat(63) }, f.context),
+    /exactly 64 lowercase hexadecimal/);
+  assert.equal(f.events.find(event => event.type === "tool_handler_returned")?.feedback_code,
+    "invalid_expected_sha256");
   assert.match(await f.writer.execute({ ...replacement, expected_sha256: "0".repeat(64) }, f.context), /hash_mismatch/);
+  assert.equal(f.events.filter(event => event.type === "tool_handler_returned")
+    .find(event => event.feedback_code === "workspace_hash_mismatch")?.status, "feedback");
   assert.match(await f.writer.execute({ ...replacement, old_text: '"' }, f.context), /not unique/);
   assert.match(await f.writer.execute({ ...replacement, path: "../workflow.json" }, f.context), /invalid/);
   assert.equal(await readFile(join(f.root, alias), "utf8"), before);

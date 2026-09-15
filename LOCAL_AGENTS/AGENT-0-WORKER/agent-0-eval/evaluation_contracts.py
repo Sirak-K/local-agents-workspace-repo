@@ -27,7 +27,7 @@ def _utf8_bytes(path: Path, limit: int) -> bytes:
 def task_contract(identifier: str) -> dict:
     raw = _utf8_bytes(CATALOG, MAX_CATALOG_BYTES)
     catalog = parse_json_document(raw.decode("utf-8"))
-    if not isinstance(catalog, dict) or catalog.get("version") != 1 or not isinstance(catalog.get("tasks"), list):
+    if not isinstance(catalog, dict) or catalog.get("version") != 2 or not isinstance(catalog.get("tasks"), list):
         raise ValueError("unsupported task catalog")
     tasks = catalog["tasks"]
     if (not 1 <= len(tasks) <= 8 or not all(isinstance(item, dict) for item in tasks)

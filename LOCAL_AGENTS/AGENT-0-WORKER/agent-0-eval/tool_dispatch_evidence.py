@@ -31,6 +31,8 @@ def summarize_tool_dispatch(events: list[dict]) -> list[dict]:
             "guard_decision": None,
             "handler_name": None,
             "receipt_status": None,
+            "handler_return_status": None,
+            "handler_result_sha256": None,
         })
         if kind == "tool_request_started":
             chain["request_started"] = True
@@ -59,4 +61,49 @@ def summarize_tool_dispatch(events: list[dict]) -> list[dict]:
             chain["handler_name"] = event.get("name")
         elif kind == "tool_handler_receipt":
             chain["receipt_status"] = event.get("status")
+        elif kind == "tool_handler_returned":
+            chain["handler_return_status"] = event.get("status")
+            chain["handler_result_sha256"] = event.get("result_sha256")
     return [chains[key] for key in sorted(chains)]
+
+
+def verify_mutation_readback(events: list[dict], initial_sha256: str, final_sha256: str,
+                             mutation_name: str = "replace_workspace_text") -> dict:
+    """Verify initial read, completed mutation and final matching read in event order."""
+    mutation_indices = []
+    mutation_sha256 = None
+    for index, entry in enumerate(events):
+        event = entry.get("data", entry) if isinstance(entry, dict) else {}
+        if (event.get("type") == "tool_handler_receipt"
+                and event.get("name") == mutation_name
+                and event.get("status") == "completed"):
+            mutation_indices.append(index)
+            mutation_sha256 = event.get("after_sha256")
+    if not mutation_indices:
+        return {"status": "unverified", "reason": "no completed mutation receipt"}
+    first_mutation, final_mutation = mutation_indices[0], mutation_indices[-1]
+    initial_read = next((index for index, entry in enumerate(events[:first_mutation])
+        if (entry.get("data", entry) if isinstance(entry, dict) else {}).get("type") == "tool_handler_receipt"
+        and (entry.get("data", entry) if isinstance(entry, dict) else {}).get("name") == "read_workspace_text"
+        and (entry.get("data", entry) if isinstance(entry, dict) else {}).get("status") == "completed"
+        and (entry.get("data", entry) if isinstance(entry, dict) else {}).get("sha256") == initial_sha256), None)
+    if initial_read is None:
+        return {"status": "unverified", "reason": "no matching initial read before mutation",
+                "mutation_event_index": final_mutation, "final_sha256": final_sha256}
+    if mutation_sha256 != final_sha256:
+        return {"status": "unverified", "reason": "final mutation receipt does not match disk",
+                "mutation_event_index": final_mutation, "mutation_sha256": mutation_sha256,
+                "final_sha256": final_sha256}
+    for index, entry in enumerate(events[final_mutation + 1:], final_mutation + 1):
+        event = entry.get("data", entry) if isinstance(entry, dict) else {}
+        if (event.get("type") == "tool_handler_receipt"
+                and event.get("name") == "read_workspace_text"
+                and event.get("status") == "completed"
+                and event.get("sha256") == final_sha256):
+            return {"status": "verified", "initial_read_event_index": initial_read,
+                    "mutation_event_index": final_mutation, "readback_event_index": index,
+                    "mutation_sha256": mutation_sha256,
+                    "final_sha256": final_sha256}
+    return {"status": "unverified", "reason": "no matching read receipt after final mutation",
+            "mutation_event_index": final_mutation, "mutation_sha256": mutation_sha256,
+            "final_sha256": final_sha256}

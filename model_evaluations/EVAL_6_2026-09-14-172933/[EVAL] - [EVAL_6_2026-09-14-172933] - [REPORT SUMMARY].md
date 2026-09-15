@@ -63,11 +63,22 @@ För framtida uppgifter ska inputstorlek inklusive tänkbara tool-svar kontrolle
 
 Riktade efterfixkontroller: Node-mutationstester 10/10 PASS, Python file-task 2/2 PASS, ComfyUI-grading 3/3 PASS och skillkontroller 2/2 PASS; texttask 4/4 och progression 2/2 PASS. Det är regressionsbevis för berörda kodvägar, inte modellpoäng eller full suite. Vid rapportens avslut var Qwen avlastad, `lms ps --json` tom och LM Studio-servern stoppad.
 
-## EXTERNAL-REVIEW-QUESTIONS-EVAL-RESULT [ERQER]
+## Report-summary: Frågor till Claude/Grok/ChatGPT att besvara
+
+**EXTERNAL-REVIEW-QUESTIONS-EVAL-RESULT [ERQER] — fyra obligatoriska frågeområden:**
 
 1. Vad kunde jag, **Codex som Frontier-evaluator**, ha gjort mycket bättre eller annorlunda för att maximera beslutsvärdet utan extra låg-ROI-körningar? Granska särskilt 4096-förvalet, Round 1-diagnostikens LF-skillnad, Round 2-gradern och när jag borde ha stoppat ComfyUI-kedjan.
 2. Hur kan framtida kandidater ge mer lönsamma, användbara och försvarbara insikter på **modellspecifik respektive modellneutral nivå** utan att harness-, instruktion- eller toolbrister blir modellfel?
 3. Hur kan framtida evals förbättras **icke-kosmetiskt och icke-trivialt** för verklighetsnära 0-WORKER-/ComfyUI-arbete? Vilken minsta ändring av kontext, verktygsgränssnitt, verifiering eller uppgiftsordning ger tydligt nytt beslutsvärde?
 4. Vilka övriga **mycket höga eller höga ROI-insikter** bör Codex adressera eller implementera som inte täcks ovan? Identifiera gärna också vad som **inte** bör utredas vidare nu.
 
-För varje rekommendation: ange konkret evidens, rätt ägare/lager, förväntad nytta, tradeoff och minsta verifiering. Ifrågasätt även denna rapports tolkningar; en extern reviewers godkännande är inte i sig orsaksbevis.
+**Återkommande beslutsfrågor — besvara även dessa sex konkret för EVAL 6:**
+
+1. Vilka slutsatser ovan stöds av angivna run-id:n och rå evidens, och vilka är Codex tolkningar? Vilka påståenden bör sänkas, rättas eller lämnas `ej verifierade`? Om du inte kan öppna rå evidens, säg uttryckligen vilka delar du endast kan bedöma utifrån rapporten.
+2. Kunde en korrekt utförd uppgift ha underkänts av instruktion, grader, kontext eller harness; eller kunde en ofullständig uppgift felaktigt ha fått PASS? Granska särskilt Round 2:s `write_summary`/`test_write_summary`, Round 1:s extra LF-byte och ComfyUI-runnens `invalid` kontra den faktiska filen.
+3. Vilka negativa fynd kan bevisligen tillskrivas enbart Qwen? Vilka måste hållas öppna eller ägas av evaldesign, konfiguration, LM Studio, SDK, tools eller miljö? Påstå inte ensam modellorsak utifrån ett missat uppgiftsmål.
+4. Vilka **oberoende återstående** uppgifter i Round 4–8 kan fortfarande ge högt beslutsvärde trots den missade tvåfils- och titeluppgiften? Var det rätt att stoppa just fler identiska titelprov, men för brett att pausa hela 8×3? Specificera vilken uppgiftsgren som bör fortsätta eller stoppas och varför.
+5. Vilken **enda minsta ändring eller nästa körning** ger störst beslutsvärde för Team Masters verkliga ComfyUI-WORKER-användning? Ange exakta villkor, resurs-/stoppbudget, möjliga utfall och vilket konkret beslut varje utfall skulle ändra.
+6. Vilka byggen, felsökningar, retries eller nya evals bör vi uttryckligen **inte** göra nu därför att de saknar nytt beslutsvärde, är redundanta eller riskerar regression?
+
+**Svarskrav:** Börja med det beslut du rekommenderar **nu** och vilket minsta nya bevis som skulle ändra det. Ge högst tre prioriterade rekommendationer; för varje: konkret evidens/run-id, rätt ägare/lager, förväntad nytta, risk eller kostnad, minsta verifiering och utfall → beslut. `Ingen ny körning behövs`, `okänt` och `rå evidens saknas` är giltiga slutsatser. Ifrågasätt rapportens tolkningar utan att skriva om originalbedömningar eller fylla evidensluckor med antaganden.

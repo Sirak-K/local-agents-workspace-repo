@@ -1,6 +1,6 @@
 # ssirak@hotmail.com [1 ÅTERSTÄLLNING]
 
-### 5h Reset: 18:50
+### 5h Reset: 23:55
 
 #### Weekly Left (R: 09-20): 25%
 
@@ -36,7 +36,7 @@ ClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeCl
 
 # ssirak@hotmail.com
 
-### 5h Reset: 04:00
+### 5h Reset: 23:10
 
 # haweykofficial@gmail.com
 
@@ -44,7 +44,7 @@ ClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeClaudeCl
 
 # sirak.dev@gmail.com
 
-### 5h Reset: 21:30
+### 5h Reset: 23:00
 
 # Sirak.H.Kahsay@gmail.com
 

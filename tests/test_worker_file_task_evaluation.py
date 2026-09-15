@@ -1,5 +1,6 @@
 """Exercise the real file runner/grader with simulated SDK dispatch evidence."""
 import json
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -79,14 +80,29 @@ class FileTaskEvaluationTest(unittest.TestCase):
                 if self.position == 2:
                     return {"type": "round_started", "index": 0}
                 path = Path(self.command["workspace_root"]) / "workflow.json"
-                text = path.read_text(encoding="utf-8")
-                text = text.replace('"title": "OUTPUT WIDTH"', '"title": "REFERENCE WIDTH CONTROL"')
-                text = text.replace('"title": "OUTPUT HEIGHT"', '"title": "REFERENCE HEIGHT CONTROL"')
-                path.write_text(text, encoding="utf-8")
-                return {"type": "result", "content": "Done", "stats": {"stopReason": "eosFound"},
+                if not self.missing_receipts and self.position == 3:
+                    return {"type": "tool_handler_receipt", "name": "read_workspace_text",
+                            "status": "completed", "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                if not self.missing_receipts and self.position == 4:
+                    text = path.read_text(encoding="utf-8")
+                    text = text.replace('"title": "OUTPUT WIDTH"', '"title": "REFERENCE WIDTH CONTROL"')
+                    text = text.replace('"title": "OUTPUT HEIGHT"', '"title": "REFERENCE HEIGHT CONTROL"')
+                    path.write_text(text, encoding="utf-8")
+                    return {"type": "tool_handler_receipt", "name": "replace_workspace_text",
+                            "status": "completed", "after_sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                if not self.missing_receipts and self.position == 5:
+                    return {"type": "tool_handler_receipt", "name": "read_workspace_text",
+                            "status": "completed", "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                if self.missing_receipts:
+                    text = path.read_text(encoding="utf-8")
+                    text = text.replace('"title": "OUTPUT WIDTH"', '"title": "REFERENCE WIDTH CONTROL"')
+                    text = text.replace('"title": "OUTPUT HEIGHT"', '"title": "REFERENCE HEIGHT CONTROL"')
+                    path.write_text(text, encoding="utf-8")
+                return {"type": "result", "content": "STATUS=SUCCESS\nVerified.",
+                        "stats": {"stopReason": "eosFound"},
                         "tool_state": {} if self.missing_receipts else {
                             "read": {"active": 0, "completed": 2},
-                            "write": {"active": 0, "completed": 2, "committed": 2}}}
+                            "write": {"active": 0, "completed": 1, "committed": 1}}}
 
             def send(self, command):
                 self.approved = command == {"command": "continue"}
@@ -113,6 +129,9 @@ class FileTaskEvaluationTest(unittest.TestCase):
                     self.assertTrue(SdkFixture.last.command["system_prompt"])
                     self.assertEqual(skill_mode, evidence["skill_exposure"]["mode"])
                     self.assertEqual("verified", evidence["source_verification"]["status"])
+                    self.assertIn("tool_dispatch_evidence.py", evidence["source_fingerprints"])
+                    self.assertIn("behavior_system_prompt_sha256", evidence["contract"])
+                    self.assertIn("Treat tool receipts", SdkFixture.last.command["system_prompt"])
                     self.assertIn(evidence["fixture"]["sha256_before"], SdkFixture.last.command["instruction"])
                     self.assertEqual("pass", evidence["task_verification"]["status"])
                     if missing:
@@ -122,8 +141,53 @@ class FileTaskEvaluationTest(unittest.TestCase):
                         self.assertEqual("response_received", evidence["state"])
                         self.assertEqual("pass", evidence["assessment"]["status"])
                         self.assertTrue(evidence["assessment"]["tool_read_write_readback_verified"])
+                        self.assertEqual("consistent",
+                                         evidence["task_verification"]["self_report"]["status"])
+                        self.assertEqual("verified",
+                                         evidence["task_verification"]["ordered_mutation_readback"]["status"])
                     with self.assertRaises(FileExistsError):
                         runner.run("EVAL_fixture", "a" * 32, "fixture")
+
+    def test_partial_artifact_with_false_success_is_a_valid_failed_attempt(self):
+        class PartialFixture:
+            def __init__(self, token, command, worker_script):
+                self.command, self.position = command, 0
+
+            def next_event(self, *_):
+                self.position += 1
+                if self.position == 1:
+                    return {"type": "model_bound", "model_info": {"identifier": "fixture"}}
+                if self.position == 2:
+                    return {"type": "round_started", "index": 0}
+                path = Path(self.command["workspace_root"]) / "workflow.json"
+                text = path.read_text(encoding="utf-8").replace(
+                    '"title": "OUTPUT WIDTH"', '"title": "REFERENCE WIDTH CONTROL"')
+                path.write_text(text, encoding="utf-8")
+                return {"type": "result", "content": "STATUS=SUCCESS\nCompleted.",
+                        "stats": {"stopReason": "eosFound"},
+                        "tool_state": {"read": {"active": 0, "completed": 0},
+                                       "write": {"active": 0, "completed": 1, "committed": 1}}}
+
+            def send(self, command):
+                pass
+
+            def cancel(self):
+                pass
+
+            def close(self):
+                pass
+
+        with tempfile.TemporaryDirectory() as temporary:
+            eval_root = Path(temporary) / "model_evaluations"
+            eval_root.mkdir()
+            with patch.object(eval_paths, "MODEL_EVALUATIONS_ROOT", eval_root), \
+                    patch.object(runner, "resolve_token", return_value="fixture-token"), \
+                    patch.object(runner, "SdkPredictionProcess", PartialFixture):
+                evidence = runner.run("EVAL_fixture", "b" * 32, "fixture")
+        self.assertEqual("response_received", evidence["state"])
+        self.assertEqual("fail", evidence["task_verification"]["status"])
+        self.assertEqual("inconsistent", evidence["task_verification"]["self_report"]["status"])
+        self.assertEqual("fail", evidence["assessment"]["status"])
 
 
 if __name__ == "__main__":

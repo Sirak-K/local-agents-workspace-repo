@@ -47,11 +47,13 @@ def _ordinary_path(path: Path) -> None:
 def load_rename_fixture() -> dict:
     manifest_body = _read_bounded(MANIFEST, MAX_MANIFEST_BYTES)
     manifest = _parse_json(manifest_body)
-    if (not isinstance(manifest, dict) or manifest.get("version") != 1
+    if (not isinstance(manifest, dict) or manifest.get("version") != 2
             or manifest.get("source") != SNAPSHOT.relative_to(PROJECT_ROOT).as_posix()
             or manifest.get("workspace_alias") != "workflow.json"
             or manifest.get("context", {}).get("file") != CONTEXT.relative_to(PROJECT_ROOT).as_posix()
-            or manifest["context"].get("role") != "system"):
+            or manifest["context"].get("role") != "system"
+            or manifest.get("completion_claim") != {
+                "success_prefix": "STATUS=SUCCESS", "failure_prefix": "STATUS=FAILED"}):
         raise ValueError("unsupported workflow fixture contract")
     for path in (SNAPSHOT.parent, SNAPSHOT, CONTEXT.parent, CONTEXT):
         _ordinary_path(path)
