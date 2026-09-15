@@ -17,13 +17,19 @@ Context:         8192
 Streaming:       ON
 ```
 
-For the current sprint:
+Restore the observed pre-change Advanced Formatting state:
 
-- leave **Advanced Formatting / Instruct Mode OFF**,
-- do not enable metadata-derived Context/Instruct templates,
-- do not add manual ChatML/Jinja/non-thinking overrides,
-- do not use the experimental Chat Completion path introduced during troubleshooting,
-- keep the normal KoboldCpp text launcher as the reference runtime.
+```text
+Context Template:  Default
+Instruct Mode:     OFF
+Instruct Template: Alpaca (inactive while Instruct Mode is OFF)
+System Prompt:     Neutral - Chat
+Reasoning:         OFF
+Custom Stops:      empty
+Start Reply With:  empty
+```
+
+Do not enable metadata-derived templates, manual ChatML/Jinja/non-thinking overrides, or the experimental Chat Completion path during this sprint.
 
 Recurring backend entrypoint:
 
@@ -47,14 +53,7 @@ The experimental non-thinking launch/test scripts have therefore been removed fr
 
 ## Deferred hardening backlog
 
-Codex/later work may revisit:
-
-- exact Qwen3.5 thinking/non-thinking template contract,
-- final role/system-prompt placement,
-- final Validation/Story sampler profiles,
-- 1000–2000 word output requirement,
-- context optimization beyond 8192,
-- exact model-specific Chat Completion/Jinja path if still useful.
+Codex/later work may revisit exact Qwen3.5 thinking/non-thinking template behavior, final role/system-prompt placement, final Validation/Story sampler profiles, the 1000–2000 word output requirement, context optimization beyond 8192, and any model-specific Chat Completion/Jinja path.
 
 ## Current gate
 
