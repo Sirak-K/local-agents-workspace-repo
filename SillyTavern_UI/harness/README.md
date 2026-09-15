@@ -12,10 +12,12 @@ Not tracked: installed third-party apps under `SillyTavern_UI/_local_runtime/`.
 From repo root after AutoPull:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\SillyTavern_UI\harness\Start-Guide1-Stack.ps1
+.\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
 ```
 
-The script:
+`Start-Guide1-Stack.cmd` selects `pwsh.exe` when available and falls back to `powershell.exe`. This avoids assuming Windows PowerShell 5.1 is installed or present in `PATH`.
+
+The launcher/script chain:
 
 1. bootstraps missing Guide-1 runtime components,
 2. checks the NVIDIA driver,
