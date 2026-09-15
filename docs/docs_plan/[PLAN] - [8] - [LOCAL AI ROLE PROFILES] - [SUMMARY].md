@@ -21,8 +21,8 @@ Byte mellan AGPR-profiler ska vara explicit, sekventiellt och reproducerbart. In
 | AGPR | Roll | Minsta nuvarande modellval | Status |
 |---|---|---|---|
 | AGPR-2 | Storyteller — primär profil för chatt och berättelseskapande | DefiantFable Q4_K_S; mmproj F16 för redan fungerande vision | Aktiv P0 och normalt använd profil; grundchatten är smoke-testad, avancerad profil och prestanda härdas nu |
-| AGPR-3 | Image Master — smal profil för captioning och/eller bildgenerering | Inte beslutad | Fastställd framtida mediaprofil; implementation och modellval väntar |
-| AGPR-4 | Voice Master — smal English TTS-profil för kvinnlig, emotionell och icke-verbal novel narration | Dia 1.6B, Dia2-1B/2B och Chatterbox Turbo är A/B-kandidater; inget val låst | Kravbaseline etablerad; Storyteller äger text/cue-placering, Voice Master renderar; modell/runtime väntar |
+| AGPR-3 | Image Master — snabb bildgenerering och iterativ justering; captioning sekundärt | SANA-Sprint 0.6B är första kvalificeringskandidat; director installeras endast vid bevisat gap | Aktiv implementation; direkt generatorväg ska bevisa två varma iterationer inom 8 GB |
+| AGPR-4 | Voice Master — smal English TTS-profil för kvinnlig, emotionell och icke-verbal novel narration | Dia2-1B är första kvalificeringskandidat; Dia 1.6B är endast reserv vid relevant FAIL | Aktiv implementation; Storyteller äger text/cue-placering och Voice Master ska bevisa ljudfil, röststabilitet, skratt och skrik |
 
 ## Tvärgående kvalitetsmål
 
@@ -35,6 +35,6 @@ Byte mellan AGPR-profiler ska vara explicit, sekventiellt och reproducerbart. In
 
 ## Aktiv implementationsordning
 
-AGPR-2 färdigställs som första vertikala och normalt använda profil innan gemensamma profilmönster generaliseras eller AGPR-3/AGPR-4 implementeras. AGPR-3 och AGPR-4 behöver endast sina snäva mediaansvar. Deras modeller eller motorer får laddas och köras sekventiellt inom 8 GB VRAM-budgeten; de behöver inte dela Storytellers chattförmåga eller vara samtidigt residenta.
+AGPR-3 och AGPR-4 utvecklas nu före Storytellers återstående live/E2E- och prestandatester. Storytellers fungerande baseline bevaras. Mediaprofilerna behöver endast sina snäva ansvar och får laddas sekventiellt inom 8 GB-budgeten; de behöver inte dela Storytellers chattförmåga eller vara samtidigt aktiva med andra AGPR-profiler.
 
 AGPR-4:s låsta minimum är lokal unrestricted English rendering, trovärdigt skratt och högintensivt skrik, minst en reproducerbar kvinnlig röst samt icke-monoton och flexibelt styrbar narration. Första leveransen är en beständig ljudfil. Inline-spelare är uttryckligen inte ett baselinekrav; broker/API och automatisk profilåtergång är separata framtida integrationsbeslut.

@@ -1,0 +1,27 @@
+{
+  "scope": "qualification-only; not a runtime API contract",
+  "profile": "AGPR-3",
+  "candidate": "Efficient-Large-Model/Sana_Sprint_0.6B_1024px_diffusers",
+  "settings": {
+    "seed": 314159,
+    "width": 1024,
+    "height": 1024,
+    "inference_steps": 2,
+    "images_per_iteration": 1
+  },
+  "cases": [
+    {
+      "id": "base_composition",
+      "purpose": "Measure prompt adherence and create the preserved comparison image.",
+      "prompt": "A cinematic night illustration of one adult woman in a bright red coat standing to the left of one blue motorcycle on a wet city street, one full moon visible, no readable text.",
+      "output_file": "qualification_outputs/image/base_seed_314159.png"
+    },
+    {
+      "id": "single_attribute_revision",
+      "purpose": "Prove a warm second iteration without model-file reload.",
+      "base_case": "base_composition",
+      "revision": "Keep the composition, subject, motorcycle, lighting, camera and seed unchanged; change only the coat from bright red to emerald green.",
+      "output_file": "qualification_outputs/image/revision_seed_314159.png"
+    }
+  ]
+}

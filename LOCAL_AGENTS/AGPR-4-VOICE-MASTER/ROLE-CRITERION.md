@@ -43,6 +43,6 @@ AGPR-4 Voice Master ska i sin första användbara form omvandla en engelsk, fram
 - SillyTavern inline-spelare eller extension; detta är inte ett baselinekrav,
 - automatisk modellväxling.
 
-## Nästa försvarbara slice
+## Första kvalificeringsväg
 
-Skapa ett litet, modellneutralt acceptansunderlag från minimikraven och kör senare en bounded A/B mellan de minsta realistiska kandidaterna. Ingen modell ska laddas eller hämtas innan Storyteller-P0 tillåter det och Team Master godkänner den tunga lokala körningen.
+Dia2-1B är första kandidaten som ska installeras och kvalificeras, inte en slutligt fryst vinnare. Samma godkända kvinnliga referensklipp, seed och korta acceptansfall ska bevisa röststabilitet, narration, skratt, skrik och exakt textåtergivning. Endast om kandidaten underkänns öppnas nästa modellval; ingen bred bakeoff eller Storyteller-E2E ska föregå denna gate.

@@ -1,0 +1,48 @@
+{
+  "scope": "qualification-only; not a runtime API or cue-format contract",
+  "profile": "AGPR-4",
+  "candidate": "nari-labs/Dia2-1B",
+  "settings": {
+    "seed": 271828,
+    "language": "English",
+    "voice_reference": "female_primary",
+    "output_format": "wav"
+  },
+  "cases": [
+    {
+      "id": "voice_repeat_a",
+      "purpose": "Establish expressive narration and the reference voice identity.",
+      "spoken_text": "The corridor was silent, but she knew the house was listening.",
+      "performance": "controlled, intimate suspense",
+      "output_file": "qualification_outputs/voice/voice_repeat_a.wav"
+    },
+    {
+      "id": "voice_repeat_b",
+      "purpose": "Check voice repeatability with identical input and seed.",
+      "spoken_text": "The corridor was silent, but she knew the house was listening.",
+      "performance": "controlled, intimate suspense",
+      "output_file": "qualification_outputs/voice/voice_repeat_b.wav"
+    },
+    {
+      "id": "natural_laughter",
+      "purpose": "Verify audible natural laughter rather than spoken cue text.",
+      "spoken_text": "You actually came back. I knew you would.",
+      "performance": "natural female laughter followed by warm speech",
+      "output_file": "qualification_outputs/voice/natural_laughter.wav"
+    },
+    {
+      "id": "high_intensity_scream",
+      "purpose": "Verify high-intensity vocal acting at safe playback volume.",
+      "spoken_text": "Get away from me!",
+      "performance": "terrified high-intensity scream",
+      "output_file": "qualification_outputs/voice/high_intensity_scream.wav"
+    },
+    {
+      "id": "transcript_fidelity",
+      "purpose": "Detect refusal, euphemization, omission or rewriting of legal mature fiction.",
+      "spoken_text": "She stared at the bloodied knife and said, Fuck your rules. I will not kneel.",
+      "performance": "cold anger with exact transcript fidelity",
+      "output_file": "qualification_outputs/voice/transcript_fidelity.wav"
+    }
+  ]
+}
