@@ -26,9 +26,12 @@ else {
 }
 $gitDir = [System.IO.Path]::GetFullPath($gitDir)
 $stopPath = Join-Path $gitDir "main-autopull.stop"
-$logPath = Join-Path $gitDir "main-autopull.log"
-$bootstrapOutPath = Join-Path $gitDir "main-autopull-bootstrap.out.log"
-$bootstrapErrPath = Join-Path $gitDir "main-autopull-bootstrap.err.log"
+$legacyEvidencePaths = @(
+    (Join-Path $gitDir "main-autopull.log"),
+    (Join-Path $gitDir "main-autopull-bootstrap.out.log"),
+    (Join-Path $gitDir "main-autopull-bootstrap.err.log")
+)
+$evidenceRoot = Join-Path $repoRoot "logs\github_autopull"
 
 $startupDir = [Environment]::GetFolderPath([Environment+SpecialFolder]::Startup)
 # This launcher is intentionally unique to local_agents_workspace. Never reuse or
@@ -47,7 +50,7 @@ if ($Uninstall) {
     [System.IO.File]::WriteAllText($stopPath, "stop`r`n", [System.Text.Encoding]::ASCII)
     Write-Host "Local Agents auto-pull startup launcher removed."
     Write-Host "Running Local Agents watcher will stop within its polling interval."
-    Write-Host "Log: $logPath"
+    Write-Host "Evidence root: $evidenceRoot"
     exit 0
 }
 
@@ -58,7 +61,9 @@ if ($IntervalSeconds -lt 5) {
 if (Test-Path $stopPath) {
     Remove-Item $stopPath -Force -ErrorAction SilentlyContinue
 }
-Remove-Item $bootstrapOutPath, $bootstrapErrPath -Force -ErrorAction SilentlyContinue
+# Step 4 moves AutoPull evidence out of .git/*.log. Historical bootstrap/state
+# text logs are not migrated into the new owner-specific runtime evidence.
+Remove-Item $legacyEvidencePaths -Force -ErrorAction SilentlyContinue
 
 $launcher = @"
 @echo off
@@ -74,7 +79,7 @@ $argList = @(
     "-RepoRoot", $repoRoot,
     "-IntervalSeconds", $IntervalSeconds.ToString()
 )
-Start-Process -FilePath $hostExe -ArgumentList $argList -WindowStyle Hidden -RedirectStandardOutput $bootstrapOutPath -RedirectStandardError $bootstrapErrPath
+Start-Process -FilePath $hostExe -ArgumentList $argList -WindowStyle Hidden
 
 Start-Sleep -Seconds 2
 
@@ -83,22 +88,17 @@ Write-Host "Repo: $repoRoot"
 Write-Host "PowerShell host: $hostExe"
 Write-Host "Poll interval: ${IntervalSeconds}s"
 Write-Host "Startup launcher: $launcherPath"
-Write-Host "Log: $logPath"
+Write-Host "Evidence root: $evidenceRoot"
 Write-Host "Safety: only branch main; only fast-forward; skips tracked/staged local changes and colliding untracked files; never resets/rebases/cleans/stashes."
 
-if (Test-Path $logPath) {
-    Write-Host "--- watcher evidence ---"
-    Get-Content $logPath -Tail 4 | ForEach-Object { Write-Host $_ }
-    Write-Host "------------------------"
+$latestEvidence = Get-ChildItem -LiteralPath $evidenceRoot -Filter "*.json" -Recurse -File -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTimeUtc -Descending |
+    Select-Object -First 1
+if ($null -ne $latestEvidence) {
+    Write-Host "Latest watcher evidence: $($latestEvidence.FullName)"
 }
 else {
-    Write-Warning "Watcher log not created yet. Showing bootstrap diagnostics if available."
-    if (Test-Path $bootstrapErrPath) {
-        Get-Content $bootstrapErrPath -Tail 20 | ForEach-Object { Write-Warning $_ }
-    }
-    if (Test-Path $bootstrapOutPath) {
-        Get-Content $bootstrapOutPath -Tail 20 | ForEach-Object { Write-Host $_ }
-    }
+    Write-Warning "No owner-specific watcher capture is visible yet. The watcher may still be in startup/fetch or Python observability may be unavailable."
 }
 
 Write-Host "Uninstall: & .\scripts\github_autopull_chatgpts_repo_work\install_main_autopull.ps1 -Uninstall"
