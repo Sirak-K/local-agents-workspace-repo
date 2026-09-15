@@ -15,6 +15,9 @@ if not defined PS_EXE (
 )
 
 echo Using PowerShell: "%PS_EXE%"
-echo Starting DefiantFable via KoboldCpp Jinja with enable_thinking=false...
+echo Starting DefiantFable/Qwen3.5 with backend Jinja and enable_thinking=false...
+echo SillyTavern path for this profile: Chat Completion ^> Custom (OpenAI-compatible) ^> http://127.0.0.1:5001/v1
+echo After KoboldCpp is ready, verify from another terminal with: .\scripts\Test-DefiantFable-NonThinking.cmd
+echo.
 "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%Start-KoboldCpp-TextBaseline.ps1" -Jinja -DisableThinking %*
 exit /b %errorlevel%
