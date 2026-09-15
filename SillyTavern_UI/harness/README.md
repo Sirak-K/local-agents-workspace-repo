@@ -15,7 +15,7 @@ From repo root after AutoPull:
 .\SillyTavern_UI\harness\Start-Guide1-Stack.cmd
 ```
 
-`Start-Guide1-Stack.cmd` selects `pwsh.exe` when available and falls back to `powershell.exe`. This avoids assuming Windows PowerShell 5.1 is installed or present in `PATH`.
+`Start-Guide1-Stack.cmd` selects `pwsh.exe` when available and falls back to `powershell.exe`. It also checks common absolute install paths so Guide 1 does not depend on a perfect PATH setup.
 
 The launcher/script chain:
 
@@ -25,9 +25,10 @@ The launcher/script chain:
 4. downloads and SHA-256 verifies KoboldCpp v1.120,
 5. clones/pins SillyTavern inside `_local_runtime`,
 6. asks you to select an existing `.gguf`,
-7. starts KoboldCpp with the locked baseline,
-8. verifies its local API,
-9. starts SillyTavern.
+7. refuses a contaminated Guide-1 run if the selected GPU already has >=50% VRAM occupied by another workload,
+8. starts KoboldCpp with the locked baseline,
+9. verifies its local API,
+10. starts SillyTavern.
 
 ## Locked KoboldCpp baseline
 
@@ -35,17 +36,23 @@ The launcher/script chain:
 |---|---|
 | Bind | `127.0.0.1` |
 | Port | `5001` |
-| Context | `8192` |
+| Requested context | `8192` |
 | CUDA GPU | ID `0` default |
 | GPU layers | `-1` / AutoFit |
 | MMQ | OFF (`--nommq`) |
 | High Priority | ON |
-| Flash Attention | ON (v1.120 default) |
+| Flash Attention | allowed/default; verify effective runtime state in log |
 | KV | F16 |
-| Context Shift | ON (v1.120 default) |
-| SWA | prevented with `--noswa` so Context Shift remains available |
+| Context Shift | allowed by baseline (`--noshift` absent), but effective state is architecture-dependent; KoboldCpp may disable it for e.g. mRoPE/hybrid models |
+| SWA | prevented with `--noswa`; some architectures do not use SWA anyway |
 | Low VRAM | OFF |
 | mmproj / RAG / remote tunnel | absent |
+
+Guide 1 does **not** treat an architecture-driven Context Shift disable as a model failure. Record the effective runtime behavior and keep failure causes separate.
+
+## Controlled GPU preflight
+
+Do not run ComfyUI inference or another heavy CUDA workload during Guide-1 AutoFit/performance verification. Competing VRAM use changes AutoFit layer selection and contaminates tok/s/VRAM evidence. The launcher now stops before model load if at least 50% of the target GPU VRAM is already occupied.
 
 ## Runtime placement
 
