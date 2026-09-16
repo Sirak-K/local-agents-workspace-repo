@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
-from pathlib import Path, PureWindowsPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 from typing import Any
 
@@ -78,6 +78,10 @@ def _portable_path(value: str, project_root: Path) -> str:
     candidate = PureWindowsPath(value)
     if candidate.is_absolute():
         name = candidate.name or "path"
+        return f"<ABSOLUTE_PATH_REDACTED>/{name}"
+    posix_candidate = PurePosixPath(value)
+    if posix_candidate.is_absolute():
+        name = posix_candidate.name or "path"
         return f"<ABSOLUTE_PATH_REDACTED>/{name}"
     path_candidate = Path(value)
     if path_candidate.is_absolute():

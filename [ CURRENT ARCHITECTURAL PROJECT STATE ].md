@@ -95,7 +95,7 @@ Varje capture är en självständig, indenterad JSON-fil med tidsgränser, metad
 
 ### `runtime_logging/` och `logs/`
 
-Plan 9 har låst den framtida gemensamma kärnan och ägargränsen, men implementationen är ännu inte färdig. `runtime_logging/` ska centralisera generiska primitives som redan är bevisade i LM Studio-observability; LM Studio behåller sitt plattformsformat genom en tunn adapter i stället för en duplicerad algoritmisk implementation.
+Plan 9 steg 2–7 har etablerat och lokalt offlineverifierat den gemensamma kärnan och ägargränsen. `runtime_logging/` centraliserar bounded operationsdokument, schema-/policyvalidering, sanering, atomisk persistens, retentionplanering och operator-CLI; LM Studio behåller sitt plattformsformat genom en tunn adapter i stället för en duplicerad algoritmisk implementation.
 
 `logs/` är en rot, inte en generell loggägare. Rå captures delas efter faktisk producent, exempelvis SillyTavern, KoboldCpp, Dia2, Diffusers, host, AutoPull och framtida profilorkestrering. Varje fel stannar i ägarströmmen och tvärkomponentoperationer länkas med korrelation och referenser. Evalresultat, Story Creator-runloggar, `LM-Studio_logs/` och media-/storyartefakter ligger kvar hos sina befintliga ägare.
 
@@ -200,7 +200,7 @@ PASS/FAIL anger först om uppgiften klarades och är inte automatiskt en modells
 
 ## 11. Nuvarande mognadsgräns
 
-Den centrala arkitekturen för LM Studio-anslutning, modulär LM-observability, evalartefakter, avbrytbar generering, kontrollerad filinspektion och separat felägarskap finns etablerad. Designen för projektets gemensamma icke-LM runtimeobservability är låst i plan 9 men dess kärna, producentintegrationer och lokala promotionsgates är ännu inte implementerade.
+Den centrala arkitekturen för LM Studio-anslutning, modulär observability, evalartefakter, avbrytbar generering, kontrollerad filinspektion och separat felägarskap finns etablerad. Plan 9:s gemensamma kärna, AutoPull-/hostadapter, SillyTavern-/KoboldCpp-instrumentering och offlinegates är implementerade; verkliga Windows-/runtimegates, Dia2/SANA-slices och slutlig prestanda-/retentionpromotion återstår i steg 8–11.
 
 Följande ska inte antas vara generell färdig kapacitet:
 

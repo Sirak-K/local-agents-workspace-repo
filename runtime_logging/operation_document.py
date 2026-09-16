@@ -364,7 +364,7 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
         raise RuntimeLoggingError("unsupported schema_version")
     if document["owner"] not in policy["owners"]:
         raise RuntimeLoggingError("document owner is not policy-approved")
-    if _STREAM_RE.fullmatch(document["stream"]) is None:
+    if not isinstance(document["stream"], str) or _STREAM_RE.fullmatch(document["stream"]) is None:
         raise RuntimeLoggingError("invalid document stream")
     operation = document["operation"]
     required_operation = {
@@ -377,6 +377,18 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
     validate_identifier(operation["correlation_id"], "correlation_id")
     if operation["status"] not in policy["statuses"]:
         raise RuntimeLoggingError("invalid operation status")
+    producer = operation["producer"]
+    if not isinstance(producer, dict) or not {"name", "version"}.issubset(producer) or set(producer) - {"name", "version", "process"}:
+        raise RuntimeLoggingError("producer object does not match the schema contract")
+    if not all(isinstance(producer[key], str) and producer[key] for key in ("name", "version")):
+        raise RuntimeLoggingError("producer name and version must be non-empty strings")
+    if producer.get("process") is not None and not isinstance(producer["process"], dict):
+        raise RuntimeLoggingError("producer process must be an object or null")
+    for key in ("profile", "model"):
+        if operation[key] is not None and not isinstance(operation[key], str):
+            raise RuntimeLoggingError(f"operation {key} must be a string or null")
+    if not isinstance(operation["data_policy"], dict) or not isinstance(operation["detail"], dict):
+        raise RuntimeLoggingError("operation data_policy and detail must be objects")
     _validate_timestamp(operation["started_at"])
     if operation["ended_at"] is not None:
         _validate_timestamp(operation["ended_at"])
@@ -388,7 +400,11 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
     else:
         if operation["ended_at"] is None or operation["duration_seconds"] is None or operation["stop_reason"] is None:
             raise RuntimeLoggingError("finalized operation is missing final fields")
+        if not isinstance(operation["stop_reason"], str):
+            raise RuntimeLoggingError("finalized operation stop_reason must be a string")
     limits = operation["limits"]
+    if not isinstance(limits, dict):
+        raise RuntimeLoggingError("operation limits must be an object")
     hard_limits = policy["hard_limits"]
     for key in ("max_capture_bytes", "max_events", "max_capture_seconds"):
         value = limits.get(key) if isinstance(limits, dict) else None
@@ -399,9 +415,19 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
         if not isinstance(duration, (int, float)) or not math.isfinite(duration) or duration < 0 or duration > limits["max_capture_seconds"]:
             raise RuntimeLoggingError("operation duration is invalid or exceeds policy")
     counts = operation["counts"]
+    if not isinstance(counts, dict):
+        raise RuntimeLoggingError("operation counts must be an object")
+    for key in ("events", "artifacts"):
+        if not isinstance(counts.get(key), int) or counts[key] < 0:
+            raise RuntimeLoggingError("operation counts must be non-negative integers")
+    if not isinstance(document["events"], list) or not isinstance(document["artifacts"], list):
+        raise RuntimeLoggingError("events and artifacts must be arrays")
     if counts.get("events") != len(document["events"]) or counts.get("artifacts") != len(document["artifacts"]):
         raise RuntimeLoggingError("operation counts do not match document arrays")
     for index, event in enumerate(document["events"], start=1):
+        required_event = {"sequence", "event_id", "observed_at", "source_time", "event_type", "severity", "outcome", "duration_seconds", "details"}
+        if not isinstance(event, dict) or set(event) != required_event:
+            raise RuntimeLoggingError("event object keys do not match the schema contract")
         if event.get("sequence") != index:
             raise RuntimeLoggingError("event sequence is not contiguous")
         validate_identifier(event.get("event_id", ""), "event_id")
@@ -410,8 +436,10 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
             _validate_timestamp(event["source_time"])
         if event.get("severity") not in policy["severities"] or event.get("outcome") not in policy["outcomes"]:
             raise RuntimeLoggingError("event policy value is invalid")
-        if _EVENT_TYPE_RE.fullmatch(event.get("event_type", "")) is None:
+        if not isinstance(event.get("event_type"), str) or _EVENT_TYPE_RE.fullmatch(event["event_type"]) is None:
             raise RuntimeLoggingError("invalid event_type")
+        if not isinstance(event["details"], dict):
+            raise RuntimeLoggingError("event details must be an object")
         event_duration = event.get("duration_seconds")
         if event_duration is not None and (
             not isinstance(event_duration, (int, float))
@@ -420,9 +448,23 @@ def validate_document(document: dict[str, Any], *, require_final: bool | None = 
         ):
             raise RuntimeLoggingError("invalid event duration")
     for artifact in document["artifacts"]:
-        _safe_artifact_reference(artifact.get("reference", ""))
-        if not isinstance(artifact.get("bytes"), int) or artifact["bytes"] < 0 or _SHA256_RE.fullmatch(artifact.get("sha256", "")) is None:
+        required_artifact = {"reference", "bytes", "sha256", "media_type", "metadata"}
+        if not isinstance(artifact, dict) or set(artifact) != required_artifact:
+            raise RuntimeLoggingError("artifact object keys do not match the schema contract")
+        if not isinstance(artifact.get("reference"), str):
+            raise RuntimeLoggingError("artifact reference must be a string")
+        _safe_artifact_reference(artifact["reference"])
+        if (
+            not isinstance(artifact.get("bytes"), int)
+            or artifact["bytes"] < 0
+            or not isinstance(artifact.get("sha256"), str)
+            or _SHA256_RE.fullmatch(artifact["sha256"]) is None
+        ):
             raise RuntimeLoggingError("invalid artifact record")
+        if artifact["media_type"] is not None and not isinstance(artifact["media_type"], str):
+            raise RuntimeLoggingError("artifact media_type must be a string or null")
+        if not isinstance(artifact["metadata"], dict):
+            raise RuntimeLoggingError("artifact metadata must be an object")
     if not isinstance(document["evidence_gaps"], list) or not all(isinstance(item, str) for item in document["evidence_gaps"]):
         raise RuntimeLoggingError("evidence_gaps must be a string list")
 

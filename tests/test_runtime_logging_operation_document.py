@@ -105,6 +105,25 @@ class OperationDocumentTests(unittest.TestCase):
         self.assertEqual(document["operation"]["stop_reason"], "synthetic_failure")
         validate_document(document, require_final=True)
 
+    def test_nested_schema_shapes_are_rejected_by_runtime_validation(self):
+        document = new_operation_document(owner="koboldcpp", stream="request", producer="test", producer_version="1")
+        missing_producer_version = json.loads(json.dumps(document))
+        del missing_producer_version["operation"]["producer"]["version"]
+        with self.assertRaises(RuntimeLoggingError):
+            validate_document(missing_producer_version)
+
+        append_event(document, "request.completed", {"ok": True})
+        malformed_event = json.loads(json.dumps(document))
+        del malformed_event["events"][0]["details"]
+        with self.assertRaises(RuntimeLoggingError):
+            validate_document(malformed_event)
+
+        append_artifact(document, reference="audio/output.wav", byte_count=1, sha256="a" * 64)
+        malformed_artifact = json.loads(json.dumps(document))
+        malformed_artifact["artifacts"][0]["metadata"] = []
+        with self.assertRaises(RuntimeLoggingError):
+            validate_document(malformed_artifact)
+
     def test_interrupted_finalization_and_running_partial_state_are_distinct(self):
         running = new_operation_document(owner="dia2", stream="render", producer="test", producer_version="1")
         append_event(running, "render.started", {"ok": True})
